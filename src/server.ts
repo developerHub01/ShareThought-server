@@ -5,10 +5,7 @@ import config from "./app/config";
 const { PORT, DB_CONNECTION_STRING } = config;
 
 (async () => {
-
-  console.log(PORT);
   console.log(DB_CONNECTION_STRING);
-  
 
   try {
     await mongoose.connect(DB_CONNECTION_STRING as string);
