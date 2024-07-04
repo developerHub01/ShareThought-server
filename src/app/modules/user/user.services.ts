@@ -1,3 +1,4 @@
+import errorHandler from "../../errors/errorHandler";
 import { IUser } from "./user.interface";
 import { UserModel } from "./user.model";
 
@@ -7,8 +8,8 @@ const createUser = async (payload: IUser) => {
       ...payload,
     });
     return result;
-  } catch (error: any) {
-    throw new Error(error);
+  } catch (error) {
+    errorHandler(error);
   }
 };
 

@@ -10,7 +10,7 @@ export const globalErrorHandler = (
   const message = error.message || "Server error";
 
   return res.status(statusCode).json({
-    success: true,
+    success: false,
     message,
     error,
   });

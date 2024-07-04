@@ -64,7 +64,7 @@ userSchema.post("save", function (doc, next) {
 userSchema.statics.isPasswordMatch = async (plainPassword, hashedPassword) => {
   return await bcrypt.compare(plainPassword, hashedPassword);
 };
-userSchema.statics.isUserExist = async (id) => {
+userSchema.statics.isUserExist = async (id:string) => {
   return await UserModel.findById(id);
 };
 

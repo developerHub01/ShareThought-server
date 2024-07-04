@@ -15,4 +15,5 @@ export default {
   BCRYPT_SALT_ROUND: process.env.BCRYPT_SALT_ROUND,
   JWT_SECRET: process.env.JWT_SECRET,
   JWT_ACCESS_EXPIRES_IN: process.env.JWT_ACCESS_EXPIRES_IN,
+  BASE_URL: process.env.BASE_URL,
 };

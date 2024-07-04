@@ -2,6 +2,7 @@ import express, { Router } from "express";
 import { ChannelRoutes } from "../modules/channel/channel.route";
 import { AuthRoutes } from "../modules/auth/auth.route";
 import { UserRoutes } from "../modules/user/user.route";
+import { FollowerRoutes } from "../modules/follower/follower.route";
 
 interface IRouteSchema {
   path: string;
@@ -22,6 +23,10 @@ const moduleRoutes: Array<IRouteSchema> = [
   {
     path: "/user",
     route: UserRoutes,
+  },
+  {
+    path: "/follow",
+    route: FollowerRoutes,
   },
 ];
 

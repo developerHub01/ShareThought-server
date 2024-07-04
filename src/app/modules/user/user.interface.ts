@@ -14,5 +14,5 @@ export interface IUserModel extends Model<IUser> {
     plainPassword: string,
     hashedPassword: string,
   ): Promise<boolean>;
-  isUserExist(id: string): boolean;
+  isUserExist(id: string): Promise<boolean>;
 }
