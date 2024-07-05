@@ -30,6 +30,25 @@ const createUserValidationSchema = zod.object({
     .trim(),
 });
 
+const updateUserValidationSchema = zod.object({
+  userName: zod.string().trim().optional(),
+  fullName: zod.string().trim().optional(),
+  avatar: zod.string().trim().optional().optional(),
+  email: zod.string().trim().email().optional(),
+  password: zod.string().optional(),
+});
+
+const updateUserPasswordValidationSchema = zod.object({
+  oldPassword: zod.string({
+    required_error: "old password is required",
+  }),
+  newPassword: zod.string({
+    required_error: "new password is required",
+  }),
+});
+
 export const UserValidation = {
   createUserValidationSchema,
+  updateUserValidationSchema,
+  updateUserPasswordValidationSchema,
 };

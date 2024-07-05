@@ -11,7 +11,7 @@ const router = express.Router();
 // const CHANNEL_AVATAR = "channelAvatar";
 // const CHANNEL_COVER = "channelCover";
 
-router.get("/all", getLoggedInUser, ChannelController.getAllChannel);
+router.get("/all", getLoggedInUser, ChannelController.findChannel);
 
 router.get("/", getLoggedInUser, ChannelController.getMyChannel);
 
@@ -24,7 +24,7 @@ router.post(
 
 router.patch(
   "/:id",
-  validateRequest(ChannelValidation.createChannelValidationSchema),
+  validateRequest(ChannelValidation.updateChannelValidationSchema),
   getLoggedInUser,
   verifyMyChannel,
   ChannelController.updateChannel,

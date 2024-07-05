@@ -4,8 +4,8 @@ import { sendResponse } from "../../utils/send.response";
 import { ChannelServices } from "./channel.services";
 import { IRequestWithUserId } from "../../interface/interface";
 
-const getAllChannel = catchAsync(async (req, res) => {
-  const result = await ChannelServices.getAllChannel(req.query);
+const findChannel = catchAsync(async (req, res) => {
+  const result = await ChannelServices.findChannel(req.query);
   return sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -78,7 +78,7 @@ const deleteChannel = catchAsync(async (req, res) => {
 });
 
 export const ChannelController = {
-  getAllChannel,
+  findChannel,
   getMyChannel,
   createChannel,
   deleteChannel,

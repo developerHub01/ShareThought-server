@@ -2,6 +2,18 @@ import httpStatus from "http-status";
 import catchAsync from "../../utils/catch.async";
 import { sendResponse } from "../../utils/send.response";
 import { UserServices } from "./user.services";
+import { IRequestWithUserId } from "../../interface/interface";
+
+const findUser = catchAsync(async (req, res) => {
+  const result = await UserServices.findUser(req.query);
+
+  return sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "user created succesfully",
+    data: result,
+  });
+});
 
 const createUser = catchAsync(async (req, res) => {
   const result = await UserServices.createUser(req.body);
@@ -14,6 +26,34 @@ const createUser = catchAsync(async (req, res) => {
   });
 });
 
+const updateUser = catchAsync(async (req, res) => {
+  const { userId } = req as IRequestWithUserId;
+  const result = await UserServices.updateUser(req.body, userId);
+
+  return sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "user updated succesfully",
+    data: result,
+  });
+});
+
+const updateUserPassword = catchAsync(async (req, res) => {
+  const { userId } = req as IRequestWithUserId;
+
+  const result = await UserServices.updateUserPassword(req.body, userId);
+
+  return sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "password changed succesfully",
+    data: result,
+  });
+});
+
 export const UserController = {
+  findUser,
   createUser,
+  updateUser,
+  updateUserPassword,
 };

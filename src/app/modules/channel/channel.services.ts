@@ -14,7 +14,7 @@ const getChannelById = async (id: string, author: boolean) => {
 };
 
 // get all channel or filter and search channel
-const getAllChannel = async (query: Record<string, unknown>) => {
+const findChannel = async (query: Record<string, unknown>) => {
   try {
     const chennelQuery = new QueryBuilder(ChannelModel.find({}), query)
       .search(ChannelConstant.channelSearchableField)
@@ -96,7 +96,7 @@ const deleteChannel = async (id: string) => {
 };
 
 export const ChannelServices = {
-  getAllChannel,
+  findChannel,
   getChannelById,
   getChannelOfMine,
   createChannel,
