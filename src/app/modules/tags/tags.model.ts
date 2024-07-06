@@ -1,5 +1,6 @@
 import { ClientSession, model, Schema } from "mongoose";
 import { ITag, ITagModel } from "./tags.interface";
+import { TagsConstant } from "./tags.constant";
 
 const tagSchema = new Schema<ITag, ITagModel>({
   _id: {
@@ -86,4 +87,4 @@ tagSchema.statics.searchTags = async (tag: string): Promise<Array<ITag>> => {
   });
 };
 
-export const TagModel = model<ITag, ITagModel>("Tag", tagSchema);
+export const TagModel = model<ITag, ITagModel>(TagsConstant.TAGS_COLLECTION_NAME, tagSchema);

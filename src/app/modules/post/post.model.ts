@@ -1,13 +1,14 @@
 import { model, Schema } from "mongoose";
 import { PostConstant } from "./post.constant";
 import { IPost, IPostModel } from "./post.interface";
+import { ChannelConstant } from "../channel/channel.constant";
 // import { PostReactionModel } from "../post.reaction/post.reaction.model";
 
 const postSchema = new Schema<IPost, IPostModel>(
   {
     channelId: {
       type: Schema.Types.ObjectId,
-      ref: "Channel",
+      ref: ChannelConstant.CHANNEL_COLLECTION_NAME,
       required: true,
     },
     title: {
@@ -101,10 +102,10 @@ postSchema.statics.isMyPost = async (
         select: "_id",
       },
     })) as unknown as { channelId: { authorId: { _id: string } } };
-  
+
   const result = collectionChain?.channelId?.authorId?._id?.toString();
 
   return userId === result;
 };
 
-export const PostModel = model<IPost, IPostModel>("Post", postSchema);
+export const PostModel = model<IPost, IPostModel>(PostConstant.POST_COLLECTION_NAME, postSchema);

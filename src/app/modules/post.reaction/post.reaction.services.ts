@@ -22,6 +22,9 @@ const allReactionOnPost = async (
         PostReactionModel.find({
           userId,
           postId,
+        }).populate({
+          path: "userId",
+          select: "fullName avatar",
         }),
         query,
       )
@@ -48,10 +51,13 @@ const allReactionOnPost = async (
 const reactOnPost = async (
   userId: string,
   postId: string,
-  reactionType: TPostReactionType,
+  reactionType?: TPostReactionType | undefined,
 ) => {
   try {
-    return await PostReactionModel.reactOnPost(userId, postId, reactionType);
+    if (reactionType)
+      return await PostReactionModel.reactOnPost(userId, postId, reactionType);
+
+    return await PostReactionModel.togglePostReaction(userId, postId);
   } catch (error) {
     errorHandler(error);
   }

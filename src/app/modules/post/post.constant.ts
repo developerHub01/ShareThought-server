@@ -1,3 +1,5 @@
+const POST_COLLECTION_NAME = "Post";
+
 const POST_TITLE_MIN_LENGTH = 3;
 const POST_TITLE_MAX_LENGTH = 100;
 const POST_CONTENT_MIN_LENGTH = 50;
@@ -7,6 +9,7 @@ const POST_TAGS_MAX_NUMBER = 4;
 const POST_SEARCHABLE_FIELD: Array<string> = ["title", "content"];
 
 export const PostConstant = {
+  POST_COLLECTION_NAME,
   POST_TITLE_MIN_LENGTH,
   POST_TITLE_MAX_LENGTH,
   POST_CONTENT_MIN_LENGTH,

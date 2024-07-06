@@ -1,5 +1,7 @@
 import { getStaticFileURL } from "../../utils/get.static.file.url";
 
+const CHANNEL_COLLECTION_NAME = "Channel";
+
 const channelSearchableField: Array<string> = [
   "channelName",
   "channelDescription",
@@ -13,8 +15,8 @@ const CHANNEL_DEFAULT_COVER = getStaticFileURL(
   Math.ceil(Math.random() * 5) + ".jpg",
 );
 
-
 export const ChannelConstant = {
+  CHANNEL_COLLECTION_NAME,
   CHANNEL_NAME_MAX_LENGTH,
   CHANNEL_NAME_MIN_LENGTH,
   CHANNEL_DESCRIPTION_MAX_LENGTH,

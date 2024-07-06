@@ -19,6 +19,9 @@ const findPost = async (query: Record<string, unknown>) => {
     const postQuery = new QueryBuilder(
       PostModel.find({
         isPublished: true,
+      }).populate({
+        path: "channelId",
+        select: "channelName channelAvatar",
       }),
       query,
     )
@@ -40,7 +43,6 @@ const findPost = async (query: Record<string, unknown>) => {
   }
 };
 
-
 /****
  *
  * If any post is panding and I am the author of the channel then only I can see and hide from others
@@ -61,7 +63,13 @@ const findPostByChannelId = async (
       if (!isMyChannel) query["isPublished"] = true;
     }
 
-    const postQuery = new QueryBuilder(PostModel.find(searchQuery), query)
+    const postQuery = new QueryBuilder(
+      PostModel.find(searchQuery).populate({
+        path: "channelId",
+        select: "channelName channelAvatar",
+      }),
+      query,
+    )
       .search(PostConstant.POST_SEARCHABLE_FIELD)
       .filter()
       .sort()
@@ -96,7 +104,10 @@ const findPostByPostId = async (postId: string, userId?: string) => {
       if (!isMyPost) query["isPublished"] = true;
     }
 
-    return await PostModel.findOne(query);
+    return await PostModel.findOne(query).populate({
+      path: "channelId",
+      select: "channelName channelAvatar",
+    });
   } catch (error) {
     errorHandler(error);
   }

@@ -15,11 +15,15 @@ router.get("/all", PostController.findPost);
 router.get("/:postId", checkAuthStatus, PostController.findPostByPostId);
 
 // get post by channelId
-router.get("/channel/:id", checkAuthStatus, PostController.findPostByChannelId);
+router.get(
+  "/channel/:id" /* :id ====> channelId */,
+  checkAuthStatus,
+  PostController.findPostByChannelId,
+);
 
 // create post
 router.post(
-  "/:id", // :id ===> channelId
+  "/:id" /* :id ===> channelId */,
   validateRequest(PostValidation.createPostValidationSchema),
   getLoggedInUser,
   verifyMyChannel,
@@ -28,17 +32,17 @@ router.post(
 
 // update post
 router.patch(
-  "/:postId", // :postId ===> postId
+  "/:postId" /* :postId ===> postId */,
   validateRequest(PostValidation.updatePostValidationSchema),
   getLoggedInUser,
-  verifyMyPost, // checking is that my post or not
+  verifyMyPost /* checking is that my post or not */,
   PostController.updatePost,
 );
 
 router.delete(
-  "/:postId", // :postId ===> postId
+  "/:postId" /* :postId ===> postId */,
   getLoggedInUser,
-  verifyMyPost, // checking is that my post or not
+  verifyMyPost /*checking is that my post or not */,
   PostController.deletePost,
 );
 

@@ -2,7 +2,7 @@ import { Model, Types } from "mongoose";
 import { PostReactionConstant } from "./post.reaction.constant";
 
 const reactionTypeList: Array<string> = Object.values(
-  PostReactionConstant.POST_REACTION_TYPE,
+  PostReactionConstant.POST_REACTION_TYPES,
 );
 
 export type TPostReactionType = (typeof reactionTypeList)[number];

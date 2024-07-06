@@ -4,6 +4,8 @@ import { AuthRoutes } from "../modules/auth/auth.route";
 import { UserRoutes } from "../modules/user/user.route";
 import { FollowerRoutes } from "../modules/follower/follower.route";
 import { PostRoutes } from "../modules/post/post.route";
+import { CommentRoutes } from "../modules/comment/comment.route";
+import { NotificationRoutes } from "../modules/notification/notification.route";
 
 interface IRouteSchema {
   path: string;
@@ -32,6 +34,14 @@ const moduleRoutes: Array<IRouteSchema> = [
   {
     path: "/post",
     route: PostRoutes,
+  },
+  {
+    path: "/comment",
+    route: CommentRoutes,
+  },
+  {
+    path: "/notification",
+    route: NotificationRoutes,
   },
 ];
 

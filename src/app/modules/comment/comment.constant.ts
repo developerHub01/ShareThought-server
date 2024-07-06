@@ -1,0 +1,15 @@
+import { Constatnt } from "../../constants/constants";
+
+const COMMENT_COLLECTION_NAME = "Comment";
+
+const COMMENT_CONTENT_MIN_LENGTH = 1;
+const COMMENT_CONTENT_MAX_LENGTH = 250;
+
+const COMMENT_REACTION_TYPES = Constatnt.REACTION_TYPES;
+
+export const CommentConstant = {
+  COMMENT_COLLECTION_NAME,
+  COMMENT_CONTENT_MIN_LENGTH,
+  COMMENT_CONTENT_MAX_LENGTH,
+  COMMENT_REACTION_TYPES,
+};

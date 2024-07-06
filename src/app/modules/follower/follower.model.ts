@@ -3,16 +3,19 @@ import AppError from "../../errors/AppError";
 import errorHandler from "../../errors/errorHandler";
 import { IFollower, IFollowerModel } from "./follower.interface";
 import { Schema, model } from "mongoose";
+import { ChannelConstant } from "../channel/channel.constant";
+import { UserConstant } from "../user/user.constant";
+import { FollowerConstant } from "./follower.cosntant";
 
 const followerSchema = new Schema<IFollower, IFollowerModel>(
   {
     channelId: {
       type: Schema.Types.ObjectId,
-      ref: "Channel",
+      ref: ChannelConstant.CHANNEL_COLLECTION_NAME,
     },
     userId: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: UserConstant.USER_COLLECTION_NAME,
     },
   },
   {
@@ -66,6 +69,6 @@ followerSchema.statics.followToggle = async (
 };
 
 export const FollowerModel = model<IFollower, IFollowerModel>(
-  "follower",
+  FollowerConstant.FOLLOWER_COLLECTION_NAME,
   followerSchema,
 );

@@ -9,8 +9,11 @@ const router = express.Router();
 // create password
 router.get("/me", getLoggedInUser, UserController.getMyDetails);
 
-router.get("/:id", getLoggedInUser, UserController.getUserById);
-
+router.get(
+  "/:id" /*:id ====> userId*/,
+  getLoggedInUser,
+  UserController.getUserById,
+);
 
 router.post(
   "/",

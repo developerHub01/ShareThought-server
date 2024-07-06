@@ -8,10 +8,6 @@ import verifyMyChannel from "../../middleware/verify.my.channel";
 
 const router = express.Router();
 
-// const CHANNEL_AVATAR = "channelAvatar";
-// const CHANNEL_COVER = "channelCover";
-
-
 router.post(
   "/",
   validateRequest(ChannelValidation.createChannelValidationSchema),
@@ -20,7 +16,7 @@ router.post(
 );
 
 router.patch(
-  "/:id",
+  "/:id" /* id ===> channelId */,
   validateRequest(ChannelValidation.updateChannelValidationSchema),
   getLoggedInUser,
   verifyMyChannel,
@@ -28,7 +24,7 @@ router.patch(
 );
 
 router.delete(
-  "/:id",
+  "/:id" /* id ===> channelId */,
   getLoggedInUser,
   channelExist,
   verifyMyChannel,
@@ -40,6 +36,10 @@ router.get("/all", getLoggedInUser, ChannelController.findChannel);
 
 router.get("/my", getLoggedInUser, ChannelController.getMyChannel);
 
-router.get("/:id", getLoggedInUser, ChannelController.singleChannel);
+router.get(
+  "/:id" /* id ===> channelId */,
+  getLoggedInUser,
+  ChannelController.singleChannel,
+);
 
 export const ChannelRoutes = router;

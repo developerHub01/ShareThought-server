@@ -12,7 +12,6 @@ const findUserById = async (userId: string) => {
   }
 };
 
-
 const findUser = async (query: Record<string, unknown>) => {
   try {
     const userQuery = new QueryBuilder(UserModel.find({}), query)

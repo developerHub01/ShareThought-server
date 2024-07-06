@@ -1,10 +1,10 @@
-const POST_REACTION_TYPE = {
-  LIKE: "like",
-  LOVE: "love",
-  WOW: "wow",
-  CLAP: "clap",
-  HELPFUL: "helpful",
-  INSPIRING: "Inspiring",
-};
+import { Constatnt } from "../../constants/constants";
 
-export const PostReactionConstant = { POST_REACTION_TYPE };
+const POST_REACTION_COLLECTION_NAME = "PostReaction";
+
+const POST_REACTION_TYPES = Constatnt.REACTION_TYPES;
+
+export const PostReactionConstant = {
+  POST_REACTION_COLLECTION_NAME,
+  POST_REACTION_TYPES,
+};

@@ -1,6 +1,7 @@
 import { Schema, model } from "mongoose";
 import { IChannel, IChannelModel } from "./channel.interface";
 import { ChannelConstant } from "./channel.constant";
+import { UserConstant } from "../user/user.constant";
 
 const channelSchema = new Schema<IChannel, IChannelModel>(
   {
@@ -13,7 +14,7 @@ const channelSchema = new Schema<IChannel, IChannelModel>(
     },
     authorId: {
       type: Schema.Types.ObjectId,
-      ref: "User",
+      ref: UserConstant.USER_COLLECTION_NAME,
     },
     channelDescription: {
       trim: true,
@@ -59,6 +60,6 @@ channelSchema.statics.isChannelMine = async (
 };
 
 export const ChannelModel = model<IChannel, IChannelModel>(
-  "Channel",
+  ChannelConstant.CHANNEL_COLLECTION_NAME,
   channelSchema,
 );

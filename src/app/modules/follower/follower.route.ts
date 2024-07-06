@@ -14,7 +14,7 @@ router.get(
 
 // channel follow or unfollow
 router.get(
-  "/follow_toggle/:id", //:id ===> channelId
+  "/follow_toggle/:id" /* :id ===> channelId */,
   getLoggedInUser,
   channelExist,
   FollowerController.handleChannelFollowToggle,
@@ -22,7 +22,7 @@ router.get(
 
 // chennel followers
 router.get(
-  "/:id", //:id ===> channelId
+  "/:id" /* :id ===> channelId */,
   getLoggedInUser,
   channelExist,
   verifyMyChannel,

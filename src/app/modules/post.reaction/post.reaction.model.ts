@@ -6,21 +6,23 @@ import {
   TPostReactionType,
 } from "./post.reaction.interface";
 import errorHandler from "../../errors/errorHandler";
+import { PostConstant } from "../post/post.constant";
+import { UserConstant } from "../user/user.constant";
 
 const postReactionSchema = new Schema<IPostReaction, IPostReactionModel>({
   postId: {
     type: Schema.Types.ObjectId,
-    ref: "Post",
+    ref: PostConstant.POST_COLLECTION_NAME,
     required: true,
   },
   userId: {
     type: Schema.Types.ObjectId,
-    ref: "User",
+    ref: UserConstant.USER_COLLECTION_NAME,
     required: true,
   },
   reactionType: {
     type: String,
-    enum: Object.values(PostReactionConstant.POST_REACTION_TYPE),
+    enum: Object.values(PostReactionConstant.POST_REACTION_TYPES),
   },
 });
 
@@ -63,7 +65,7 @@ postReactionSchema.statics.togglePostReaction = async (
       await PostReactionModel.create({
         postId,
         userId,
-        reactionType: PostReactionConstant.POST_REACTION_TYPE.LIKE,
+        reactionType: PostReactionConstant.POST_REACTION_TYPES.LIKE,
       }),
     );
   } catch (error) {
@@ -82,17 +84,23 @@ postReactionSchema.statics.reactOnPost = async (
         userId,
         postId,
       },
-      { upsert: true },
+      { upsert: true, new: true },
     );
-    return await PostReactionModel.findByIdAndUpdate(doc?._id, {
-      reactionType,
-    });
+    return await PostReactionModel.findByIdAndUpdate(
+      doc?._id,
+      {
+        reactionType,
+      },
+      {
+        new: true,
+      },
+    );
   } catch (error) {
     errorHandler(error);
   }
 };
 
 export const PostReactionModel = model<IPostReaction, IPostReactionModel>(
-  "PostReaction",
+  PostReactionConstant.POST_REACTION_COLLECTION_NAME,
   postReactionSchema,
 );

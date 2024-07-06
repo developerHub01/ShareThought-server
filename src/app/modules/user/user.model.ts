@@ -6,6 +6,7 @@ import config from "../../config";
 import httpStatus from "http-status";
 import AppError from "../../errors/AppError";
 import errorHandler from "../../errors/errorHandler";
+import { UserConstant } from "./user.constant";
 
 const userSchema = new Schema<IUser, IUserModel>(
   {
@@ -51,7 +52,7 @@ const userSchema = new Schema<IUser, IUserModel>(
 userSchema.pre("save", async function (next) {
   if (this?.avatar) return next();
   this.avatar = UserUtils.generateAvatarURL(this.gender, this.userName);
-  
+
   this.password = await UserModel.createHash(this?.password);
 
   next();
@@ -118,4 +119,7 @@ userSchema.statics.changePassword = async (
   }
 };
 
-export const UserModel = model<IUser, IUserModel>("User", userSchema);
+export const UserModel = model<IUser, IUserModel>(
+  UserConstant.USER_COLLECTION_NAME,
+  userSchema,
+);

@@ -6,7 +6,11 @@ import { ChannelModel } from "./channel.model";
 
 const singleChannel = async (id: string, author: boolean) => {
   try {
-    if (author) return await ChannelModel.findById(id).populate("authorId");
+    if (author)
+      return await ChannelModel.findById(id).populate({
+        path: "authorId",
+        select: "fullName avatar",
+      });
     return await ChannelModel.findById(id);
   } catch (error) {
     errorHandler(error);
@@ -16,7 +20,13 @@ const singleChannel = async (id: string, author: boolean) => {
 // get all channel or filter and search channel
 const findChannel = async (query: Record<string, unknown>) => {
   try {
-    const chennelQuery = new QueryBuilder(ChannelModel.find({}), query)
+    const chennelQuery = new QueryBuilder(
+      ChannelModel.find({}).populate({
+        path: "userId",
+        select: "fullName avatar",
+      }),
+      query,
+    )
       .search(ChannelConstant.channelSearchableField)
       .filter()
       .sort()

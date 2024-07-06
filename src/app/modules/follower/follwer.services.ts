@@ -10,7 +10,10 @@ const getChannelFollowing = async (
     const followerQuery = new QueryBuilder(
       FollowerModel.find({
         userId,
-      }).populate("channelId"),
+      }).populate({
+        path: "channelId",
+        select: "channelName channelAvatar",
+      }),
       query,
     )
       .filter()
@@ -37,7 +40,10 @@ const getChannelFollowers = async (
     const followerQuery = new QueryBuilder(
       FollowerModel.find({
         channelId,
-      }).populate("userId"),
+      }).populate({
+        path: "userId",
+        select: "fullName avatar",
+      }),
       query,
     )
       .filter()
