@@ -4,7 +4,7 @@ import { ChannelConstant } from "./channel.constant";
 import { IChannel, ICreateChannel } from "./channel.interface";
 import { ChannelModel } from "./channel.model";
 
-const getChannelById = async (id: string, author: boolean) => {
+const singleChannel = async (id: string, author: boolean) => {
   try {
     if (author) return await ChannelModel.findById(id).populate("authorId");
     return await ChannelModel.findById(id);
@@ -97,7 +97,7 @@ const deleteChannel = async (id: string) => {
 
 export const ChannelServices = {
   findChannel,
-  getChannelById,
+  singleChannel,
   getChannelOfMine,
   createChannel,
   updateChannel,

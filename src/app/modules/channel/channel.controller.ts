@@ -25,11 +25,11 @@ const getMyChannel = catchAsync(async (req, res) => {
   });
 });
 
-const getChannelById = catchAsync(async (req, res) => {
+const singleChannel = catchAsync(async (req, res) => {
   const { id } = req.params;
   const { author } = req.query;
 
-  const result = await ChannelServices.getChannelById(id, Boolean(author));
+  const result = await ChannelServices.singleChannel(id, Boolean(author));
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -82,6 +82,6 @@ export const ChannelController = {
   getMyChannel,
   createChannel,
   deleteChannel,
-  getChannelById,
+  singleChannel,
   updateChannel,
 };

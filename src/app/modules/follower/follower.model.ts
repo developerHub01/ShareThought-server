@@ -4,16 +4,21 @@ import errorHandler from "../../errors/errorHandler";
 import { IFollower, IFollowerModel } from "./follower.interface";
 import { Schema, model } from "mongoose";
 
-const followerSchema = new Schema<IFollower, IFollowerModel>({
-  channelId: {
-    type: Schema.Types.ObjectId,
-    ref: "Channel",
+const followerSchema = new Schema<IFollower, IFollowerModel>(
+  {
+    channelId: {
+      type: Schema.Types.ObjectId,
+      ref: "Channel",
+    },
+    userId: {
+      type: Schema.Types.ObjectId,
+      ref: "User",
+    },
   },
-  userId: {
-    type: Schema.Types.ObjectId,
-    ref: "User",
+  {
+    timestamps: true,
   },
-});
+);
 
 followerSchema.pre("save", async function (next) {
   try {

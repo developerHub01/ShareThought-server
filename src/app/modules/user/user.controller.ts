@@ -4,6 +4,32 @@ import { sendResponse } from "../../utils/send.response";
 import { UserServices } from "./user.services";
 import { IRequestWithUserId } from "../../interface/interface";
 
+const getMyDetails = catchAsync(async (req, res) => {
+  const { userId } = req as IRequestWithUserId;
+
+  const result = await UserServices.findUserById(userId);
+
+  return sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "user created succesfully",
+    data: result,
+  });
+});
+
+const getUserById = catchAsync(async (req, res) => {
+  const { id } = req.params;
+
+  const result = await UserServices.findUserById(id);
+
+  return sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "user created succesfully",
+    data: result,
+  });
+});
+
 const findUser = catchAsync(async (req, res) => {
   const result = await UserServices.findUser(req.query);
 
@@ -52,6 +78,8 @@ const updateUserPassword = catchAsync(async (req, res) => {
 });
 
 export const UserController = {
+  getMyDetails,
+  getUserById,
   findUser,
   createUser,
   updateUser,

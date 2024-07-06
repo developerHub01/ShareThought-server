@@ -4,6 +4,15 @@ import { UserConstant } from "./user.constant";
 import { IUser, IUserChangePassword } from "./user.interface";
 import { UserModel } from "./user.model";
 
+const findUserById = async (userId: string) => {
+  try {
+    return await UserModel.findById(userId);
+  } catch (error) {
+    errorHandler(error);
+  }
+};
+
+
 const findUser = async (query: Record<string, unknown>) => {
   try {
     const userQuery = new QueryBuilder(UserModel.find({}), query)
@@ -62,6 +71,7 @@ const updateUserPassword = async (
 };
 
 export const UserServices = {
+  findUserById,
   findUser,
   createUser,
   updateUser,

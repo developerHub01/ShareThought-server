@@ -5,8 +5,17 @@ import { PostValidation } from "./post.validation";
 import verifyMyChannel from "../../middleware/verify.my.channel";
 import { PostController } from "./post.controller";
 import verifyMyPost from "../../middleware/verify.my.post";
+import checkAuthStatus from "../../middleware/check.auth.status";
 
 const router = express.Router();
+
+router.get("/all", PostController.findPost);
+
+// get post by Id
+router.get("/:postId", checkAuthStatus, PostController.findPostByPostId);
+
+// get post by channelId
+router.get("/channel/:id", checkAuthStatus, PostController.findPostByChannelId);
 
 // create post
 router.post(
@@ -28,7 +37,6 @@ router.patch(
 
 router.delete(
   "/:postId", // :postId ===> postId
-  validateRequest(PostValidation.updatePostValidationSchema),
   getLoggedInUser,
   verifyMyPost, // checking is that my post or not
   PostController.deletePost,

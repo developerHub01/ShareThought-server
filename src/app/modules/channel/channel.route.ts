@@ -11,9 +11,6 @@ const router = express.Router();
 // const CHANNEL_AVATAR = "channelAvatar";
 // const CHANNEL_COVER = "channelCover";
 
-router.get("/all", getLoggedInUser, ChannelController.findChannel);
-
-router.get("/", getLoggedInUser, ChannelController.getMyChannel);
 
 router.post(
   "/",
@@ -38,6 +35,11 @@ router.delete(
   ChannelController.deleteChannel,
 );
 
-router.get("/:id", getLoggedInUser, ChannelController.getChannelById);
+
+router.get("/all", getLoggedInUser, ChannelController.findChannel);
+
+router.get("/my", getLoggedInUser, ChannelController.getMyChannel);
+
+router.get("/:id", getLoggedInUser, ChannelController.singleChannel);
 
 export const ChannelRoutes = router;

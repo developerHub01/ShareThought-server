@@ -1,6 +1,7 @@
 import { model, Schema } from "mongoose";
 import { PostConstant } from "./post.constant";
 import { IPost, IPostModel } from "./post.interface";
+// import { PostReactionModel } from "../post.reaction/post.reaction.model";
 
 const postSchema = new Schema<IPost, IPostModel>(
   {
@@ -55,6 +56,37 @@ const postSchema = new Schema<IPost, IPostModel>(
   },
 );
 
+// postSchema.post("findOne", function (docs) {
+//   // const result = await PostReactionModel.totalPostReactionByPostId(this)
+//   console.log("================");
+
+//   // docs.test = "Test";
+
+//   // delete docs["title"];
+
+//   // console.log(this.);
+//   // console.log(docs);
+// });
+// postSchema.pre("findOne", async function (docs) {
+//   // const result = await PostReactionModel.totalPostReactionByPostId(this)
+//   console.log("======Pre==========");
+
+//   // docs.test = "Test";
+
+//   // console.log(docs);
+//   // docs.test = "Test";
+
+//   // console.log(docs);
+
+//   docs?.forEach((doc) => {
+//     console.log(doc);
+//   });
+
+//   console.log(arguments.length);
+
+//   // console.log(docs);
+// });
+
 postSchema.statics.isMyPost = async (
   postId: string,
   userId: string,
@@ -69,8 +101,8 @@ postSchema.statics.isMyPost = async (
         select: "_id",
       },
     })) as unknown as { channelId: { authorId: { _id: string } } };
-
-  const result = collectionChain?.channelId?.authorId?._id.toString();
+  
+  const result = collectionChain?.channelId?.authorId?._id?.toString();
 
   return userId === result;
 };
