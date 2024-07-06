@@ -1,5 +1,5 @@
 import { z as zod } from "zod";
-import { Constant } from "../../constants/constants";
+import { ChannelConstant } from "./channel.constant";
 
 const createChannelValidationSchema = zod.object({
   channelName: zod
@@ -8,12 +8,12 @@ const createChannelValidationSchema = zod.object({
     })
     .trim()
     .max(
-      Constant.CHANNEL_NAME_MAX_LENGTH,
-      `Channel name maximum length is ${Constant.CHANNEL_NAME_MAX_LENGTH}`,
+      ChannelConstant.CHANNEL_NAME_MAX_LENGTH,
+      `Channel name maximum length is ${ChannelConstant.CHANNEL_NAME_MAX_LENGTH}`,
     )
     .min(
-      Constant.CHANNEL_NAME_MIN_LENGTH,
-      `Channel name minimum length is ${Constant.CHANNEL_NAME_MIN_LENGTH}`,
+      ChannelConstant.CHANNEL_NAME_MIN_LENGTH,
+      `Channel name minimum length is ${ChannelConstant.CHANNEL_NAME_MIN_LENGTH}`,
     ),
 });
 
@@ -22,20 +22,20 @@ const updateChannelValidationSchema = zod.object({
     .string()
     .trim()
     .max(
-      Constant.CHANNEL_NAME_MAX_LENGTH,
-      `Channel name maximum length is ${Constant.CHANNEL_NAME_MAX_LENGTH}`,
+      ChannelConstant.CHANNEL_NAME_MAX_LENGTH,
+      `Channel name maximum length is ${ChannelConstant.CHANNEL_NAME_MAX_LENGTH}`,
     )
     .min(
-      Constant.CHANNEL_NAME_MIN_LENGTH,
-      `Channel name minimum length is ${Constant.CHANNEL_NAME_MIN_LENGTH}`,
+      ChannelConstant.CHANNEL_NAME_MIN_LENGTH,
+      `Channel name minimum length is ${ChannelConstant.CHANNEL_NAME_MIN_LENGTH}`,
     )
     .optional(),
   channelDescription: zod
     .string()
     .trim()
     .max(
-      Constant.CHANNEL_DESCRIPTION_MAX_LENGTH,
-      `Channel description maximum length is ${Constant.CHANNEL_DESCRIPTION_MAX_LENGTH}`,
+      ChannelConstant.CHANNEL_DESCRIPTION_MAX_LENGTH,
+      `Channel description maximum length is ${ChannelConstant.CHANNEL_DESCRIPTION_MAX_LENGTH}`,
     )
     .trim()
     .optional(),

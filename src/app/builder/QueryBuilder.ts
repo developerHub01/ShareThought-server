@@ -1,18 +1,18 @@
 import { FilterQuery, Query } from "mongoose";
 
 class QueryBuilder<T> {
-  public modelQuery: Query<T[], T>;
+  public modelQuery: Query<Array<T>, T>;
   public query: Record<string, unknown>;
 
-  constructor(modelQuery: Query<T[], T>, query: Record<string, unknown>) {
+  constructor(modelQuery: Query<Array<T>, T>, query: Record<string, unknown>) {
     this.modelQuery = modelQuery;
     this.query = query;
   }
 
-  search(searchableFields: string[]) {
+  search(searchableFields: Array<string>) {
     const searchTerm = this?.query?.searchTerm;
     if (!searchTerm) return this;
-    
+
     this.modelQuery = this.modelQuery.find({
       $or: searchableFields.map(
         (field) =>

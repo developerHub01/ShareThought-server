@@ -3,6 +3,7 @@ import { ChannelRoutes } from "../modules/channel/channel.route";
 import { AuthRoutes } from "../modules/auth/auth.route";
 import { UserRoutes } from "../modules/user/user.route";
 import { FollowerRoutes } from "../modules/follower/follower.route";
+import { PostRoutes } from "../modules/post/post.route";
 
 interface IRouteSchema {
   path: string;
@@ -27,6 +28,10 @@ const moduleRoutes: Array<IRouteSchema> = [
   {
     path: "/follow",
     route: FollowerRoutes,
+  },
+  {
+    path: "/post",
+    route: PostRoutes,
   },
 ];
 

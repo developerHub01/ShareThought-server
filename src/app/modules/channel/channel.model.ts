@@ -1,6 +1,6 @@
 import { Schema, model } from "mongoose";
-import { Constant } from "../../constants/constants";
 import { IChannel, IChannelModel } from "./channel.interface";
+import { ChannelConstant } from "./channel.constant";
 
 const channelSchema = new Schema<IChannel, IChannelModel>(
   {
@@ -8,8 +8,8 @@ const channelSchema = new Schema<IChannel, IChannelModel>(
       type: String,
       required: true,
       trim: true,
-      maxLength: Constant.CHANNEL_NAME_MAX_LENGTH,
-      minLength: Constant.CHANNEL_NAME_MIN_LENGTH,
+      maxLength: ChannelConstant.CHANNEL_NAME_MAX_LENGTH,
+      minLength: ChannelConstant.CHANNEL_NAME_MIN_LENGTH,
     },
     authorId: {
       type: Schema.Types.ObjectId,
@@ -18,7 +18,7 @@ const channelSchema = new Schema<IChannel, IChannelModel>(
     channelDescription: {
       trim: true,
       type: String,
-      maxLength: Constant.CHANNEL_DESCRIPTION_MAX_LENGTH,
+      maxLength: ChannelConstant.CHANNEL_DESCRIPTION_MAX_LENGTH,
     },
     channelAvatar: {
       trim: true,
@@ -27,7 +27,7 @@ const channelSchema = new Schema<IChannel, IChannelModel>(
     channelCover: {
       trim: true,
       type: String,
-      default: Constant.CHANNEL_DEFAULT_COVER,
+      default: ChannelConstant.CHANNEL_DEFAULT_COVER,
     },
   },
   {
