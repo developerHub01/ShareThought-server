@@ -22,7 +22,7 @@ const findChannel = async (query: Record<string, unknown>) => {
   try {
     const chennelQuery = new QueryBuilder(
       ChannelModel.find({}).populate({
-        path: "userId",
+        path: "authorId",
         select: "fullName avatar",
       }),
       query,

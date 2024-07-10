@@ -6,6 +6,7 @@ import { FollowerRoutes } from "../modules/follower/follower.route";
 import { PostRoutes } from "../modules/post/post.route";
 import { CommentRoutes } from "../modules/comment/comment.route";
 import { NotificationRoutes } from "../modules/notification/notification.route";
+import { CategoryRoutes } from "../modules/category/category.route";
 
 interface IRouteSchema {
   path: string;
@@ -38,6 +39,10 @@ const moduleRoutes: Array<IRouteSchema> = [
   {
     path: "/comment",
     route: CommentRoutes,
+  },
+  {
+    path: "/category",
+    route: CategoryRoutes,
   },
   {
     path: "/notification",

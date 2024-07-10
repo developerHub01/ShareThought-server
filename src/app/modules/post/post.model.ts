@@ -2,6 +2,7 @@ import { model, Schema } from "mongoose";
 import { PostConstant } from "./post.constant";
 import { IPost, IPostModel } from "./post.interface";
 import { ChannelConstant } from "../channel/channel.constant";
+import errorHandler from "../../errors/errorHandler";
 // import { PostReactionModel } from "../post.reaction/post.reaction.model";
 
 const postSchema = new Schema<IPost, IPostModel>(
@@ -108,4 +109,23 @@ postSchema.statics.isMyPost = async (
   return userId === result;
 };
 
-export const PostModel = model<IPost, IPostModel>(PostConstant.POST_COLLECTION_NAME, postSchema);
+postSchema.statics.findPostById = async (id: string): Promise<unknown> => {
+  try {
+    return await PostModel.findById(id);
+  } catch (error) {
+    return errorHandler(error);
+  }
+};
+postSchema.statics.isPublicPostById = async (id: string): Promise<boolean | unknown> => {
+  try {
+    const { isPublished } = (await PostModel.findById(id)) || {};
+    return Boolean(isPublished);
+  } catch (error) {
+    return errorHandler(error);
+  }
+};
+
+export const PostModel = model<IPost, IPostModel>(
+  PostConstant.POST_COLLECTION_NAME,
+  postSchema,
+);
