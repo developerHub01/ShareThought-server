@@ -39,9 +39,35 @@ const findCommentById = async (commentId: string) => {
   }
 };
 
-const createComment = async (payload: ICreateComment) => {
+const createComment = async (
+  payload: ICreateComment,
+  postId: string,
+  userId: string,
+) => {
   try {
-    return await CommentModel.create({ ...payload });
+    payload = {
+      ...payload,
+      postId,
+      commentAuthorId: userId,
+    };
+    return await CommentModel.createComment(payload);
+  } catch (error) {
+    errorHandler(error);
+  }
+};
+
+const replyComment = async (
+  payload: ICreateComment,
+  userId: string,
+  parentCommentId: string,
+) => {
+  try {
+    payload = {
+      ...payload,
+      parentCommentId,
+      commentAuthorId: userId,
+    };
+    return await CommentModel.createComment(payload);
   } catch (error) {
     errorHandler(error);
   }
@@ -67,10 +93,20 @@ const deleteComment = async (commentId: string, userId: string) => {
   }
 };
 
+const deleteAllComment = async (commentId: string, userId: string) => {
+  try {
+    return await CommentModel.deleteAllCommentByPostId(commentId, userId);
+  } catch (error) {
+    errorHandler(error);
+  }
+};
+
 export const CommentServices = {
   findCommentByPostId,
   findCommentById,
+  replyComment,
   createComment,
   updateComment,
   deleteComment,
+  deleteAllComment,
 };

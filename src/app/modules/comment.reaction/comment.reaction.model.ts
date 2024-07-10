@@ -1,4 +1,4 @@
-import { model, Schema } from "mongoose";
+import { ClientSession, model, Schema } from "mongoose";
 import {
   ICommentReaction,
   ICommentReactionModel,
@@ -55,6 +55,23 @@ commentReactionSchema.statics.myReactionOnComment = async (
   }
 };
 
+commentReactionSchema.statics.deleteCommentReactionByCommentId = async (
+  commentId: string,
+  session: ClientSession,
+): Promise<unknown> => {
+  const options = session ? { session } : {};
+  try {
+    return await CommentReactionModel.findOneAndDelete(
+      {
+        commentId,
+      },
+      { options },
+    );
+  } catch (error) {
+    return errorHandler(error);
+  }
+};
+
 commentReactionSchema.statics.toggleCommentReaction = async (
   userId: string,
   commentId: string,
@@ -62,6 +79,7 @@ commentReactionSchema.statics.toggleCommentReaction = async (
   try {
     const isDeleted = await CommentReactionModel.findOneAndDelete({
       commentId,
+      userId,
     });
 
     if (isDeleted) return Boolean(isDeleted);

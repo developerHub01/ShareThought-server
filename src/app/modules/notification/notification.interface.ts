@@ -18,4 +18,9 @@ export interface INotification {
 }
 export interface INotificationModel extends Model<INotification> {
   createNotification(payload: Partial<INotification>): Promise<unknown>;
+  numberOfMyUnseenNotification(userId: string): Promise<number | unknown>;
+  numberOfChannelUnseenNotification(
+    channelId: string,
+  ): Promise<number | unknown>;
+  makeNotificationSeen(id: string, userId: string): Promise<number | unknown>;
 }

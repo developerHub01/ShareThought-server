@@ -73,7 +73,8 @@ const updatePost = catchAsync(async (req, res) => {
 
 const deletePost = catchAsync(async (req, res) => {
   const { postId } = req.params;
-  const result = await PostServices.deletePost(postId);
+  const { userId } = req as IRequestWithUserId;
+  const result = await PostServices.deletePost(postId, userId);
   return sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,

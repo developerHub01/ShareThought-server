@@ -35,9 +35,8 @@ const handleChannelFollowToggle = catchAsync(async (req, res) => {
 
   const result = await FollowerServices.handleChannelFollowToggle(id, userId);
 
-  const isFollowing = Boolean(
-    (result as typeof result & { deletedCount: number }).deletedCount,
-  );
+  const isFollowing = !(result as typeof result & { deletedCount: number })
+    .deletedCount;
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,

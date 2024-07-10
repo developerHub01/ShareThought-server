@@ -6,6 +6,7 @@ import { Schema, model } from "mongoose";
 import { ChannelConstant } from "../channel/channel.constant";
 import { UserConstant } from "../user/user.constant";
 import { FollowerConstant } from "./follower.cosntant";
+import { ChannelModel } from "../channel/channel.model";
 
 const followerSchema = new Schema<IFollower, IFollowerModel>(
   {
@@ -54,6 +55,14 @@ followerSchema.statics.followToggle = async (
   channelId: string,
   userId: string,
 ) => {
+  const isMyChannel = await ChannelModel.isChannelMine(channelId, userId);
+
+  if (isMyChannel)
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "You can't follow your own channel",
+    );
+
   const isFollowing = await FollowerModel.isFollowing(channelId, userId);
   if (isFollowing) {
     return await FollowerModel.deleteOne({

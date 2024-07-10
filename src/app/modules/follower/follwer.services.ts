@@ -32,6 +32,7 @@ const getChannelFollowing = async (
     errorHandler(error);
   }
 };
+
 const getChannelFollowers = async (
   query: Record<string, unknown>,
   channelId: string,

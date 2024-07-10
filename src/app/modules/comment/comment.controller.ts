@@ -5,7 +5,7 @@ import { CommentServices } from "./comment.services";
 import { IRequestWithUserId } from "../../interface/interface";
 
 const findCommentByPostId = catchAsync(async (req, res) => {
-  const { postId } = req.params;
+  const { id: postId } = req.params;
 
   const result = await CommentServices.findCommentByPostId(req.query, postId);
 
@@ -30,12 +30,32 @@ const findCommentById = catchAsync(async (req, res) => {
 });
 
 const createComment = catchAsync(async (req, res) => {
-  const result = await CommentServices.createComment(req.body);
+  const { userId } = req as IRequestWithUserId;
+  const { id: postId } = req.params;
+  const result = await CommentServices.createComment(req.body, postId, userId);
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
     message: "comment created succesfully",
+    data: result,
+  });
+});
+
+const replyComment = catchAsync(async (req, res) => {
+  const { userId } = req as IRequestWithUserId;
+  const { id: parentCommentId } = req.params; // commentId of parent comment
+
+  const result = await CommentServices.replyComment(
+    req.body,
+    userId,
+    parentCommentId,
+  );
+
+  return sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "replied succesfully",
     data: result,
   });
 });
@@ -59,7 +79,21 @@ const deleteComment = catchAsync(async (req, res) => {
   const { id } = req.params;
 
   const result = await CommentServices.deleteComment(id, userId);
-  
+
+  return sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "comment deleted succesfully",
+    data: result,
+  });
+});
+
+const deleteAllComment = catchAsync(async (req, res) => {
+  const { userId } = req as IRequestWithUserId;
+  const { id } = req.params;
+
+  const result = await CommentServices.deleteAllComment(id, userId);
+
   return sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -72,6 +106,8 @@ export const CommentController = {
   findCommentByPostId,
   findCommentById,
   createComment,
+  replyComment,
   updateComment,
   deleteComment,
+  deleteAllComment,
 };

@@ -1,5 +1,5 @@
 import { CommentConstant } from "./../comment/comment.constant";
-import { Model, Types } from "mongoose";
+import { ClientSession, Model, Types } from "mongoose";
 
 const reactionTypeList: Array<string> = Object.values(
   CommentConstant.COMMENT_REACTION_TYPES,
@@ -18,6 +18,10 @@ export interface ICommentReactionModel extends Model<ICommentReaction> {
     userId: string,
     commentId: string,
   ): Promise<string | unknown>;
+  deleteCommentReactionByCommentId(
+    commentId: string,
+    session?: ClientSession,
+  ): Promise<unknown>;
   toggleCommentReaction(
     userId: string,
     commentId: string,

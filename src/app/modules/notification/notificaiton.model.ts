@@ -3,6 +3,9 @@ import { NotificationConstant } from "./notification.constant";
 import { INotification, INotificationModel } from "./notification.interface";
 import { UserConstant } from "../user/user.constant";
 import errorHandler from "../../errors/errorHandler";
+import AppError from "../../errors/AppError";
+import httpStatus from "http-status";
+import { ChannelModel } from "../channel/channel.model";
 
 const notificationSchema = new Schema<INotification, INotificationModel>({
   userId: {
@@ -36,6 +39,58 @@ notificationSchema.statics.createNotification = async (
     return await NotificationModel.create({
       ...payload,
     });
+  } catch (error) {
+    return errorHandler(error);
+  }
+};
+
+notificationSchema.statics.numberOfMyUnseenNotification = async (
+  userId: string,
+): Promise<number | unknown> => {
+  try {
+    return (
+      (await NotificationModel.countDocuments({ userId, isSeen: false })) || 0
+    );
+  } catch (error) {
+    return errorHandler(error);
+  }
+};
+notificationSchema.statics.numberOfChannelUnseenNotification = async (
+  channelId: string,
+): Promise<number | unknown> => {
+  try {
+    return (
+      (await NotificationModel.countDocuments({ channelId, isSeen: false })) ||
+      0
+    );
+  } catch (error) {
+    return errorHandler(error);
+  }
+};
+
+notificationSchema.statics.makeNotificationSeen = async (
+  id: string,
+  userId: string,
+): Promise<number | unknown> => {
+  try {
+    const notificationData = await NotificationModel.findById(id);
+
+    if (!notificationData)
+      throw new AppError(httpStatus.NOT_FOUND, "Notification not found");
+
+    const channelId = notificationData?.channelId?.toString();
+
+    let haveAccess = true;
+
+    if (channelId) {
+      await ChannelModel.isChannelMine(channelId, userId);
+    }
+
+    return await NotificationModel.findByIdAndUpdate(
+      id,
+      { isSeen: true },
+      { new: true },
+    );
   } catch (error) {
     return errorHandler(error);
   }

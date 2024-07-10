@@ -1,8 +1,11 @@
-import { model, Schema } from "mongoose";
+import mongoose, { model, Schema } from "mongoose";
 import { PostConstant } from "./post.constant";
 import { IPost, IPostModel } from "./post.interface";
 import { ChannelConstant } from "../channel/channel.constant";
 import errorHandler from "../../errors/errorHandler";
+import AppError from "../../errors/AppError";
+import httpStatus from "http-status";
+import { CommentModel } from "../comment/comment.model";
 // import { PostReactionModel } from "../post.reaction/post.reaction.model";
 
 const postSchema = new Schema<IPost, IPostModel>(
@@ -39,55 +42,12 @@ const postSchema = new Schema<IPost, IPostModel>(
       type: Boolean,
       default: false,
     },
-    // tags: {
-    //   type: [
-    //     {
-    //       type: Schema.Types.ObjectId,
-    //       ref: "Tag",
-    //     },
-    //   ],
-    //   validate: [
-    //     (tags: Array<Schema.Types.ObjectId>) =>
-    //       tags.length <= PostConstant.POST_TAGS_MAX_NUMBER,
-    //     `{PATH} exceeds the limit of ${PostConstant.POST_TAGS_MAX_NUMBER}`,
-    //   ],
-    // },
   },
   {
     timestamps: true,
   },
 );
 
-// postSchema.post("findOne", function (docs) {
-//   // const result = await PostReactionModel.totalPostReactionByPostId(this)
-//   console.log("================");
-
-//   // docs.test = "Test";
-
-//   // delete docs["title"];
-
-//   // console.log(this.);
-//   // console.log(docs);
-// });
-// postSchema.pre("findOne", async function (docs) {
-//   // const result = await PostReactionModel.totalPostReactionByPostId(this)
-//   console.log("======Pre==========");
-
-//   // docs.test = "Test";
-
-//   // console.log(docs);
-//   // docs.test = "Test";
-
-//   // console.log(docs);
-
-//   docs?.forEach((doc) => {
-//     console.log(doc);
-//   });
-
-//   console.log(arguments.length);
-
-//   // console.log(docs);
-// });
 
 postSchema.statics.isMyPost = async (
   postId: string,
@@ -116,11 +76,48 @@ postSchema.statics.findPostById = async (id: string): Promise<unknown> => {
     return errorHandler(error);
   }
 };
-postSchema.statics.isPublicPostById = async (id: string): Promise<boolean | unknown> => {
+
+postSchema.statics.isPublicPostById = async (
+  id: string,
+): Promise<boolean | unknown> => {
   try {
     const { isPublished } = (await PostModel.findById(id)) || {};
     return Boolean(isPublished);
   } catch (error) {
+    return errorHandler(error);
+  }
+};
+
+postSchema.statics.deletePost = async (
+  postId: string,
+  userId: string,
+): Promise<unknown> => {
+  const session = await mongoose.startSession();
+  try {
+    session.startTransaction();
+
+    if (!(await PostModel.isMyPost(postId, userId)))
+      throw new AppError(httpStatus.UNAUTHORIZED, "This is not your post..");
+
+    let result = await CommentModel.deleteAllCommentByPostId(postId, userId);
+
+    (result as unknown) = await PostModel.findByIdAndDelete(postId, {
+      session,
+    });
+
+    if (!result)
+      throw new AppError(
+        httpStatus.INTERNAL_SERVER_ERROR,
+        "Something went wrong",
+      );
+
+    await session.commitTransaction();
+    await session.endSession();
+
+    return result;
+  } catch (error) {
+    await session.abortTransaction();
+    await session.endSession();
     return errorHandler(error);
   }
 };

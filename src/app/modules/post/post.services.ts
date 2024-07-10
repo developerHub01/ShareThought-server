@@ -147,16 +147,9 @@ const updatePost = async (payload: Partial<ICreatePost>, postId: string) => {
   }
 };
 
-const deletePost = async (postId: string) => {
+const deletePost = async (postId: string, userId: string) => {
   try {
-    /* 
-    ================= TODO
-    
-    here need to use transaction with delete post and delete reaction, comments
-    
-    */
-
-    return await PostModel.findByIdAndDelete(postId);
+    return await PostModel.deletePost(postId, userId);
   } catch (error) {
     errorHandler(error);
   }

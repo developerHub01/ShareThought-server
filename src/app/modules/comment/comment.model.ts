@@ -1,4 +1,4 @@
-import mongoose, { model, Schema } from "mongoose";
+import mongoose, { ClientSession, model, Schema } from "mongoose";
 import { CommentConstant } from "./comment.constant";
 import { PostConstant } from "../post/post.constant";
 import { UserConstant } from "../user/user.constant";
@@ -7,18 +7,24 @@ import errorHandler from "../../errors/errorHandler";
 import AppError from "../../errors/AppError";
 import httpStatus from "http-status";
 import { PostModel } from "../post/post.model";
+import { Types } from "mongoose";
+import { CommentReactionModel } from "../comment.reaction/comment.reaction.model";
+// import mongooseAutoComplete from "mongoose-autopopulate";
 
 const commentSchema = new Schema<IComment, ICommentModel>(
   {
     postId: {
       type: Schema.Types.ObjectId,
       ref: PostConstant.POST_COLLECTION_NAME,
-      required: true,
     },
     commentAuthorId: {
       type: Schema.Types.ObjectId,
       ref: UserConstant.USER_COLLECTION_NAME,
       required: true,
+    },
+    parentCommentId: {
+      type: Schema.Types.ObjectId,
+      ref: CommentConstant.COMMENT_COLLECTION_NAME,
     },
     content: {
       type: String,
@@ -32,6 +38,7 @@ const commentSchema = new Schema<IComment, ICommentModel>(
         {
           type: Schema.Types.ObjectId,
           ref: CommentConstant.COMMENT_COLLECTION_NAME,
+          // autopopulate: true,
         },
       ],
       default: [],
@@ -44,6 +51,8 @@ const commentSchema = new Schema<IComment, ICommentModel>(
     },
   },
 );
+
+// commentSchema.plugin(mongooseAutoComplete);
 
 commentSchema.virtual("totalRepies").get(function () {
   return this.replies.length;
@@ -75,6 +84,7 @@ commentSchema.statics.isMyPost = async (
     errorHandler(error);
   }
 };
+
 commentSchema.statics.isMyComment = async (
   commentId: string,
   userId: string,
@@ -87,6 +97,83 @@ commentSchema.statics.isMyComment = async (
     return commentData?.commentAuthorId?.toString() === userId;
   } catch (error) {
     errorHandler(error);
+  }
+};
+
+commentSchema.statics.createComment = async (
+  payload: ICreateComment,
+): Promise<unknown> => {
+  const session = await mongoose.startSession();
+  session.startTransaction();
+
+  try {
+    const { parentCommentId, postId } = payload;
+
+    if (
+      postId &&
+      !(await PostModel.findOne({ _id: postId, isPublished: true }))
+    )
+      throw new AppError(httpStatus.NOT_FOUND, "post not found");
+
+    if (parentCommentId && !(await CommentModel.findById(parentCommentId)))
+      throw new AppError(httpStatus.NOT_FOUND, "comment not found");
+
+    await session.commitTransaction();
+
+    const commentData = (
+      await CommentModel.create(
+        [
+          {
+            ...payload,
+          },
+        ],
+        {
+          session,
+        },
+      )
+    )[0];
+
+    if (!commentData)
+      throw new AppError(
+        httpStatus.BAD_GATEWAY,
+        "Comment not created something went wrong",
+      );
+
+    const { _id: commentId } = commentData as typeof commentData & {
+      _id: Types.ObjectId;
+    };
+
+    if (!parentCommentId) {
+      await session.endSession();
+      return commentData;
+    }
+
+    const addToParentDoc = await CommentModel.findByIdAndUpdate(
+      parentCommentId,
+      {
+        $push: {
+          replies: commentId,
+        },
+      },
+      {
+        new: true,
+        session,
+      },
+    );
+
+    if (!addToParentDoc)
+      throw new AppError(
+        httpStatus.BAD_GATEWAY,
+        "Comment not created something went wrong",
+      );
+
+    await session.endSession();
+
+    return addToParentDoc;
+  } catch (error) {
+    await session.abortTransaction();
+    await session.endSession();
+    return errorHandler(error);
   }
 };
 
@@ -113,13 +200,47 @@ commentSchema.statics.updateComment = async (
   }
 };
 
+commentSchema.statics.deleteCommentsWithReplies = async (
+  commentId: string,
+  session?: ClientSession,
+) => {
+  const options = session ? { session } : {};
+  const commentData = await CommentModel.findById(commentId, null, options);
+  if (!commentData)
+    throw new AppError(httpStatus.NOT_FOUND, "Comment not found");
+
+  const { replies } = commentData;
+
+  if (!replies.length) {
+    await CommentReactionModel.deleteCommentReactionByCommentId(
+      commentId,
+      options?.session,
+    );
+    return await CommentModel.findByIdAndDelete(commentId, options?.session);
+  }
+
+  for (const reply of replies) {
+    const { _id } = reply;
+    await CommentModel.deleteCommentsWithReplies(
+      _id?.toString(),
+      options?.session,
+    );
+  }
+
+  await CommentReactionModel.deleteCommentReactionByCommentId(
+    commentId,
+    options?.session,
+  );
+  return await CommentModel.findByIdAndDelete(commentId, options?.session);
+};
+
 commentSchema.statics.deleteComment = async (
-  id: string,
+  commentId: string,
   userId: string,
 ): Promise<boolean | unknown> => {
   const haveAccessToDelete =
-    (await CommentModel.isMyPost(id, userId)) ||
-    (await CommentModel.isMyComment(id, userId));
+    (await CommentModel.isMyPost(commentId, userId)) ||
+    (await CommentModel.isMyComment(commentId, userId));
 
   if (!haveAccessToDelete)
     throw new AppError(
@@ -131,25 +252,9 @@ commentSchema.statics.deleteComment = async (
   try {
     session.startTransaction();
 
-    let result = Boolean(
-      await CommentModel.findByIdAndDelete(id, {
-        session,
-      }),
-    );
-
-    if (!result)
-      throw new AppError(httpStatus.BAD_REQUEST, "Failed to delete student");
-
-    result = Boolean(
-      await CommentModel.updateMany(
-        {
-          replies: id,
-        },
-        {
-          $pull: { replies: id },
-        },
-        { session },
-      ),
+    const result = await CommentModel.deleteCommentsWithReplies(
+      commentId,
+      session,
     );
 
     await session.commitTransaction();
@@ -159,6 +264,44 @@ commentSchema.statics.deleteComment = async (
     await session.abortTransaction();
     await session.endSession();
     errorHandler(error);
+  }
+};
+
+commentSchema.statics.deleteAllCommentByPostId = async (
+  postId: string,
+  userId: string,
+): Promise<unknown> => {
+  console.log({ postId, userId });
+  console.log("============+++++++=============");
+
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  try {
+    if (!(await PostModel.isMyPost(postId, userId)))
+      throw new AppError(httpStatus.UNAUTHORIZED, "This is not your post");
+
+    const result = await CommentModel.find({
+      postId,
+    }).select("_id");
+
+    for (const test of result) {
+      console.log(test);
+      const { _id } = test;
+      console.log({ _id });
+      console.log(_id.toString());
+      console.log("============#######=============");
+      await CommentModel.deleteCommentsWithReplies(_id?.toString(), session);
+    }
+    await session.commitTransaction();
+    await session.endSession();
+
+    console.log(result);
+
+    return result;
+  } catch (error) {
+    await session.abortTransaction();
+    await session.endSession();
+    return errorHandler(error);
   }
 };
 
