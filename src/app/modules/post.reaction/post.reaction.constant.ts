@@ -1,6 +1,6 @@
 import { Constatnt } from "../../constants/constants";
 
-const POST_REACTION_COLLECTION_NAME = "PostReaction";
+const POST_REACTION_COLLECTION_NAME = "Post_Reaction";
 
 const POST_REACTION_TYPES = Constatnt.REACTION_TYPES;
 

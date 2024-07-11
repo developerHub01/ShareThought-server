@@ -1,6 +1,6 @@
 import { Constatnt } from "../../constants/constants";
 
-const COMMENT_REACTION_COLLECTION_NAME = "CommentReaction";
+const COMMENT_REACTION_COLLECTION_NAME = "Comment_Reaction";
 
 const COMMENT_REACTION_TYPES = Constatnt.REACTION_TYPES;
 

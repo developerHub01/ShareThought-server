@@ -48,7 +48,6 @@ const postSchema = new Schema<IPost, IPostModel>(
   },
 );
 
-
 postSchema.statics.isMyPost = async (
   postId: string,
   userId: string,
@@ -69,9 +68,22 @@ postSchema.statics.isMyPost = async (
   return userId === result;
 };
 
-postSchema.statics.findPostById = async (id: string): Promise<unknown> => {
+postSchema.statics.findPostById = async (
+  id: string,
+  userId?: string,
+): Promise<unknown> => {
   try {
-    return await PostModel.findById(id);
+    const postDetails = await PostModel.findById(id);
+
+    if (!postDetails)
+      throw new AppError(httpStatus.NOT_FOUND, "post not found");
+
+    const { isPublished } = postDetails;
+
+    if (userId && !isPublished && !(await PostModel.isMyPost(id, userId)))
+      throw new AppError(httpStatus.NOT_FOUND, "post not found");
+
+    return postDetails;
   } catch (error) {
     return errorHandler(error);
   }
