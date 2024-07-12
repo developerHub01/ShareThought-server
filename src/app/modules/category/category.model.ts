@@ -20,19 +20,16 @@ const categorySchema = new Schema<ICategory, ICategoryModel>(
       type: Schema.Types.ObjectId,
       ref: ChannelConstant.CHANNEL_COLLECTION_NAME,
       required: true,
-      unique: true,
     },
     name: {
       type: String,
       required: true,
-      unique: true,
       trim: true,
       minlength: CategoryConstant.CATEGORY_NAME_MIN_LENGTH,
       maxlength: CategoryConstant.CATEGORY_NAME_MAX_LENGTH,
     },
     description: {
       type: String,
-      unique: true,
       trim: true,
       minlength: CategoryConstant.CATEGORY_DESCRIPTION_MIN_LENGTH,
       maxlength: CategoryConstant.CATEGORY_DESCRIPTION_MAX_LENGTH,
@@ -51,7 +48,6 @@ const categorySchema = new Schema<ICategory, ICategoryModel>(
         {
           type: Schema.Types.ObjectId,
           ref: PostConstant.POST_COLLECTION_NAME,
-          unique: true,
         },
       ],
       default: [],
@@ -63,11 +59,35 @@ const categorySchema = new Schema<ICategory, ICategoryModel>(
   },
 );
 
+categorySchema.statics.haveAccessCategory = async (
+  categoryId: string,
+  userId: string,
+): Promise<unknown> => {
+  try {
+    const categoryData = await CategoryModel.findById(categoryId).populate({
+      path: "channelId",
+      select: "authorId",
+    });
+
+    if (!categoryData) return false;
+
+    const {
+      channelId: { authorId },
+    } = categoryData as typeof categoryData & {
+      channelId: { authorId: string };
+    };
+
+    return Boolean(authorId?.toString() === userId);
+  } catch (error) {
+    return errorHandler(error);
+  }
+};
+
 categorySchema.statics.findCategoryById = async (
-  id: string,
+  categoryId: string,
 ): Promise<ICategory | unknown> => {
   try {
-    return await CategoryModel.findById(id)
+    return await CategoryModel.findById(categoryId)
       .populate({
         path: "postList",
       })
@@ -80,10 +100,10 @@ categorySchema.statics.findCategoryById = async (
 };
 
 categorySchema.statics.isCategoryExist = async (
-  id: string,
+  categoryId: string,
 ): Promise<boolean> => {
   try {
-    return Boolean(await CategoryModel.findById(id));
+    return Boolean(await CategoryModel.findById(categoryId));
   } catch (error) {
     return errorHandler(error);
   }
@@ -116,18 +136,44 @@ categorySchema.statics.haveAccessToModify = async (
   }
 };
 
+categorySchema.statics.isSameNameCategoryExistInMyChannelCategoryList = async (
+  channelId: string,
+  categoryName: string,
+): Promise<boolean | unknown> => {
+  try {
+    return Boolean(
+      await CategoryModel.findOne({
+        channelId,
+        name: categoryName,
+      }),
+    );
+  } catch (error) {
+    return errorHandler(error);
+  }
+};
+
 categorySchema.statics.createCategory = async (
   payload: ICreateCategory,
   userId: string,
 ) => {
   try {
-    const { channelId } = payload;
-    const haveAccess = await ChannelModel.isChannelMine(channelId, userId);
+    const { channelId, name: chnannelName } = payload;
 
-    if (!haveAccess)
+    if (!(await ChannelModel.isChannelMine(channelId, userId)))
       throw new AppError(
         httpStatus.UNAUTHORIZED,
         "You have no access to create category in that channel",
+      );
+
+    if (
+      await CategoryModel.isSameNameCategoryExistInMyChannelCategoryList(
+        channelId,
+        chnannelName,
+      )
+    )
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "Category with same name already exist",
       );
 
     return await CategoryModel.create({

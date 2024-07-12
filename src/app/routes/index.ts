@@ -8,6 +8,7 @@ import { CommentRoutes } from "../modules/comment/comment.route";
 import { NotificationRoutes } from "../modules/notification/notification.route";
 import { CategoryRoutes } from "../modules/category/category.route";
 import { ReadLaterRoutes } from "../modules/read.later/read.later.route";
+import { SavedCategoryRoutes } from "../modules/saved.category/saved.category.route";
 
 interface IRouteSchema {
   path: string;
@@ -48,6 +49,10 @@ const moduleRoutes: Array<IRouteSchema> = [
   {
     path: "/read_later",
     route: ReadLaterRoutes,
+  },
+  {
+    path: "/save_category",
+    route: SavedCategoryRoutes,
   },
   {
     path: "/notification",

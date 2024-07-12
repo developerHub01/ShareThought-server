@@ -1,6 +1,10 @@
 import { z as zod } from "zod";
 import { CategoryConstant } from "./category.constant";
 
+const accessTypeList = Object.keys(CategoryConstant.CATEGORY_ACCESS_TYPE) as [
+  keyof typeof CategoryConstant.CATEGORY_ACCESS_TYPE,
+];
+
 const createCategory = zod.object({
   channelId: zod.string(),
   name: zod
@@ -15,6 +19,7 @@ const createCategory = zod.object({
     ),
   postList: zod.array(zod.string()).min(1),
 });
+
 const updateCategory = zod.object({
   name: zod
     .string()
@@ -38,6 +43,7 @@ const updateCategory = zod.object({
       `Category name maximum length is ${CategoryConstant.CATEGORY_NAME_MAX_LENGTH}`,
     )
     .optional(),
+  accessType: zod.enum(accessTypeList),
   postList: zod.array(zod.string()).min(1, `postList contain atlest one post`),
 });
 
