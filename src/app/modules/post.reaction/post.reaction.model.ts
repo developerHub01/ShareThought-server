@@ -1,4 +1,4 @@
-import { model, Schema } from "mongoose";
+import { ClientSession, model, Schema } from "mongoose";
 import { PostReactionConstant } from "./post.reaction.constant";
 import {
   IPostReaction,
@@ -8,6 +8,9 @@ import {
 import errorHandler from "../../errors/errorHandler";
 import { PostConstant } from "../post/post.constant";
 import { UserConstant } from "../user/user.constant";
+import { PostModel } from "../post/post.model";
+import AppError from "../../errors/AppError";
+import httpStatus from "http-status";
 
 const postReactionSchema = new Schema<IPostReaction, IPostReactionModel>({
   postId: {
@@ -97,6 +100,22 @@ postReactionSchema.statics.reactOnPost = async (
     );
   } catch (error) {
     errorHandler(error);
+  }
+};
+
+postReactionSchema.statics.deleteAllReactionByPostId = async (
+  userId: string,
+  postId: string,
+  session?: ClientSession,
+) => {
+  const options = session ? { session } : {};
+  try {
+    if (!(await PostModel.isMyPost(postId, userId)))
+      throw new AppError(httpStatus.UNAUTHORIZED, "This is not your post");
+
+    return await PostReactionModel.deleteMany({ postId }, options);
+  } catch (error) {
+    return errorHandler(error);
   }
 };
 

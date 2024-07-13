@@ -1,4 +1,4 @@
-import { Model, Types } from "mongoose";
+import { ClientSession, Model, Types } from "mongoose";
 import { CategoryConstant } from "./category.constant";
 
 const accessTypeList = Object.values(CategoryConstant.CATEGORY_ACCESS_TYPE);
@@ -62,5 +62,11 @@ export interface ICategoryModel extends Model<ICategory> {
     payload: Partial<IUpdateCategory>,
     categoryId: string,
     userId: string,
+  ): Promise<unknown>;
+
+  removeSpecificPostFromAllCategoryList(
+    postId: string,
+    userId: string,
+    session?: ClientSession,
   ): Promise<unknown>;
 }

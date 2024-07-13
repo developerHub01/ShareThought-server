@@ -1,4 +1,4 @@
-import { model, Schema } from "mongoose";
+import { ClientSession, model, Schema } from "mongoose";
 import { ReadLaterConstant } from "./read.later.constant";
 import { IReadLater, IReadLaterModel } from "./read.later.interface";
 import { PostConstant } from "../post/post.constant";
@@ -6,6 +6,7 @@ import { UserConstant } from "../user/user.constant";
 import errorHandler from "../../errors/errorHandler";
 import AppError from "../../errors/AppError";
 import httpStatus from "http-status";
+import { PostModel } from "../post/post.model";
 
 const readLaterSchema = new Schema<IReadLater, IReadLaterModel>(
   {
@@ -133,6 +134,23 @@ readLaterSchema.statics.removeFromReadLaterList = async (
       );
 
     return await ReadLaterModel.deleteOne({ postId, userId });
+  } catch (error) {
+    return errorHandler(error);
+  }
+};
+
+readLaterSchema.statics.removeFromReadLaterListWhenPostIsDeleting = async (
+  postId: string,
+  userId: string,
+  session: ClientSession,
+) => {
+  try {
+    const options = session ? { session } : {};
+
+    if (!(await PostModel.isMyPost(postId, userId)))
+      throw new AppError(httpStatus.UNAUTHORIZED, "This is not your post");
+
+    return await ReadLaterModel.deleteMany({ postId }, options);
   } catch (error) {
     return errorHandler(error);
   }

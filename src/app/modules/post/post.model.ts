@@ -6,7 +6,9 @@ import errorHandler from "../../errors/errorHandler";
 import AppError from "../../errors/AppError";
 import httpStatus from "http-status";
 import { CommentModel } from "../comment/comment.model";
-// import { PostReactionModel } from "../post.reaction/post.reaction.model";
+import { PostReactionModel } from "../post.reaction/post.reaction.model";
+import { ReadLaterModel } from "../read.later/read.later.model";
+import { CategoryModel } from "../category/category.model";
 
 const postSchema = new Schema<IPost, IPostModel>(
   {
@@ -111,7 +113,31 @@ postSchema.statics.deletePost = async (
     if (!(await PostModel.isMyPost(postId, userId)))
       throw new AppError(httpStatus.UNAUTHORIZED, "This is not your post..");
 
+    /* Deleting all comments of post */
     let result = await CommentModel.deleteAllCommentByPostId(postId, userId);
+
+    /* Deleting all reactions of post */
+    (result as unknown) = await PostReactionModel.deleteAllReactionByPostId(
+      postId,
+      userId,
+      session,
+    );
+
+    /* removing post from all category postList */
+    (result as unknown) =
+      await CategoryModel.removeSpecificPostFromAllCategoryList(
+        postId,
+        userId,
+        session,
+      );
+
+    /* Deleting all that post from all read later list */
+    (result as unknown) =
+      await ReadLaterModel.removeFromReadLaterListWhenPostIsDeleting(
+        postId,
+        userId,
+        session,
+      );
 
     (result as unknown) = await PostModel.findByIdAndDelete(postId, {
       session,

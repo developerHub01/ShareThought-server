@@ -1,4 +1,4 @@
-import { Model, Types } from "mongoose";
+import { ClientSession, Model, Types } from "mongoose";
 import { PostReactionConstant } from "./post.reaction.constant";
 
 const reactionTypeList: Array<string> = Object.values(
@@ -24,5 +24,10 @@ export interface IPostReactionModel extends Model<IPostReaction> {
     userId: string,
     postId: string,
     reactionType: TPostReactionType,
+  ): Promise<unknown>;
+  deleteAllReactionByPostId(
+    userId: string,
+    postId: string,
+    session?: ClientSession,
   ): Promise<unknown>;
 }

@@ -1,4 +1,4 @@
-import { model, Schema } from "mongoose";
+import { ClientSession, model, Schema } from "mongoose";
 import { CategoryConstant } from "./category.constant";
 import {
   ICategory,
@@ -297,6 +297,30 @@ categorySchema.statics.updateCategory = async (
       categoryId,
       { ...payload },
       { new: true },
+    );
+  } catch (error) {
+    return errorHandler(error);
+  }
+};
+
+categorySchema.statics.removeSpecificPostFromAllCategoryList = async (
+  postId: string,
+  userId: string,
+  session?: ClientSession,
+) => {
+  try {
+    const options = session ? { session } : {};
+    if (!(await PostModel.isMyPost(postId, userId)))
+      throw new AppError(httpStatus.UNAUTHORIZED, "this is not your post");
+
+    return await CategoryModel.updateMany(
+      { postList: postId },
+      {
+        $pull: {
+          postList: { postId },
+        },
+      },
+      options,
     );
   } catch (error) {
     return errorHandler(error);
