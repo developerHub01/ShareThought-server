@@ -30,8 +30,10 @@ const createPostValidationSchema = zod.object({
     ),
   isPublished: zod.boolean().optional().default(false),
   banner: zod.string().optional(),
+  scheduledTime: zod.string().optional(),
   tags: zod.string().array().optional(),
 });
+
 const updatePostValidationSchema = zod.object({
   title: zod
     .string({
@@ -63,6 +65,7 @@ const updatePostValidationSchema = zod.object({
     .optional(),
   isPublished: zod.boolean().optional().default(false),
   banner: zod.string().optional(),
+  scheduledTime: zod.string().optional(),
   tags: zod.string().array().optional(),
 });
 

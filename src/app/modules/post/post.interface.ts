@@ -6,7 +6,9 @@ export interface IPost {
   content: string;
   banner: string;
   views?: number;
-  isPublished: boolean;
+  isPublished?: boolean;
+  publishedAt?: Date;
+  scheduledTime?: Date;
   // tags: Array<Types.ObjectId>;
 }
 
@@ -15,12 +17,13 @@ export interface ICreatePost {
   content: string;
   banner?: string;
   isPublished?: boolean;
+  scheduledTime?: Date;
   // tags: Array<string>;
 }
 
 export interface IPostModel extends Model<IPost> {
   isMyPost(postId: string, userId: string): Promise<boolean>;
-  findPostById(id: string, userId?:string): Promise<unknown>;
+  findPostById(id: string, userId?: string): Promise<unknown>;
   isPublicPostById(id: string): Promise<boolean | unknown>;
   deletePost(postId: string, userId: string): Promise<unknown>;
 }
