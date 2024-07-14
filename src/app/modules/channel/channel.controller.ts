@@ -2,7 +2,11 @@ import httpStatus from "http-status";
 import catchAsync from "../../utils/catch.async";
 import { sendResponse } from "../../utils/send.response";
 import { ChannelServices } from "./channel.services";
-import { IRequestWithUserId } from "../../interface/interface";
+import { IReqFiles, IRequestWithUserId } from "../../interface/interface";
+import { CloudinaryConstant } from "../../constants/cloudinary.constant";
+import { ChannelModel } from "./channel.model";
+import AppError from "../../errors/AppError";
+import { ChannelUtils } from "./channel.utils";
 
 const findChannel = catchAsync(async (req, res) => {
   const result = await ChannelServices.findChannel(req.query);
@@ -13,6 +17,7 @@ const findChannel = catchAsync(async (req, res) => {
     data: result,
   });
 });
+
 const getMyChannel = catchAsync(async (req, res) => {
   const { userId } = req as IRequestWithUserId;
 
@@ -55,6 +60,43 @@ const createChannel = catchAsync(async (req, res) => {
 
 const updateChannel = catchAsync(async (req, res) => {
   const { id } = req.params;
+
+  const channelData = await ChannelModel.findById(id);
+
+  if (!channelData)
+    throw new AppError(httpStatus.NOT_FOUND, "Channel not found");
+
+  const { channelAvatar: previousAvatar, channelCover: previousCover } =
+    channelData;
+
+  const channelAvatarPath =
+    (req.files as IReqFiles)?.channelAvatar &&
+    (req.files as IReqFiles)?.channelAvatar[0]?.path;
+  const channelCoverPath =
+    (req.files as IReqFiles)?.channelCover &&
+    (req.files as IReqFiles)?.channelCover[0]?.path;
+
+    
+  if (channelAvatarPath) {
+    const url = await ChannelUtils.updateChannelImage(
+      channelAvatarPath,
+      previousAvatar,
+      CloudinaryConstant.SHARE_THOUGHT_CHANNEL_AVATAR_NAME,
+    );
+
+    if (url) req.body.channelAvatar = url;
+  }
+
+  if (channelCoverPath) {
+    const url = await ChannelUtils.updateChannelImage(
+      channelCoverPath,
+      previousCover,
+      CloudinaryConstant.SHARE_THOUGHT_CHANNEL_COVER_NAME,
+    );
+
+    if (url) req.body.channelCover = url;
+  }
+
   const result = await ChannelServices.updateChannel(id, req.body);
 
   return sendResponse(res, {
@@ -79,9 +121,9 @@ const deleteChannel = catchAsync(async (req, res) => {
 
 export const ChannelController = {
   findChannel,
+  singleChannel,
   getMyChannel,
   createChannel,
-  deleteChannel,
-  singleChannel,
   updateChannel,
+  deleteChannel,
 };

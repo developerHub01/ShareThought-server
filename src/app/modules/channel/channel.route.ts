@@ -5,6 +5,7 @@ import { ChannelValidation } from "./channel.validation";
 import { validateRequest } from "../../middleware/validate.request";
 import channelExist from "../../middleware/channel.exist";
 import verifyMyChannel from "../../middleware/verify.my.channel";
+import { ChannelMiddleware } from "./channel.middleware";
 
 const router = express.Router();
 
@@ -20,6 +21,7 @@ router.patch(
   validateRequest(ChannelValidation.updateChannelValidationSchema),
   getLoggedInUser,
   verifyMyChannel,
+  ChannelMiddleware.updateChannelImages,
   ChannelController.updateChannel,
 );
 
@@ -30,7 +32,6 @@ router.delete(
   verifyMyChannel,
   ChannelController.deleteChannel,
 );
-
 
 router.get("/all", getLoggedInUser, ChannelController.findChannel);
 
