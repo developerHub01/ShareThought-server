@@ -29,7 +29,7 @@ const createPostValidationSchema = zod.object({
       `post title max length is ${PostConstant.POST_CONTENT_MIN_LENGTH}`,
     ),
   isPublished: zod.boolean().optional().default(false),
-  banner: zod.string().optional(),
+  banner: zod.string().array().optional(),
   scheduledTime: zod.string().optional(),
   tags: zod.string().array().optional(),
 });
@@ -64,7 +64,7 @@ const updatePostValidationSchema = zod.object({
     )
     .optional(),
   isPublished: zod.boolean().optional().default(false),
-  banner: zod.string().optional(),
+  banner: zod.string().array().optional(),
   scheduledTime: zod.string().optional(),
   tags: zod.string().array().optional(),
 });

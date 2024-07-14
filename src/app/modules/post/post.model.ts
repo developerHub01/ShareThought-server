@@ -149,6 +149,9 @@ postSchema.statics.isMyPost = async (
       },
     })) as unknown as { channelId: { authorId: { _id: string } } };
 
+  if (!collectionChain)
+    throw new AppError(httpStatus.NOT_FOUND, "Post not found");
+
   const result = collectionChain?.channelId?.authorId?._id?.toString();
 
   return userId === result;

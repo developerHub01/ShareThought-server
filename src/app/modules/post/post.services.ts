@@ -97,9 +97,12 @@ const findPostByChannelId = async (
 const findPostByPostId = async (postId: string, userId?: string) => {
   try {
     const query: IFindPostByIdQuery = { _id: postId };
+    console.log("======================");
 
     if (userId) {
       const isMyPost = await PostModel.isMyPost(postId, userId);
+
+      
 
       if (!isMyPost) query["isPublished"] = true;
     }

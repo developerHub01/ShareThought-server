@@ -6,6 +6,7 @@ import verifyMyChannel from "../../middleware/verify.my.channel";
 import { PostController } from "./post.controller";
 import verifyMyPost from "../../middleware/verify.my.post";
 import checkAuthStatus from "../../middleware/check.auth.status";
+import { PostMiddleware } from "./post.middleware";
 
 const router = express.Router();
 
@@ -24,6 +25,7 @@ router.get(
 // create post
 router.post(
   "/:id" /* :id ===> channelId */,
+  PostMiddleware.createOrUpdatePostImages,
   validateRequest(PostValidation.createPostValidationSchema),
   getLoggedInUser,
   verifyMyChannel,
@@ -33,6 +35,7 @@ router.post(
 // update post
 router.patch(
   "/:postId" /* :postId ===> postId */,
+  PostMiddleware.createOrUpdatePostImages,
   validateRequest(PostValidation.updatePostValidationSchema),
   getLoggedInUser,
   verifyMyPost /* checking is that my post or not */,

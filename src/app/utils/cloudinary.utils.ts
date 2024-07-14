@@ -37,8 +37,6 @@ const deleteFile = async (filePaths: Array<string>) => {
   try {
     filePaths = getFileIdList(filePaths);
 
-    console.log({ filePaths });
-
     const result = await cloudinary.v2.api.delete_resources(filePaths, {
       type: "upload",
       resource_type: "image",
