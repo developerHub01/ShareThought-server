@@ -1,0 +1,9 @@
+const HISTORY_SETTING_COLLECTION_NAME = "history_setting";
+const HISTORY_ITEM_COLLECTION_NAME = "history_item";
+const HISTORY_POST_SEARCHABLE_FIELD: Array<string> = [];
+
+export const HistoryConstant = {
+  HISTORY_SETTING_COLLECTION_NAME,
+  HISTORY_ITEM_COLLECTION_NAME,
+  HISTORY_POST_SEARCHABLE_FIELD,
+};
