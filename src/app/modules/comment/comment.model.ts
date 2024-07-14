@@ -16,6 +16,7 @@ const commentSchema = new Schema<IComment, ICommentModel>(
     postId: {
       type: Schema.Types.ObjectId,
       ref: PostConstant.POST_COLLECTION_NAME,
+      required: true,
     },
     commentAuthorId: {
       type: Schema.Types.ObjectId,
@@ -42,6 +43,9 @@ const commentSchema = new Schema<IComment, ICommentModel>(
         },
       ],
       default: [],
+    },
+    commentImage: {
+      type: String,
     },
   },
   {
@@ -107,7 +111,8 @@ commentSchema.statics.createComment = async (
   session.startTransaction();
 
   try {
-    const { parentCommentId, postId } = payload;
+    const parentCommentId = payload.parentCommentId;
+    let postId = payload.postId;
 
     if (
       postId &&
@@ -115,8 +120,21 @@ commentSchema.statics.createComment = async (
     )
       throw new AppError(httpStatus.NOT_FOUND, "post not found");
 
-    if (parentCommentId && !(await CommentModel.findById(parentCommentId)))
-      throw new AppError(httpStatus.NOT_FOUND, "comment not found");
+    /* if it is a reply */
+    if (parentCommentId) {
+      const parentComment = await CommentModel.findById(parentCommentId);
+
+      if (!parentComment)
+        throw new AppError(httpStatus.NOT_FOUND, "comment not found");
+
+      if (!postId) {
+        postId = parentComment?.postId?.toString();
+        payload = {
+          ...payload,
+          postId,
+        };
+      }
+    }
 
     await session.commitTransaction();
 
@@ -271,9 +289,6 @@ commentSchema.statics.deleteAllCommentByPostId = async (
   postId: string,
   userId: string,
 ): Promise<unknown> => {
-  console.log({ postId, userId });
-  console.log("============+++++++=============");
-
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
@@ -284,18 +299,12 @@ commentSchema.statics.deleteAllCommentByPostId = async (
       postId,
     }).select("_id");
 
-    for (const test of result) {
-      console.log(test);
-      const { _id } = test;
-      console.log({ _id });
-      console.log(_id.toString());
-      console.log("============#######=============");
+    for (const commentData of result) {
+      const { _id } = commentData;
       await CommentModel.deleteCommentsWithReplies(_id?.toString(), session);
     }
     await session.commitTransaction();
     await session.endSession();
-
-    console.log(result);
 
     return result;
   } catch (error) {
