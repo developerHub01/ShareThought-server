@@ -3,6 +3,7 @@ import { validateRequest } from "../../middleware/validate.request";
 import { UserValidation } from "./user.validation";
 import { UserController } from "./user.controller";
 import getLoggedInUser from "../../middleware/get.loggedin.user";
+import { UserMiddleware } from "./user.middleware";
 
 const router = express.Router();
 
@@ -24,8 +25,9 @@ router.post(
 // update user
 router.patch(
   "/",
-  getLoggedInUser,
+  UserMiddleware.UpdateUserAvatar,
   validateRequest(UserValidation.updateUserValidationSchema),
+  getLoggedInUser,
   UserController.updateUser,
 );
 

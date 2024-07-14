@@ -112,8 +112,6 @@ const deletePost = catchAsync(async (req, res) => {
 
   const bannerImage = (await PostModel.findById(postId))?.banner;
 
-  // console.log(await PostModel.findById(postId));
-
   if (bannerImage) {
     await CloudinaryUtils.deleteFile([bannerImage]);
   }
