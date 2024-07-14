@@ -6,13 +6,15 @@ export interface IComment {
   parentCommentId: Types.ObjectId;
   content: string;
   replies: Array<Types.ObjectId>;
+  commentImage: string;
 }
 
 export interface ICreateComment {
-  postId?: string;
+  postId: string;
   commentAuthorId?: string;
   parentCommentId?: string;
   content?: string;
+  commentImage: string;
 }
 
 export interface ICommentModel extends Model<IComment> {

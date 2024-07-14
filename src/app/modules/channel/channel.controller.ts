@@ -2,7 +2,7 @@ import httpStatus from "http-status";
 import catchAsync from "../../utils/catch.async";
 import { sendResponse } from "../../utils/send.response";
 import { ChannelServices } from "./channel.services";
-import { IReqFiles, IRequestWithUserId } from "../../interface/interface";
+import { IRequestWithUserId } from "../../interface/interface";
 import { CloudinaryConstant } from "../../constants/cloudinary.constant";
 import { ChannelModel } from "./channel.model";
 import AppError from "../../errors/AppError";
@@ -69,19 +69,15 @@ const updateChannel = catchAsync(async (req, res) => {
   const { channelAvatar: previousAvatar, channelCover: previousCover } =
     channelData;
 
-  const channelAvatarPath =
-    (req.files as IReqFiles)?.channelAvatar &&
-    (req.files as IReqFiles)?.channelAvatar[0]?.path;
-  const channelCoverPath =
-    (req.files as IReqFiles)?.channelCover &&
-    (req.files as IReqFiles)?.channelCover[0]?.path;
+  const { channelAvatar, channelCover } = req.body;
+  const channelAvatarPath = channelAvatar[0];
+  const channelCoverPath = channelCover[0];
 
-    
   if (channelAvatarPath) {
     const url = await ChannelUtils.updateChannelImage(
       channelAvatarPath,
       previousAvatar,
-      CloudinaryConstant.SHARE_THOUGHT_CHANNEL_AVATAR_NAME,
+      CloudinaryConstant.SHARE_THOUGHT_CHANNEL_AVATAR_FOLDER_NAME,
     );
 
     if (url) req.body.channelAvatar = url;
@@ -91,7 +87,7 @@ const updateChannel = catchAsync(async (req, res) => {
     const url = await ChannelUtils.updateChannelImage(
       channelCoverPath,
       previousCover,
-      CloudinaryConstant.SHARE_THOUGHT_CHANNEL_COVER_NAME,
+      CloudinaryConstant.SHARE_THOUGHT_CHANNEL_COVER_FOLDER_NAME,
     );
 
     if (url) req.body.channelCover = url;

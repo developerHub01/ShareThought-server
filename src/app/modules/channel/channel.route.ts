@@ -18,10 +18,10 @@ router.post(
 
 router.patch(
   "/:id" /* id ===> channelId */,
+  ChannelMiddleware.updateChannelImages,
   validateRequest(ChannelValidation.updateChannelValidationSchema),
   getLoggedInUser,
   verifyMyChannel,
-  ChannelMiddleware.updateChannelImages,
   ChannelController.updateChannel,
 );
 

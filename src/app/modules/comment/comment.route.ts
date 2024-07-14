@@ -4,6 +4,8 @@ import { CommentController } from "./comment.controller";
 import { validateRequest } from "../../middleware/validate.request";
 import { CommentValidation } from "./comment.validation";
 import verifyMyPost from "../../middleware/verify.my.post";
+import { CommentMiddleware } from "./comment.middleware";
+import verifyMyComment from "../../middleware/verify.my.comment";
 const router = express.Router();
 
 router.get(
@@ -20,13 +22,16 @@ router.get(
 
 router.post(
   "/:id" /* :id ===> postId */,
+  CommentMiddleware.createOrUpdateCommentImages,
   validateRequest(CommentValidation.createOrUpdateComment),
   getLoggedInUser,
   CommentController.createComment,
 );
 
+/* reply comment */
 router.post(
   "/reply/:id" /* :id ===> commentId */,
+  CommentMiddleware.createOrUpdateCommentImages,
   validateRequest(CommentValidation.createOrUpdateComment),
   getLoggedInUser,
   CommentController.replyComment,
@@ -34,15 +39,25 @@ router.post(
 
 router.patch(
   "/:id" /* :id ===> commentId */,
+  CommentMiddleware.createOrUpdateCommentImages,
   validateRequest(CommentValidation.createOrUpdateComment),
   getLoggedInUser,
+  verifyMyComment,
   CommentController.updateComment,
 );
 
 router.delete(
   "/:id" /* :id ===> commentId */,
   getLoggedInUser,
+  verifyMyComment,
   CommentController.deleteComment,
+);
+
+router.delete(
+  "/comment_image/:id" /* :id ===> commentId */,
+  getLoggedInUser,
+  verifyMyComment,
+  CommentController.deleteCommentImage,
 );
 
 router.delete(
