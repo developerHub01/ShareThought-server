@@ -70,8 +70,9 @@ const updateChannel = catchAsync(async (req, res) => {
     channelData;
 
   const { channelAvatar, channelCover } = req.body;
-  const channelAvatarPath = channelAvatar[0];
-  const channelCoverPath = channelCover[0];
+
+  const channelAvatarPath = Array.isArray(channelAvatar) && channelAvatar[0];
+  const channelCoverPath = Array.isArray(channelCover) && channelCover[0];
 
   if (channelAvatarPath) {
     const url = await ChannelUtils.updateChannelImage(
