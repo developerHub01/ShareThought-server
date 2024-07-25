@@ -1,11 +1,12 @@
 import httpStatus from "http-status";
-import { IRequestWithUserId } from "../../interface/interface";
+import { IRequestWithActiveDetails } from "../../interface/interface";
 import catchAsync from "../../utils/catch.async";
 import { sendResponse } from "../../utils/send.response";
 import { FollowerServices } from "./follwer.services";
+import AppError from "../../errors/AppError";
 
 const getChannelFollowing = catchAsync(async (req, res) => {
-  const { userId } = req as IRequestWithUserId;
+  const { userId } = req as IRequestWithActiveDetails;
 
   const result = await FollowerServices.getChannelFollowing(req.query, userId);
 
@@ -17,9 +18,15 @@ const getChannelFollowing = catchAsync(async (req, res) => {
   });
 });
 const getChannelFollowers = catchAsync(async (req, res) => {
-  const { id } = req.params;
+  const { channelId } = req as IRequestWithActiveDetails;
 
-  const result = await FollowerServices.getChannelFollowers(req.query, id);
+  if (!channelId)
+    throw new AppError(httpStatus.BAD_REQUEST, "your channel is not activated");
+
+  const result = await FollowerServices.getChannelFollowers(
+    req.query,
+    channelId,
+  );
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -30,10 +37,15 @@ const getChannelFollowers = catchAsync(async (req, res) => {
 });
 
 const handleChannelFollowToggle = catchAsync(async (req, res) => {
-  const { id } = req.params;
-  const { userId } = req as IRequestWithUserId;
+  const { userId, channelId } = req as IRequestWithActiveDetails;
 
-  const result = await FollowerServices.handleChannelFollowToggle(id, userId);
+  if (!channelId)
+    throw new AppError(httpStatus.BAD_REQUEST, "your channel is not activated");
+
+  const result = await FollowerServices.handleChannelFollowToggle(
+    channelId,
+    userId,
+  );
 
   const isFollowing = !(result as typeof result & { deletedCount: number })
     .deletedCount;

@@ -1,11 +1,11 @@
 import httpStatus from "http-status";
 import catchAsync from "../../utils/catch.async";
 import { sendResponse } from "../../utils/send.response";
-import { IRequestWithUserId } from "../../interface/interface";
+import { IRequestWithActiveDetails } from "../../interface/interface";
 import { HistoryServices } from "./history.services";
 
 const findHistoryItem = catchAsync(async (req, res) => {
-  const { userId } = req as IRequestWithUserId;
+  const { userId } = req as IRequestWithActiveDetails;
 
   const result = await HistoryServices.findHistoryItem(req.query, userId);
 
@@ -18,7 +18,7 @@ const findHistoryItem = catchAsync(async (req, res) => {
 });
 
 const isMyHistoryActive = catchAsync(async (req, res) => {
-  const { userId } = req as IRequestWithUserId;
+  const { userId } = req as IRequestWithActiveDetails;
 
   const result = await HistoryServices.isMyHistoryActive(userId);
 
@@ -31,7 +31,7 @@ const isMyHistoryActive = catchAsync(async (req, res) => {
 });
 
 const toggleHistoryActivity = catchAsync(async (req, res) => {
-  const { userId } = req as IRequestWithUserId;
+  const { userId } = req as IRequestWithActiveDetails;
 
   const result = await HistoryServices.toggleHistoryActivity(userId);
 
@@ -44,7 +44,7 @@ const toggleHistoryActivity = catchAsync(async (req, res) => {
 });
 
 const addPostInHistory = catchAsync(async (req, res) => {
-  const { userId } = req as IRequestWithUserId;
+  const { userId } = req as IRequestWithActiveDetails;
   const { postId } = req.params;
 
   const result = await HistoryServices.addPostInHistory(postId, userId);
@@ -58,7 +58,7 @@ const addPostInHistory = catchAsync(async (req, res) => {
 });
 
 const removePostFromHistory = catchAsync(async (req, res) => {
-  const { userId } = req as IRequestWithUserId;
+  const { userId } = req as IRequestWithActiveDetails;
   const { id: historyItemId } = req.params;
 
   const result = await HistoryServices.removePostFromHistory(
@@ -75,7 +75,7 @@ const removePostFromHistory = catchAsync(async (req, res) => {
 });
 
 const clearPostFromHistory = catchAsync(async (req, res) => {
-  const { userId } = req as IRequestWithUserId;
+  const { userId } = req as IRequestWithActiveDetails;
 
   const result = await HistoryServices.clearPostFromHistory(userId);
 

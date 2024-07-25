@@ -6,6 +6,7 @@ import { validateRequest } from "../../middleware/validate.request";
 import channelExist from "../../middleware/channel.exist";
 import verifyMyChannel from "../../middleware/verify.my.channel";
 import { ChannelMiddleware } from "./channel.middleware";
+import getActiveChannel from "../../middleware/get.active.channel";
 
 const router = express.Router();
 
@@ -14,8 +15,9 @@ router.get("/all", getLoggedInUser, ChannelController.findChannel);
 router.get("/my", getLoggedInUser, ChannelController.getMyChannel);
 
 router.get(
-  "/:id" /* id ===> channelId */,
+  "/",
   getLoggedInUser,
+  getActiveChannel,
   ChannelController.singleChannel,
 );
 
@@ -30,15 +32,15 @@ router.post(
 router.patch(
   "/switch/:id" /* id ===> channelId */,
   getLoggedInUser,
-  verifyMyChannel,
   ChannelController.switchChannel,
 );
 
 router.patch(
-  "/:id" /* id ===> channelId */,
+  "/",
   ChannelMiddleware.updateChannelImages,
   validateRequest(ChannelValidation.updateChannelValidationSchema),
   getLoggedInUser,
+  getActiveChannel,
   verifyMyChannel,
   ChannelController.updateChannel,
 );
@@ -47,8 +49,9 @@ router.patch(
 router.delete("/logout", getLoggedInUser, ChannelController.logOutChannel);
 
 router.delete(
-  "/:id" /* id ===> channelId */,
+  "/",
   getLoggedInUser,
+  getActiveChannel,
   channelExist,
   verifyMyChannel,
   ChannelController.deleteChannel,

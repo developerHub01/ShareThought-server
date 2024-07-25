@@ -7,6 +7,7 @@ import { PostController } from "./post.controller";
 import verifyMyPost from "../../middleware/verify.my.post";
 import checkAuthStatus from "../../middleware/check.auth.status";
 import { PostMiddleware } from "./post.middleware";
+import getActiveChannel from "../../middleware/get.active.channel";
 
 const router = express.Router();
 
@@ -24,10 +25,11 @@ router.get(
 
 // create post
 router.post(
-  "/:id" /* :id ===> channelId */,
+  "/",
   PostMiddleware.createOrUpdatePostImages,
   validateRequest(PostValidation.createPostValidationSchema),
   getLoggedInUser,
+  getActiveChannel,
   verifyMyChannel,
   PostController.createPost,
 );

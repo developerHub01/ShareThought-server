@@ -7,6 +7,12 @@ const REACTION_TYPES = {
   INSPIRING: "INSPIRING",
 };
 
+const TOKENS = {
+  ACCESS_TOKEN: "access_token",
+  CHANNEL_TOKEN: "channel_token",
+};
+
 export const Constatnt = {
+  TOKENS,
   REACTION_TYPES,
 };

@@ -1,12 +1,12 @@
 import httpStatus from "http-status";
 import AppError from "../errors/AppError";
-import { IRequestWithUserId } from "../interface/interface";
+import { IRequestWithActiveDetails } from "../interface/interface";
 import catchAsync from "../utils/catch.async";
 import { CommentModel } from "../modules/comment/comment.model";
 
 const verifyMyComment = catchAsync(async (req, res, next) => {
   const { id: commentId } = req.params;
-  const { userId } = req as IRequestWithUserId;
+  const { userId } = req as IRequestWithActiveDetails;
 
   const isMyComment = await CommentModel.isMyComment(commentId, userId);
 

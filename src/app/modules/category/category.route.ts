@@ -44,7 +44,8 @@ router.delete(
   ":id/post/:postId",
   /* 
     id ==> categoryId 
-  */ validateRequest(CategoryValidation.updateCategory),
+  */
+  validateRequest(CategoryValidation.updateCategory),
   getLoggedInUser,
   verifyMyPost,
   CategoryController.removePostFromCategory,

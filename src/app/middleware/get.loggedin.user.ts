@@ -5,11 +5,12 @@ import AppError from "../errors/AppError";
 import httpStatus from "http-status";
 import { UserModel } from "../modules/user/user.model";
 import catchAsync from "../utils/catch.async";
-import { IRequestWithUserId } from "../interface/interface";
+import { IRequestWithActiveDetails } from "../interface/interface";
+import { Constatnt } from "../constants/constants";
 
 const getLoggedInUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const token = req.cookies.access_token;
+    const token = req.cookies[Constatnt.TOKENS.ACCESS_TOKEN];
     
     const { userId } = AuthUtils.verifyToken(
       token,
@@ -21,7 +22,7 @@ const getLoggedInUser = catchAsync(
     if (!userId || !isUserExist)
       throw new AppError(httpStatus.UNAUTHORIZED, "You are not logged in");
     
-    (req as IRequestWithUserId).userId = userId;
+    (req as IRequestWithActiveDetails).userId = userId;
     
 
     next();

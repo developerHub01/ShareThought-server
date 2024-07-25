@@ -2,7 +2,7 @@ import httpStatus from "http-status";
 import catchAsync from "../../utils/catch.async";
 import { sendResponse } from "../../utils/send.response";
 import { CategoryServices } from "./category.services";
-import { IRequestWithUserId } from "../../interface/interface";
+import { IRequestWithActiveDetails } from "../../interface/interface";
 
 const findCategoryById = catchAsync(async (req, res) => {
   const { id: categoryId } = req.params;
@@ -37,7 +37,7 @@ const findCategoryByChannelId = catchAsync(async (req, res) => {
 });
 
 const createCategory = catchAsync(async (req, res) => {
-  const { userId } = req as IRequestWithUserId;
+  const { userId } = req as IRequestWithActiveDetails;
 
   const result = await CategoryServices.createCategory(req.body, userId);
 
@@ -50,7 +50,7 @@ const createCategory = catchAsync(async (req, res) => {
 });
 
 const updateCategory = catchAsync(async (req, res) => {
-  const { userId } = req as IRequestWithUserId;
+  const { userId } = req as IRequestWithActiveDetails;
   const { id } = req.params;
 
   const result = await CategoryServices.updateCategory(req.body, id, userId);
@@ -64,7 +64,7 @@ const updateCategory = catchAsync(async (req, res) => {
 });
 
 const addPostInCategory = catchAsync(async (req, res) => {
-  const { userId } = req as IRequestWithUserId;
+  const { userId } = req as IRequestWithActiveDetails;
   const { id: categoryId, postId } = req.params;
 
   const result = await CategoryServices.addPostInCategory(
@@ -82,7 +82,7 @@ const addPostInCategory = catchAsync(async (req, res) => {
 });
 
 const removePostFromCategory = catchAsync(async (req, res) => {
-  const { userId } = req as IRequestWithUserId;
+  const { userId } = req as IRequestWithActiveDetails;
   const { id: categoryId, postId } = req.params;
 
   const result = await CategoryServices.removePostFromCategory(
@@ -100,7 +100,7 @@ const removePostFromCategory = catchAsync(async (req, res) => {
 });
 
 const deleteCategory = catchAsync(async (req, res) => {
-  const { userId } = req as IRequestWithUserId;
+  const { userId } = req as IRequestWithActiveDetails;
   const { id: categoryId } = req.params;
 
   const result = await CategoryServices.deleteCategory(categoryId, userId);

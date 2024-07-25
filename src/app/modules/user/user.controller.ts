@@ -2,13 +2,13 @@ import httpStatus from "http-status";
 import catchAsync from "../../utils/catch.async";
 import { sendResponse } from "../../utils/send.response";
 import { UserServices } from "./user.services";
-import { IRequestWithUserId } from "../../interface/interface";
+import { IRequestWithActiveDetails } from "../../interface/interface";
 import { UserUtils } from "./user.utils";
 import { UserModel } from "./user.model";
 import { CloudinaryConstant } from "../../constants/cloudinary.constant";
 
 const getMyDetails = catchAsync(async (req, res) => {
-  const { userId } = req as IRequestWithUserId;
+  const { userId } = req as IRequestWithActiveDetails;
 
   const result = await UserServices.findUserById(userId);
 
@@ -56,7 +56,7 @@ const createUser = catchAsync(async (req, res) => {
 });
 
 const updateUser = catchAsync(async (req, res) => {
-  const { userId } = req as IRequestWithUserId;
+  const { userId } = req as IRequestWithActiveDetails;
 
   const previousAvatarImage = (await UserModel.findById(userId))?.avatar;
 
@@ -87,7 +87,7 @@ const updateUser = catchAsync(async (req, res) => {
 });
 
 const updateUserPassword = catchAsync(async (req, res) => {
-  const { userId } = req as IRequestWithUserId;
+  const { userId } = req as IRequestWithActiveDetails;
 
   const result = await UserServices.updateUserPassword(req.body, userId);
 

@@ -1,12 +1,12 @@
 import httpStatus from "http-status";
 import catchAsync from "../../utils/catch.async";
 import { sendResponse } from "../../utils/send.response";
-import { IRequestWithUserId } from "../../interface/interface";
+import { IRequestWithActiveDetails } from "../../interface/interface";
 import { SavedCategoryServices } from "./saved.category.services";
 import { SavedCategoryModel } from "./saved.category.model";
 
 const findSavedCategory = catchAsync(async (req, res) => {
-  const { userId } = req as IRequestWithUserId;
+  const { userId } = req as IRequestWithActiveDetails;
 
   const result = await SavedCategoryServices.findSavedCategory(
     req.query,
@@ -22,7 +22,7 @@ const findSavedCategory = catchAsync(async (req, res) => {
 });
 
 const addToSaveCategory = catchAsync(async (req, res) => {
-  const { userId } = req as IRequestWithUserId;
+  const { userId } = req as IRequestWithActiveDetails;
 
   const { categoryId } = req.params;
 
@@ -37,7 +37,7 @@ const addToSaveCategory = catchAsync(async (req, res) => {
 });
 
 const removeFromSaveCategoryByCategoryId = catchAsync(async (req, res) => {
-  const { userId } = req as IRequestWithUserId;
+  const { userId } = req as IRequestWithActiveDetails;
 
   const { categoryId } = req.params;
 
@@ -55,7 +55,7 @@ const removeFromSaveCategoryByCategoryId = catchAsync(async (req, res) => {
 });
 
 const removeFromSaveCategoryBySavedCategoryId = catchAsync(async (req, res) => {
-  const { userId } = req as IRequestWithUserId;
+  const { userId } = req as IRequestWithActiveDetails;
 
   const { savedCategoryId } = req.params;
 

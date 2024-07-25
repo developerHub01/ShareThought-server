@@ -2,10 +2,10 @@ import httpStatus from "http-status";
 import catchAsync from "../../utils/catch.async";
 import { sendResponse } from "../../utils/send.response";
 import { NotificationServices } from "./notification.services";
-import { IRequestWithUserId } from "../../interface/interface";
+import { IRequestWithActiveDetails } from "../../interface/interface";
 
 const findMyNotification = catchAsync(async (req, res) => {
-  const { userId } = req as IRequestWithUserId;
+  const { userId } = req as IRequestWithActiveDetails;
   const result = await NotificationServices.findMyNotification(
     req.query,
     userId,
@@ -65,7 +65,7 @@ const findChannelUnseenNotification = catchAsync(async (req, res) => {
 });
 
 const numberOfMyUnseenNotification = catchAsync(async (req, res) => {
-  const { userId } = req as IRequestWithUserId;
+  const { userId } = req as IRequestWithActiveDetails;
   const result =
     await NotificationServices.numberOfMyUnseenNotification(userId);
 

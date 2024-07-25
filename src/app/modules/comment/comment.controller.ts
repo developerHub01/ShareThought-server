@@ -2,7 +2,7 @@ import httpStatus from "http-status";
 import catchAsync from "../../utils/catch.async";
 import { sendResponse } from "../../utils/send.response";
 import { CommentServices } from "./comment.services";
-import { IRequestWithUserId } from "../../interface/interface";
+import { IRequestWithActiveDetails } from "../../interface/interface";
 import { CommentUtils } from "./comment.utils";
 import { CloudinaryConstant } from "../../constants/cloudinary.constant";
 import { CommentModel } from "./comment.model";
@@ -35,7 +35,7 @@ const findCommentById = catchAsync(async (req, res) => {
 });
 
 const createComment = catchAsync(async (req, res) => {
-  const { userId } = req as IRequestWithUserId;
+  const { userId } = req as IRequestWithActiveDetails;
   const { id: postId } = req.params;
 
   let commentImagePath;
@@ -63,7 +63,7 @@ const createComment = catchAsync(async (req, res) => {
 });
 
 const replyComment = catchAsync(async (req, res) => {
-  const { userId } = req as IRequestWithUserId;
+  const { userId } = req as IRequestWithActiveDetails;
   const { id: parentCommentId } = req.params; // commentId of parent comment
 
   let commentImagePath;
@@ -96,7 +96,7 @@ const replyComment = catchAsync(async (req, res) => {
 });
 
 const updateComment = catchAsync(async (req, res) => {
-  const { userId } = req as IRequestWithUserId;
+  const { userId } = req as IRequestWithActiveDetails;
   const { id } = req.params;
 
   const previousCommentImage = (await CommentModel.findById(id))?.commentImage;
@@ -128,7 +128,7 @@ const updateComment = catchAsync(async (req, res) => {
 });
 
 const deleteComment = catchAsync(async (req, res) => {
-  const { userId } = req as IRequestWithUserId;
+  const { userId } = req as IRequestWithActiveDetails;
   const { id } = req.params;
 
   const commentImage = (await CommentModel.findById(id))?.commentImage;
@@ -161,7 +161,7 @@ const deleteCommentImage = catchAsync(async (req, res) => {
 });
 
 const deleteAllComment = catchAsync(async (req, res) => {
-  const { userId } = req as IRequestWithUserId;
+  const { userId } = req as IRequestWithActiveDetails;
   const { id } = req.params;
 
   const result = await CommentServices.deleteAllComment(id, userId);

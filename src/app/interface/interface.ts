@@ -1,7 +1,8 @@
 import { Request } from "express";
 
-export interface IRequestWithUserId extends Request {
+export interface IRequestWithActiveDetails extends Request {
   userId: string;
+  channelId?: string;
 }
 
 export interface IFileObject {
@@ -16,5 +17,5 @@ export interface IFileObject {
 }
 
 export interface IReqFiles {
-  [key: string]: IFileObject[]
+  [key: string]: IFileObject[];
 }

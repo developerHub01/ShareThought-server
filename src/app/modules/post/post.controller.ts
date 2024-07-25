@@ -2,7 +2,7 @@ import httpStatus from "http-status";
 import catchAsync from "../../utils/catch.async";
 import { sendResponse } from "../../utils/send.response";
 import { PostServices } from "./post.services";
-import { IRequestWithUserId } from "../../interface/interface";
+import { IRequestWithActiveDetails } from "../../interface/interface";
 import { PostUtils } from "./post.utils";
 import { CloudinaryConstant } from "../../constants/cloudinary.constant";
 import { PostModel } from "./post.model";
@@ -22,7 +22,7 @@ const findPost = catchAsync(async (req, res) => {
 const findPostByChannelId = catchAsync(async (req, res) => {
   const { id } = req.params;
 
-  const { userId } = req as IRequestWithUserId;
+  const { userId } = req as IRequestWithActiveDetails;
 
   const result = await PostServices.findPostByChannelId(req.query, id, userId);
 
@@ -37,7 +37,7 @@ const findPostByChannelId = catchAsync(async (req, res) => {
 const findPostByPostId = catchAsync(async (req, res) => {
   const { postId } = req.params;
 
-  const { userId } = req as IRequestWithUserId;
+  const { userId } = req as IRequestWithActiveDetails;
 
   const result = await PostServices.findPostByPostId(postId, userId);
 
@@ -50,9 +50,9 @@ const findPostByPostId = catchAsync(async (req, res) => {
 });
 
 const createPost = catchAsync(async (req, res) => {
-  const { id } = req.params;
+  const { channelId } = req as IRequestWithActiveDetails;
 
-  req.body.channelId = id;
+  req.body.channelId = channelId;
 
   let bannerPath;
 
@@ -108,7 +108,7 @@ const updatePost = catchAsync(async (req, res) => {
 
 const deletePost = catchAsync(async (req, res) => {
   const { postId } = req.params;
-  const { userId } = req as IRequestWithUserId;
+  const { userId } = req as IRequestWithActiveDetails;
 
   const bannerImage = (await PostModel.findById(postId))?.banner;
 

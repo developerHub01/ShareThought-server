@@ -3,6 +3,7 @@ import { FollowerController } from "./follower.controller";
 import express from "express";
 import channelExist from "../../middleware/channel.exist";
 import verifyMyChannel from "../../middleware/verify.my.channel";
+import getActiveChannel from "../../middleware/get.active.channel";
 const router = express.Router();
 
 // channel following by me
@@ -12,19 +13,20 @@ router.get(
   FollowerController.getChannelFollowing,
 );
 
-
 // channel follow or unfollow
 router.get(
-  "/follow_toggle/:id" /* :id ===> channelId */,
+  "/follow_toggle",
   getLoggedInUser,
+  getActiveChannel,
   channelExist,
   FollowerController.handleChannelFollowToggle,
 );
 
 // chennel followers
 router.get(
-  "/:id" /* :id ===> channelId */,
+  "/",
   getLoggedInUser,
+  getActiveChannel,
   channelExist,
   verifyMyChannel,
   FollowerController.getChannelFollowers,

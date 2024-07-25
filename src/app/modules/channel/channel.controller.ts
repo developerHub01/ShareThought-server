@@ -2,7 +2,7 @@ import httpStatus from "http-status";
 import catchAsync from "../../utils/catch.async";
 import { sendResponse } from "../../utils/send.response";
 import { ChannelServices } from "./channel.services";
-import { IRequestWithUserId } from "../../interface/interface";
+import { IRequestWithActiveDetails } from "../../interface/interface";
 import { CloudinaryConstant } from "../../constants/cloudinary.constant";
 import { ChannelModel } from "./channel.model";
 import AppError from "../../errors/AppError";
@@ -21,7 +21,7 @@ const findChannel = catchAsync(async (req, res) => {
 });
 
 const getMyChannel = catchAsync(async (req, res) => {
-  const { userId } = req as IRequestWithUserId;
+  const { userId } = req as IRequestWithActiveDetails;
 
   const result = await ChannelServices.getChannelOfMine(req.query, userId);
   return sendResponse(res, {
@@ -33,10 +33,15 @@ const getMyChannel = catchAsync(async (req, res) => {
 });
 
 const singleChannel = catchAsync(async (req, res) => {
-  const { id } = req.params;
-  const { author } = req.query;
+  const { userId, channelId } = req as IRequestWithActiveDetails;
 
-  const result = await ChannelServices.singleChannel(id, Boolean(author));
+  if (!channelId)
+    throw new AppError(httpStatus.UNAUTHORIZED, "channel is not activated");
+
+  const result = await ChannelServices.singleChannel(
+    channelId,
+    Boolean(userId),
+  );
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -47,7 +52,7 @@ const singleChannel = catchAsync(async (req, res) => {
 });
 
 const createChannel = catchAsync(async (req, res) => {
-  const { userId } = req as IRequestWithUserId;
+  const { userId } = req as IRequestWithActiveDetails;
   req.body.authorId = userId;
 
   const result = await ChannelServices.createChannel(req.body);
@@ -61,9 +66,12 @@ const createChannel = catchAsync(async (req, res) => {
 });
 
 const updateChannel = catchAsync(async (req, res) => {
-  const { id } = req.params;
+  const { channelId } = req as IRequestWithActiveDetails;
 
-  const channelData = await ChannelModel.findById(id);
+  if (!channelId)
+    throw new AppError(httpStatus.BAD_REQUEST, "your channel is not activated");
+
+  const channelData = await ChannelModel.findById(channelId);
 
   if (!channelData)
     throw new AppError(httpStatus.NOT_FOUND, "Channel not found");
@@ -96,7 +104,7 @@ const updateChannel = catchAsync(async (req, res) => {
     if (url) req.body.channelCover = url;
   }
 
-  const result = await ChannelServices.updateChannel(id, req.body);
+  const result = await ChannelServices.updateChannel(channelId, req.body);
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -107,8 +115,12 @@ const updateChannel = catchAsync(async (req, res) => {
 });
 
 const deleteChannel = catchAsync(async (req, res) => {
-  const { id } = req.params;
-  const result = ChannelServices.deleteChannel(id);
+  const { channelId } = req as IRequestWithActiveDetails;
+
+  if (!channelId)
+    throw new AppError(httpStatus.BAD_REQUEST, "your channel is not activated");
+
+  const result = ChannelServices.deleteChannel(channelId);
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,

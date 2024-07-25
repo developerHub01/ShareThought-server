@@ -3,7 +3,7 @@ import { AuthUtils } from "../modules/auth/auth.utils";
 import config from "../config";
 import { UserModel } from "../modules/user/user.model";
 import catchAsync from "../utils/catch.async";
-import { IRequestWithUserId } from "../interface/interface";
+import { IRequestWithActiveDetails } from "../interface/interface";
 
 
 /* 
@@ -31,7 +31,7 @@ const checkAuthStatus = catchAsync(
 
     if (!isUserExist) return next();
 
-    (req as IRequestWithUserId).userId = userId;
+    (req as IRequestWithActiveDetails).userId = userId;
 
     next();
   },

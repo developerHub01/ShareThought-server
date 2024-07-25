@@ -1,11 +1,11 @@
 import httpStatus from "http-status";
 import catchAsync from "../../utils/catch.async";
 import { sendResponse } from "../../utils/send.response";
-import { IRequestWithUserId } from "../../interface/interface";
+import { IRequestWithActiveDetails } from "../../interface/interface";
 import { ReadLaterServices } from "./read.later.services";
 
 const findReadLaterList = catchAsync(async (req, res) => {
-  const { userId } = req as IRequestWithUserId;
+  const { userId } = req as IRequestWithActiveDetails;
 
   const result = await ReadLaterServices.findReadLaterList(req.query, userId);
 
@@ -18,7 +18,7 @@ const findReadLaterList = catchAsync(async (req, res) => {
 });
 
 const isExistInReadLaterList = catchAsync(async (req, res) => {
-  const { userId } = req as IRequestWithUserId;
+  const { userId } = req as IRequestWithActiveDetails;
   const { postId } = req.params;
 
   const result = await ReadLaterServices.isExistInReadLaterList(postId, userId);
@@ -32,7 +32,7 @@ const isExistInReadLaterList = catchAsync(async (req, res) => {
 });
 
 const addToReadLaterList = catchAsync(async (req, res) => {
-  const { userId } = req as IRequestWithUserId;
+  const { userId } = req as IRequestWithActiveDetails;
   const { postId } = req.params;
 
   const result = await ReadLaterServices.addToReadLaterList(postId, userId);
@@ -46,7 +46,7 @@ const addToReadLaterList = catchAsync(async (req, res) => {
 });
 
 const removeFromReadLaterListById = catchAsync(async (req, res) => {
-  const { userId } = req as IRequestWithUserId;
+  const { userId } = req as IRequestWithActiveDetails;
   const { id } = req.params;
 
   const result = await ReadLaterServices.removeFromReadLaterListById(
@@ -63,7 +63,7 @@ const removeFromReadLaterListById = catchAsync(async (req, res) => {
 });
 
 const removeFromReadLaterList = catchAsync(async (req, res) => {
-  const { userId } = req as IRequestWithUserId;
+  const { userId } = req as IRequestWithActiveDetails;
   const { postId } = req.params;
   const result = await ReadLaterServices.removeFromReadLaterList(
     postId,
