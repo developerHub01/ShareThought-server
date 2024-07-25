@@ -28,6 +28,7 @@ const loginUser = catchAsync(async (req, res) => {
     },
   });
 });
+
 const logoutUser = catchAsync(async (req, res) => {
   res.clearCookie("access_token");
   return sendResponse(res, {

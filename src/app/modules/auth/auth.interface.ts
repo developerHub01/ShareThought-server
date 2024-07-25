@@ -3,5 +3,6 @@ export interface ILoginUser {
   password: string;
 }
 export interface IJWTPayload {
-  userId: string;
+  userId?: string;
+  channelId?: string
 }

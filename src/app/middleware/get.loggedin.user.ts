@@ -23,6 +23,7 @@ const getLoggedInUser = catchAsync(
     
     (req as IRequestWithUserId).userId = userId;
     
+
     next();
   },
 );

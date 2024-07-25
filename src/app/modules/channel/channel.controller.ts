@@ -7,6 +7,8 @@ import { CloudinaryConstant } from "../../constants/cloudinary.constant";
 import { ChannelModel } from "./channel.model";
 import AppError from "../../errors/AppError";
 import { ChannelUtils } from "./channel.utils";
+import { AuthUtils } from "../auth/auth.utils";
+import config from "../../config";
 
 const findChannel = catchAsync(async (req, res) => {
   const result = await ChannelServices.findChannel(req.query);
@@ -116,6 +118,43 @@ const deleteChannel = catchAsync(async (req, res) => {
   });
 });
 
+const switchChannel = catchAsync(async (req, res) => {
+  const { id: channelId } = req.params;
+
+  const channelToken = AuthUtils.createToken(
+    { channelId },
+    config?.JWT_SECRET as string,
+    config?.JWT_ACCESS_EXPIRES_IN as string,
+  );
+
+  res.cookie("channel_token", channelToken, {
+    secure: true,
+    httpOnly: true,
+    sameSite: "none",
+    maxAge: 1000 * 60 * 60 * 24 * 365,
+  });
+
+  return sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "channel swtiched succesfully",
+    data: {
+      channelId,
+    },
+  });
+});
+
+const logOutChannel = catchAsync(async (req, res) => {
+  res.clearCookie("channel_token");
+
+  return sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "channel logged out succesfully",
+    data: null,
+  });
+});
+
 export const ChannelController = {
   findChannel,
   singleChannel,
@@ -123,4 +162,6 @@ export const ChannelController = {
   createChannel,
   updateChannel,
   deleteChannel,
+  switchChannel,
+  logOutChannel,
 };

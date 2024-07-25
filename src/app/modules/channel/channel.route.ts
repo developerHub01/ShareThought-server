@@ -9,11 +9,29 @@ import { ChannelMiddleware } from "./channel.middleware";
 
 const router = express.Router();
 
+router.get("/all", getLoggedInUser, ChannelController.findChannel);
+
+router.get("/my", getLoggedInUser, ChannelController.getMyChannel);
+
+router.get(
+  "/:id" /* id ===> channelId */,
+  getLoggedInUser,
+  ChannelController.singleChannel,
+);
+
 router.post(
   "/",
   validateRequest(ChannelValidation.createChannelValidationSchema),
   getLoggedInUser,
   ChannelController.createChannel,
+);
+
+/* activate a specific channel */
+router.patch(
+  "/switch/:id" /* id ===> channelId */,
+  getLoggedInUser,
+  verifyMyChannel,
+  ChannelController.switchChannel,
 );
 
 router.patch(
@@ -25,22 +43,15 @@ router.patch(
   ChannelController.updateChannel,
 );
 
+/* logout from a chnnale or back to main profile */
+router.delete("/logout", getLoggedInUser, ChannelController.logOutChannel);
+
 router.delete(
   "/:id" /* id ===> channelId */,
   getLoggedInUser,
   channelExist,
   verifyMyChannel,
   ChannelController.deleteChannel,
-);
-
-router.get("/all", getLoggedInUser, ChannelController.findChannel);
-
-router.get("/my", getLoggedInUser, ChannelController.getMyChannel);
-
-router.get(
-  "/:id" /* id ===> channelId */,
-  getLoggedInUser,
-  ChannelController.singleChannel,
 );
 
 export const ChannelRoutes = router;
