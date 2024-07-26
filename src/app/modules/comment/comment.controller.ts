@@ -104,6 +104,10 @@ const replyComment = catchAsync(async (req, res) => {
 const updateComment = catchAsync(async (req, res) => {
   const { id } = req.params;
 
+  const isRemovingImage =
+    typeof req.body?.commentImage === "string" &&
+    !req.body?.commentImage?.length;
+
   const previousCommentImage = (await CommentModel.findById(id))?.commentImage;
 
   let commentImagePath;
@@ -122,10 +126,13 @@ const updateComment = catchAsync(async (req, res) => {
     req.body.commentImage = commentImage;
   }
 
-  const result = await CommentServices.updateComment(
-    req.body,
-    id,
-  );
+  if (isRemovingImage && previousCommentImage) {
+    await CloudinaryUtils.deleteFile([previousCommentImage]);
+    CommentServices.removeCommentImageField(id);
+    delete req.body["commentImage"];
+  }
+
+  const result = await CommentServices.updateComment(req.body, id);
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -136,7 +143,6 @@ const updateComment = catchAsync(async (req, res) => {
 });
 
 const deleteComment = catchAsync(async (req, res) => {
-  const { userId } = req as IRequestWithActiveDetails;
   const { id } = req.params;
 
   const commentImage = (await CommentModel.findById(id))?.commentImage;
@@ -145,20 +151,7 @@ const deleteComment = catchAsync(async (req, res) => {
     await CloudinaryUtils.deleteFile([commentImage]);
   }
 
-  const result = await CommentServices.deleteComment(id, userId);
-
-  return sendResponse(res, {
-    statusCode: httpStatus.OK,
-    success: true,
-    message: "comment deleted succesfully",
-    data: result,
-  });
-});
-
-const deleteCommentImage = catchAsync(async (req, res) => {
-  const { id } = req.params;
-
-  const result = await CommentServices.deleteCommentImage(id);
+  const result = await CommentServices.deleteComment(id);
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -169,10 +162,9 @@ const deleteCommentImage = catchAsync(async (req, res) => {
 });
 
 const deleteAllComment = catchAsync(async (req, res) => {
-  const { userId } = req as IRequestWithActiveDetails;
   const { id } = req.params;
 
-  const result = await CommentServices.deleteAllComment(id, userId);
+  const result = await CommentServices.deleteAllComment(id);
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -190,5 +182,4 @@ export const CommentController = {
   updateComment,
   deleteComment,
   deleteAllComment,
-  deleteCommentImage,
 };

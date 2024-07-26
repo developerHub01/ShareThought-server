@@ -1,8 +1,5 @@
-import httpStatus from "http-status";
 import QueryBuilder from "../../builder/QueryBuilder";
-import AppError from "../../errors/AppError";
 import errorHandler from "../../errors/errorHandler";
-import { CloudinaryUtils } from "../../utils/cloudinary.utils";
 import { ICreateComment } from "./comment.interface";
 import { CommentModel } from "./comment.model";
 
@@ -104,34 +101,25 @@ const deleteComment = async (commentId: string) => {
   }
 };
 
-const deleteAllComment = async (commentId: string, userId: string) => {
+const deleteAllComment = async (commentId: string) => {
   try {
-    return await CommentModel.deleteAllCommentByPostId(commentId, userId);
+    return await CommentModel.deleteAllCommentByPostId(commentId);
   } catch (error) {
     errorHandler(error);
   }
 };
 
-const deleteCommentImage = async (commentId: string) => {
+const removeCommentImageField = async (commentId: string) => {
   try {
-    const commentImage = (await CommentModel.findById(commentId))?.commentImage;
-
-    if (!commentImage)
-      throw new AppError(httpStatus.BAD_REQUEST, "This comment have no image");
-
-    await CloudinaryUtils.deleteFile([commentImage]);
-
     return await CommentModel.findByIdAndUpdate(
       commentId,
       {
         $unset: { commentImage: 1 },
       },
-      {
-        new: true,
-      },
+      { new: true },
     );
   } catch (error) {
-    return errorHandler(error);
+    errorHandler(error);
   }
 };
 
@@ -143,5 +131,5 @@ export const CommentServices = {
   updateComment,
   deleteComment,
   deleteAllComment,
-  deleteCommentImage,
+  removeCommentImageField,
 };

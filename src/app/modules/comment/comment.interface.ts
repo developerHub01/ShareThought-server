@@ -20,19 +20,24 @@ export interface ICreateComment {
 }
 
 export interface ICommentModel extends Model<IComment> {
-  findComment(id: string): Promise<unknown>;
-  createComment(payload: ICreateComment): Promise<unknown>;
-  deleteCommentsWithReplies(
-    commentId: string,
-    session?: ClientSession,
-  ): Promise<unknown>;
-  deleteComment(id: string, userId: string): Promise<boolean | unknown>;
-  deleteAllCommentByPostId(postId: string, userId: string): Promise<unknown>;
-  updateComment(payload: ICreateComment, commentId: string): Promise<unknown>;
   isMyComment(
     commentId: string,
     id: string,
     idType: "userId" | "channelId",
   ): Promise<boolean | unknown>;
   isMyPost(commentId: string, userId: string): Promise<boolean | unknown>;
+  haveAccessToDelete(
+    commentId: string,
+    userId: string,
+    channelId?: string,
+  ): Promise<unknown>;
+  findComment(id: string): Promise<unknown>;
+  createComment(payload: ICreateComment): Promise<unknown>;
+  deleteCommentsWithReplies(
+    commentId: string,
+    session?: ClientSession,
+  ): Promise<unknown>;
+  deleteComment(id: string): Promise<boolean | unknown>;
+  deleteAllCommentByPostId(postId: string): Promise<unknown>;
+  updateComment(payload: ICreateComment, commentId: string): Promise<unknown>;
 }

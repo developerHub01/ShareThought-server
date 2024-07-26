@@ -7,6 +7,7 @@ import verifyMyPost from "../../middleware/verify.my.post";
 import { CommentMiddleware } from "./comment.middleware";
 import verifyMyComment from "../../middleware/verify.my.comment";
 import checkChannelStatus from "../../middleware/check.channel.status";
+import haveAccessDeleteComment from "../../middleware/have.access.delete.comment";
 const router = express.Router();
 
 router.get(
@@ -53,22 +54,16 @@ router.patch(
 router.delete(
   "/:id" /* :id ===> commentId */,
   getLoggedInUser,
-  verifyMyComment,
+  checkChannelStatus,
+  haveAccessDeleteComment,
   CommentController.deleteComment,
-);
-
-router.delete(
-  "/comment_image/:id" /* :id ===> commentId */,
-  getLoggedInUser,
-  verifyMyComment,
-  CommentController.deleteCommentImage,
 );
 
 router.delete(
   "/post/:id" /* :id ===> postId */,
   getLoggedInUser,
   verifyMyPost,
-  CommentController.findCommentByPostId,
+  CommentController.deleteAllComment,
 );
 
 export const CommentRoutes = router;

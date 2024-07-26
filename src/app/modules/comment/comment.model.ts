@@ -10,6 +10,7 @@ import { PostModel } from "../post/post.model";
 import { Types } from "mongoose";
 import { CommentReactionModel } from "../comment.reaction/comment.reaction.model";
 import { ChannelConstant } from "../channel/channel.constant";
+import { CloudinaryUtils } from "../../utils/cloudinary.utils";
 // import mongooseAutoComplete from "mongoose-autopopulate";
 
 const commentSchema = new Schema<IComment, ICommentModel>(
@@ -260,7 +261,7 @@ commentSchema.statics.deleteCommentsWithReplies = async (
   if (!commentData)
     throw new AppError(httpStatus.NOT_FOUND, "Comment not found");
 
-  const { replies } = commentData;
+  const { replies, commentImage } = commentData;
 
   if (!replies.length) {
     await CommentReactionModel.deleteCommentReactionByCommentId(
@@ -282,23 +283,20 @@ commentSchema.statics.deleteCommentsWithReplies = async (
     commentId,
     options?.session,
   );
-  return await CommentModel.findByIdAndDelete(commentId, options?.session);
+
+  const result = await CommentModel.findByIdAndDelete(
+    commentId,
+    options?.session,
+  );
+
+  if (result && commentImage) await CloudinaryUtils.deleteFile([commentImage]);
+
+  return result;
 };
 
 commentSchema.statics.deleteComment = async (
   commentId: string,
-  userId: string,
 ): Promise<boolean | unknown> => {
-  const haveAccessToDelete =
-    (await CommentModel.isMyPost(commentId, userId)) ||
-    (await CommentModel.isMyComment(commentId, userId));
-
-  if (!haveAccessToDelete)
-    throw new AppError(
-      httpStatus.UNAUTHORIZED,
-      "This comment or post is not your",
-    );
-
   const session = await mongoose.startSession();
   try {
     session.startTransaction();
@@ -320,14 +318,10 @@ commentSchema.statics.deleteComment = async (
 
 commentSchema.statics.deleteAllCommentByPostId = async (
   postId: string,
-  userId: string,
 ): Promise<unknown> => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
-    if (!(await PostModel.isMyPost(postId, userId)))
-      throw new AppError(httpStatus.UNAUTHORIZED, "This is not your post");
-
     const result = await CommentModel.find({
       postId,
     }).select("_id");
