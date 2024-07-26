@@ -9,25 +9,32 @@ export type TPostReactionType = (typeof reactionTypeList)[number];
 
 export interface IPostReaction {
   userId?: Types.ObjectId;
-  postId: Types.ObjectId;
+  postId?: Types.ObjectId;
+  channelId?: Types.ObjectId;
   reactionType: TPostReactionType;
 }
 
 export interface IPostReactionModel extends Model<IPostReaction> {
   totalPostReactionByPostId(postId: string): Promise<unknown>;
-  myReactionOnPost(userId: string, postId: string): Promise<string | unknown>;
-  togglePostReaction(
-    userId: string,
+  myReactionOnPost(
     postId: string,
+    authorId: string,
+    authorIdType: "userId" | "channelId",
+  ): Promise<string | unknown>;
+  togglePostReaction(
+    postId: string,
+    authorId: string,
+    authorIdType: "userId" | "channelId",
   ): Promise<boolean | unknown>;
   reactOnPost(
-    userId: string,
     postId: string,
+    authorId: string,
+    authorIdType: "userId" | "channelId",
     reactionType: TPostReactionType,
   ): Promise<unknown>;
   deleteAllReactionByPostId(
-    userId: string,
     postId: string,
+    userId: string,
     session?: ClientSession,
   ): Promise<unknown>;
 }

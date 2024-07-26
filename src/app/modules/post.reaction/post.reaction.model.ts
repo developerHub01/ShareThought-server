@@ -8,9 +8,9 @@ import {
 import errorHandler from "../../errors/errorHandler";
 import { PostConstant } from "../post/post.constant";
 import { UserConstant } from "../user/user.constant";
-import { PostModel } from "../post/post.model";
 import AppError from "../../errors/AppError";
 import httpStatus from "http-status";
+import { ChannelConstant } from "../channel/channel.constant";
 
 const postReactionSchema = new Schema<IPostReaction, IPostReactionModel>({
   postId: {
@@ -21,12 +21,22 @@ const postReactionSchema = new Schema<IPostReaction, IPostReactionModel>({
   userId: {
     type: Schema.Types.ObjectId,
     ref: UserConstant.USER_COLLECTION_NAME,
-    required: true,
+  },
+  channelId: {
+    type: Schema.Types.ObjectId,
+    ref: ChannelConstant.CHANNEL_COLLECTION_NAME,
   },
   reactionType: {
     type: String,
     enum: Object.values(PostReactionConstant.POST_REACTION_TYPES),
   },
+});
+
+postReactionSchema.pre("save", async function (next) {
+  if (!this.userId && !this.channelId)
+    throw new AppError(httpStatus.BAD_REQUEST, "author data not exist");
+
+  next();
 });
 
 postReactionSchema.statics.totalPostReactionByPostId = async (
@@ -40,13 +50,16 @@ postReactionSchema.statics.totalPostReactionByPostId = async (
 };
 
 postReactionSchema.statics.myReactionOnPost = async (
-  userId: string,
   postId: string,
+  authorId: string,
+  authorIdType: "userId" | "channelId",
 ): Promise<string | unknown> => {
   try {
     const result = await PostReactionModel.findOne({
       postId,
-      userId,
+      ...(authorIdType === "channelId"
+        ? { channelId: authorId }
+        : { userId: authorId }),
     });
 
     return result?.reactionType || null;
@@ -56,18 +69,26 @@ postReactionSchema.statics.myReactionOnPost = async (
 };
 
 postReactionSchema.statics.togglePostReaction = async (
-  userId: string,
   postId: string,
+  authorId: string,
+  authorIdType: "userId" | "channelId",
 ): Promise<boolean | unknown> => {
   try {
-    const isDeleted = await PostReactionModel.findOneAndDelete({ postId });
+    const isDeleted = await PostReactionModel.findOneAndDelete({
+      postId,
+      ...(authorIdType === "channelId"
+        ? { channelId: authorId }
+        : { userId: authorId }),
+    });
 
     if (isDeleted) return Boolean(isDeleted);
 
     return Boolean(
       await PostReactionModel.create({
         postId,
-        userId,
+        ...(authorIdType === "channelId"
+          ? { channelId: authorId }
+          : { userId: authorId }),
         reactionType: PostReactionConstant.POST_REACTION_TYPES.LIKE,
       }),
     );
@@ -77,18 +98,22 @@ postReactionSchema.statics.togglePostReaction = async (
 };
 
 postReactionSchema.statics.reactOnPost = async (
-  userId: string,
   postId: string,
+  authorId: string,
+  authorIdType: "userId" | "channelId",
   reactionType: TPostReactionType,
 ): Promise<unknown> => {
   try {
     const doc = await PostReactionModel.findOneAndUpdate(
       {
-        userId,
         postId,
+        ...(authorIdType === "channelId"
+          ? { channelId: authorId }
+          : { userId: authorId }),
       },
       { upsert: true, new: true },
     );
+
     return await PostReactionModel.findByIdAndUpdate(
       doc?._id,
       {
@@ -104,16 +129,17 @@ postReactionSchema.statics.reactOnPost = async (
 };
 
 postReactionSchema.statics.deleteAllReactionByPostId = async (
-  userId: string,
   postId: string,
   session?: ClientSession,
 ) => {
   const options = session ? { session } : {};
   try {
-    if (!(await PostModel.isMyPost(postId, userId)))
-      throw new AppError(httpStatus.UNAUTHORIZED, "This is not your post");
-
-    return await PostReactionModel.deleteMany({ postId }, options);
+    return await PostReactionModel.deleteMany(
+      {
+        postId,
+      },
+      options,
+    );
   } catch (error) {
     return errorHandler(error);
   }
