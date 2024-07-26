@@ -6,7 +6,6 @@ import { UserConstant } from "../user/user.constant";
 import errorHandler from "../../errors/errorHandler";
 import AppError from "../../errors/AppError";
 import httpStatus from "http-status";
-import { PostModel } from "../post/post.model";
 
 const readLaterSchema = new Schema<IReadLater, IReadLaterModel>(
   {
@@ -92,6 +91,11 @@ readLaterSchema.statics.addToReadLaterList = async (
   }
 };
 
+/*
+ *
+ *  removing post from my read later list
+ *
+ */
 readLaterSchema.statics.removeFromReadLaterListById = async (
   id: string,
   userId: string,
@@ -109,6 +113,11 @@ readLaterSchema.statics.removeFromReadLaterListById = async (
   }
 };
 
+/*
+ *
+ *  removing post from my read later list
+ *
+ */
 readLaterSchema.statics.removeFromReadLaterList = async (
   postId: string,
   userId: string,
@@ -141,16 +150,13 @@ readLaterSchema.statics.removeFromReadLaterList = async (
 
 readLaterSchema.statics.removeFromReadLaterListWhenPostIsDeleting = async (
   postId: string,
-  userId: string,
   session: ClientSession,
 ) => {
   try {
-    const options = session ? { session } : {};
-
-    if (!(await PostModel.isMyPost(postId, userId)))
-      throw new AppError(httpStatus.UNAUTHORIZED, "This is not your post");
-
-    return await ReadLaterModel.deleteMany({ postId }, options);
+    return await ReadLaterModel.deleteMany(
+      { postId },
+      { ...(session ? { session } : {}) },
+    );
   } catch (error) {
     return errorHandler(error);
   }

@@ -17,7 +17,6 @@ export interface IReadLaterModel extends Model<IReadLater> {
   removeFromReadLaterListById(id: string, userId: string): Promise<unknown>;
   removeFromReadLaterListWhenPostIsDeleting(
     postId: string,
-    userId: string,
     session: ClientSession,
   ): Promise<unknown>;
 }
