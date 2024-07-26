@@ -136,30 +136,20 @@ postSchema.pre("findOneAndUpdate", async function () {
 
 postSchema.statics.isMyPost = async (
   postId: string,
-  userId: string,
+  channelId: string,
 ): Promise<boolean> => {
-  const collectionChain = (await PostModel.findById(postId)
-    .select("channelId -_id")
-    .populate({
-      path: "channelId",
-      select: "authorId -_id",
-      populate: {
-        path: "authorId",
-        select: "_id",
-      },
-    })) as unknown as { channelId: { authorId: { _id: string } } };
+  const { channelId: postChannelId } =
+    (await PostModel.findById(postId).select("channelId -_id")) || {};
 
-  if (!collectionChain)
+  if (!postChannelId)
     throw new AppError(httpStatus.NOT_FOUND, "Post not found");
 
-  const result = collectionChain?.channelId?.authorId?._id?.toString();
-
-  return userId === result;
+  return channelId === postChannelId?.toString();
 };
 
 postSchema.statics.findPostById = async (
   id: string,
-  userId?: string,
+  channelId: string,
 ): Promise<unknown> => {
   try {
     const postDetails = await PostModel.findById(id);
@@ -169,7 +159,7 @@ postSchema.statics.findPostById = async (
 
     const { isPublished } = postDetails;
 
-    if (userId && !isPublished && !(await PostModel.isMyPost(id, userId)))
+    if (channelId && !isPublished && !(await PostModel.isMyPost(id, channelId)))
       throw new AppError(httpStatus.NOT_FOUND, "post not found");
 
     return postDetails;
@@ -191,22 +181,18 @@ postSchema.statics.isPublicPostById = async (
 
 postSchema.statics.deletePost = async (
   postId: string,
-  userId: string,
+  channelId: string,
 ): Promise<unknown> => {
   const session = await mongoose.startSession();
   try {
     session.startTransaction();
 
-    if (!(await PostModel.isMyPost(postId, userId)))
-      throw new AppError(httpStatus.UNAUTHORIZED, "This is not your post..");
-
     /* Deleting all comments of post */
-    let result = await CommentModel.deleteAllCommentByPostId(postId, userId);
+    let result = await CommentModel.deleteAllCommentByPostId(postId);
 
     /* Deleting all reactions of post */
     (result as unknown) = await PostReactionModel.deleteAllReactionByPostId(
       postId,
-      userId,
       session,
     );
 
@@ -214,7 +200,6 @@ postSchema.statics.deletePost = async (
     (result as unknown) =
       await CategoryModel.removeSpecificPostFromAllCategoryList(
         postId,
-        userId,
         session,
       );
 
@@ -222,7 +207,7 @@ postSchema.statics.deletePost = async (
     (result as unknown) =
       await ReadLaterModel.removeFromReadLaterListWhenPostIsDeleting(
         postId,
-        userId,
+        channelId,
         session,
       );
 

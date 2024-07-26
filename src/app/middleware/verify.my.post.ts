@@ -6,9 +6,12 @@ import catchAsync from "../utils/catch.async";
 
 const verifyMyPost = catchAsync(async (req, res, next) => {
   const { postId } = req.params;
-  const { userId } = req as IRequestWithActiveDetails;
+  const { channelId } = req as IRequestWithActiveDetails;
 
-  const result = await PostModel.isMyPost(postId, userId);
+  if (!channelId)
+    throw new AppError(httpStatus.UNAUTHORIZED, "no channel activated");
+
+  const result = await PostModel.isMyPost(postId, channelId);
 
   if (!result)
     throw new AppError(httpStatus.UNAUTHORIZED, "This is not your post");

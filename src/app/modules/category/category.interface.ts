@@ -31,7 +31,11 @@ export interface IUpdateCategory {
 export interface ICategoryModel extends Model<ICategory> {
   findCategoryById(categoryId: string): Promise<ICategory | unknown>;
 
-  haveAccessCategory(categoryId: string, userId: string): Promise<unknown>;
+  haveAccessCategory(
+    categoryId: string,
+    userOrChannelId: string,
+    idType: "channelId" | "userId",
+  ): Promise<unknown>;
 
   isSameNameCategoryExistInMyChannelCategoryList(
     channelId: string,
@@ -40,33 +44,31 @@ export interface ICategoryModel extends Model<ICategory> {
 
   isCategoryExist(categoryId: string): Promise<boolean>;
 
-  createCategory(payload: ICreateCategory, userId: string): Promise<unknown>;
+  isMyCategory(categoryId: string, channelId: string): Promise<boolean>;
 
-  deleteCategory(categoryId: string, userId: string): Promise<unknown>;
+  createCategory(payload: ICreateCategory): Promise<unknown>;
 
-  haveAccessToModify(categoryId: string, userId: string): Promise<boolean>;
+  deleteCategory(categoryId: string): Promise<unknown>;
+
+  haveAccessToModify(categoryId: string, channelId: string): Promise<boolean>;
 
   addPostInCategory(
     categoryId: string,
     postId: string,
-    userId: string,
   ): Promise<ICategory | unknown>;
 
   removePostFromCategory(
     categoryId: string,
     postId: string,
-    userId: string,
   ): Promise<ICategory | unknown>;
 
   updateCategory(
     payload: Partial<IUpdateCategory>,
     categoryId: string,
-    userId: string,
   ): Promise<unknown>;
 
   removeSpecificPostFromAllCategoryList(
     postId: string,
-    userId: string,
     session?: ClientSession,
   ): Promise<unknown>;
 }

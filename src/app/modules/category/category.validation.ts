@@ -6,7 +6,6 @@ const accessTypeList = Object.keys(CategoryConstant.CATEGORY_ACCESS_TYPE) as [
 ];
 
 const createCategory = zod.object({
-  channelId: zod.string(),
   name: zod
     .string()
     .min(
@@ -43,8 +42,11 @@ const updateCategory = zod.object({
       `Category name maximum length is ${CategoryConstant.CATEGORY_NAME_MAX_LENGTH}`,
     )
     .optional(),
-  accessType: zod.enum(accessTypeList),
-  postList: zod.array(zod.string()).min(1, `postList contain atlest one post`),
+  accessType: zod.enum(accessTypeList).optional(),
+  postList: zod
+    .array(zod.string())
+    .min(1, `postList contain atlest one post`)
+    .optional(),
 });
 
 export const CategoryValidation = { createCategory, updateCategory };

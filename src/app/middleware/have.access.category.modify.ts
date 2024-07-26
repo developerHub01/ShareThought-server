@@ -4,15 +4,14 @@ import { IRequestWithActiveDetails } from "../interface/interface";
 import catchAsync from "../utils/catch.async";
 import { CategoryModel } from "../modules/category/category.model";
 
-const haveAccessCategory = catchAsync(async (req, res, next) => {
+const haveAccessCategoryModify = catchAsync(async (req, res, next) => {
   const { id: categoryId } = req.params;
-  const { userId, channelId } = req as IRequestWithActiveDetails;
+  const { channelId } = req as IRequestWithActiveDetails;
 
-  const result = await CategoryModel.haveAccessCategory(
-    categoryId,
-    channelId || userId,
-    channelId ? "channelId" : "userId",
-  );
+  if (!channelId)
+    throw new AppError(httpStatus.UNAUTHORIZED, "This is not your channel");
+
+  const result = await CategoryModel.haveAccessToModify(categoryId, channelId);
 
   if (!result)
     throw new AppError(
@@ -23,4 +22,4 @@ const haveAccessCategory = catchAsync(async (req, res, next) => {
   return next();
 });
 
-export default haveAccessCategory;
+export default haveAccessCategoryModify;

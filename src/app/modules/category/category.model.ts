@@ -11,7 +11,6 @@ import { PostConstant } from "../post/post.constant";
 import errorHandler from "../../errors/errorHandler";
 import AppError from "../../errors/AppError";
 import httpStatus from "http-status";
-import { ChannelModel } from "../channel/channel.model";
 import { PostModel } from "../post/post.model";
 
 const categorySchema = new Schema<ICategory, ICategoryModel>(
@@ -59,25 +58,69 @@ const categorySchema = new Schema<ICategory, ICategoryModel>(
   },
 );
 
+categorySchema.statics.isCategoryExist = async (
+  categoryId: string,
+): Promise<boolean> => {
+  try {
+    return Boolean(await CategoryModel.findById(categoryId));
+  } catch (error) {
+    return errorHandler(error);
+  }
+};
+
+categorySchema.statics.isMyCategory = async (
+  categoryId: string,
+  channelId: string,
+): Promise<boolean> => {
+  try {
+    const categoryData = await CategoryModel.findById(categoryId);
+
+    if (!categoryData)
+      throw new AppError(httpStatus.NOT_FOUND, "Category not found");
+
+    return Boolean(channelId === categoryData?.channelId?.toString());
+  } catch (error) {
+    return errorHandler(error);
+  }
+};
+
 categorySchema.statics.haveAccessCategory = async (
   categoryId: string,
-  userId: string,
+  userOrChannelId: string,
+  idType: "channelId" | "userId",
 ): Promise<unknown> => {
   try {
-    const categoryData = await CategoryModel.findById(categoryId).populate({
-      path: "channelId",
-      select: "authorId",
-    });
+    const categoryData = await CategoryModel.findById(categoryId);
 
     if (!categoryData) return false;
 
-    const {
-      channelId: { authorId },
-    } = categoryData as typeof categoryData & {
-      channelId: { authorId: string };
-    };
+    const { channelId: categoryChannelId, accessType } = categoryData;
 
-    return Boolean(authorId?.toString() === userId);
+    if (
+      idType === "channelId" &&
+      userOrChannelId === categoryChannelId?.toString()
+    )
+      return true;
+
+    return accessType === CategoryConstant.CATEGORY_ACCESS_TYPE.PUBLIC;
+  } catch (error) {
+    return errorHandler(error);
+  }
+};
+
+categorySchema.statics.haveAccessToModify = async (
+  categoryId: string,
+  channelId: string,
+): Promise<boolean> => {
+  try {
+    const categoryData = await CategoryModel.findById(categoryId);
+
+    if (!categoryData)
+      throw new AppError(httpStatus.NOT_FOUND, "Category not found");
+
+    const categoryChannelId = categoryData?.channelId?.toString();
+
+    return categoryChannelId === channelId;
   } catch (error) {
     return errorHandler(error);
   }
@@ -99,43 +142,6 @@ categorySchema.statics.findCategoryById = async (
   }
 };
 
-categorySchema.statics.isCategoryExist = async (
-  categoryId: string,
-): Promise<boolean> => {
-  try {
-    return Boolean(await CategoryModel.findById(categoryId));
-  } catch (error) {
-    return errorHandler(error);
-  }
-};
-
-categorySchema.statics.haveAccessToModify = async (
-  categoryId: string,
-  userId: string,
-): Promise<boolean> => {
-  try {
-    const isCategoryExist = await CategoryModel.isCategoryExist(categoryId);
-
-    if (!isCategoryExist)
-      throw new AppError(httpStatus.NOT_FOUND, "Category not found");
-
-    const categoryData = await CategoryModel.findById(categoryId)
-      .select("channelId")
-      .populate({
-        path: "channelId",
-        select: "authorId",
-      });
-
-    const channelAuthorId = (
-      categoryData as unknown as { channelId: { authorId?: string } }
-    )?.channelId?.authorId?.toString();
-
-    return channelAuthorId === userId;
-  } catch (error) {
-    return errorHandler(error);
-  }
-};
-
 categorySchema.statics.isSameNameCategoryExistInMyChannelCategoryList = async (
   channelId: string,
   categoryName: string,
@@ -152,18 +158,9 @@ categorySchema.statics.isSameNameCategoryExistInMyChannelCategoryList = async (
   }
 };
 
-categorySchema.statics.createCategory = async (
-  payload: ICreateCategory,
-  userId: string,
-) => {
+categorySchema.statics.createCategory = async (payload: ICreateCategory) => {
   try {
     const { channelId, name: chnannelName } = payload;
-
-    if (!(await ChannelModel.isChannelMine(channelId, userId)))
-      throw new AppError(
-        httpStatus.UNAUTHORIZED,
-        "You have no access to create category in that channel",
-      );
 
     if (
       await CategoryModel.isSameNameCategoryExistInMyChannelCategoryList(
@@ -184,25 +181,26 @@ categorySchema.statics.createCategory = async (
   }
 };
 
+categorySchema.statics.updateCategory = async (
+  payload: Partial<IUpdateCategory>,
+  categoryId: string,
+): Promise<unknown> => {
+  try {
+    return await CategoryModel.findByIdAndUpdate(
+      categoryId,
+      { ...payload },
+      { new: true },
+    );
+  } catch (error) {
+    return errorHandler(error);
+  }
+};
+
 categorySchema.statics.addPostInCategory = async (
   categoryId: string,
   postId: string,
-  userId: string,
 ): Promise<ICategory | unknown> => {
   try {
-    /*
-     * Checking is it my post or not
-     */
-    const haveAccessToModify =
-      (await CategoryModel.haveAccessToModify(categoryId, userId)) &&
-      (await PostModel.isMyPost(postId, userId));
-
-    if (!haveAccessToModify)
-      throw new AppError(
-        httpStatus.UNAUTHORIZED,
-        "you have no access to modify that category",
-      );
-
     const isPublicPost = await PostModel.isPublicPostById(postId);
 
     if (!isPublicPost)
@@ -224,28 +222,23 @@ categorySchema.statics.addPostInCategory = async (
 categorySchema.statics.removePostFromCategory = async (
   categoryId: string,
   postId: string,
-  userId: string,
 ): Promise<ICategory | unknown> => {
   try {
-    const haveAccessToModify = await CategoryModel.haveAccessToModify(
-      categoryId,
-      userId,
-    );
-
-    if (!haveAccessToModify)
-      throw new AppError(
-        httpStatus.UNAUTHORIZED,
-        "you have no access to modify that category",
-      );
-
-    return await CategoryModel.updateOne(
+    const result = await CategoryModel.updateOne(
       { _id: categoryId },
       {
-        $addToSet: {
+        $pull: {
           postList: postId,
         },
       },
     );
+
+    const postListLength = (await CategoryModel.findById(categoryId))?.postList
+      ?.length;
+
+    if (!postListLength) await CategoryModel.deleteCategory(categoryId);
+
+    return result;
   } catch (error) {
     return errorHandler(error);
   }
@@ -253,51 +246,9 @@ categorySchema.statics.removePostFromCategory = async (
 
 categorySchema.statics.deleteCategory = async (
   categoryId: string,
-  userId: string,
 ): Promise<unknown> => {
   try {
-    const haveAccessToModify = await CategoryModel.haveAccessToModify(
-      categoryId,
-      userId,
-    );
-
-    if (!haveAccessToModify)
-      throw new AppError(
-        httpStatus.UNAUTHORIZED,
-        "you have no access to modify that category",
-      );
-
     return await CategoryModel.findByIdAndDelete(categoryId);
-  } catch (error) {
-    return errorHandler(error);
-  }
-};
-
-categorySchema.statics.updateCategory = async (
-  payload: Partial<IUpdateCategory>,
-  categoryId: string,
-  userId: string,
-): Promise<unknown> => {
-  try {
-    /*
-     * Checking is it my post or not
-     */
-    const haveAccessToModify = await CategoryModel.haveAccessToModify(
-      categoryId,
-      userId,
-    );
-
-    if (!haveAccessToModify)
-      throw new AppError(
-        httpStatus.UNAUTHORIZED,
-        "you have no access to modify that category",
-      );
-
-    return await CategoryModel.findByIdAndUpdate(
-      categoryId,
-      { ...payload },
-      { new: true },
-    );
   } catch (error) {
     return errorHandler(error);
   }
@@ -305,14 +256,9 @@ categorySchema.statics.updateCategory = async (
 
 categorySchema.statics.removeSpecificPostFromAllCategoryList = async (
   postId: string,
-  userId: string,
   session?: ClientSession,
 ) => {
   try {
-    const options = session ? { session } : {};
-    if (!(await PostModel.isMyPost(postId, userId)))
-      throw new AppError(httpStatus.UNAUTHORIZED, "this is not your post");
-
     return await CategoryModel.updateMany(
       { postList: postId },
       {
@@ -320,7 +266,7 @@ categorySchema.statics.removeSpecificPostFromAllCategoryList = async (
           postList: { postId },
         },
       },
-      options,
+      { ...(session ? { session } : {}) },
     );
   } catch (error) {
     return errorHandler(error);

@@ -23,9 +23,12 @@ const findCategoryById = catchAsync(async (req, res) => {
 const findCategoryByChannelId = catchAsync(async (req, res) => {
   const { id: channelId } = req.params;
 
+  const { channelId: myChannelId } = req as IRequestWithActiveDetails;
+
   const result = await CategoryServices.findCategoryByChannelId(
     req.query,
     channelId,
+    myChannelId as string,
   );
 
   return sendResponse(res, {
@@ -37,9 +40,11 @@ const findCategoryByChannelId = catchAsync(async (req, res) => {
 });
 
 const createCategory = catchAsync(async (req, res) => {
-  const { userId } = req as IRequestWithActiveDetails;
+  const { channelId } = req as IRequestWithActiveDetails;
 
-  const result = await CategoryServices.createCategory(req.body, userId);
+  req.body.channelId = channelId;
+
+  const result = await CategoryServices.createCategory(req.body);
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -50,10 +55,9 @@ const createCategory = catchAsync(async (req, res) => {
 });
 
 const updateCategory = catchAsync(async (req, res) => {
-  const { userId } = req as IRequestWithActiveDetails;
   const { id } = req.params;
 
-  const result = await CategoryServices.updateCategory(req.body, id, userId);
+  const result = await CategoryServices.updateCategory(req.body, id);
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -64,14 +68,9 @@ const updateCategory = catchAsync(async (req, res) => {
 });
 
 const addPostInCategory = catchAsync(async (req, res) => {
-  const { userId } = req as IRequestWithActiveDetails;
   const { id: categoryId, postId } = req.params;
 
-  const result = await CategoryServices.addPostInCategory(
-    categoryId,
-    postId,
-    userId,
-  );
+  const result = await CategoryServices.addPostInCategory(categoryId, postId);
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -82,13 +81,11 @@ const addPostInCategory = catchAsync(async (req, res) => {
 });
 
 const removePostFromCategory = catchAsync(async (req, res) => {
-  const { userId } = req as IRequestWithActiveDetails;
   const { id: categoryId, postId } = req.params;
 
   const result = await CategoryServices.removePostFromCategory(
     categoryId,
     postId,
-    userId,
   );
 
   return sendResponse(res, {
@@ -100,15 +97,14 @@ const removePostFromCategory = catchAsync(async (req, res) => {
 });
 
 const deleteCategory = catchAsync(async (req, res) => {
-  const { userId } = req as IRequestWithActiveDetails;
   const { id: categoryId } = req.params;
 
-  const result = await CategoryServices.deleteCategory(categoryId, userId);
+  const result = await CategoryServices.deleteCategory(categoryId);
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "category updated succesfully",
+    message: "category deleted succesfully",
     data: result,
   });
 });

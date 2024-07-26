@@ -22,9 +22,13 @@ const findPost = catchAsync(async (req, res) => {
 const findPostByChannelId = catchAsync(async (req, res) => {
   const { id } = req.params;
 
-  const { userId } = req as IRequestWithActiveDetails;
+  const { channelId } = req as IRequestWithActiveDetails;
 
-  const result = await PostServices.findPostByChannelId(req.query, id, userId);
+  const result = await PostServices.findPostByChannelId(
+    req.query,
+    id,
+    channelId as string,
+  );
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -37,9 +41,9 @@ const findPostByChannelId = catchAsync(async (req, res) => {
 const findPostByPostId = catchAsync(async (req, res) => {
   const { postId } = req.params;
 
-  const { userId } = req as IRequestWithActiveDetails;
+  const { channelId } = req as IRequestWithActiveDetails;
 
-  const result = await PostServices.findPostByPostId(postId, userId);
+  const result = await PostServices.findPostByPostId(postId, channelId);
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -108,7 +112,7 @@ const updatePost = catchAsync(async (req, res) => {
 
 const deletePost = catchAsync(async (req, res) => {
   const { postId } = req.params;
-  const { userId } = req as IRequestWithActiveDetails;
+  const { channelId } = req as IRequestWithActiveDetails;
 
   const bannerImage = (await PostModel.findById(postId))?.banner;
 
@@ -116,7 +120,7 @@ const deletePost = catchAsync(async (req, res) => {
     await CloudinaryUtils.deleteFile([bannerImage]);
   }
 
-  const result = await PostServices.deletePost(postId, userId);
+  const result = await PostServices.deletePost(postId, channelId as string);
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,

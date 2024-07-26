@@ -22,8 +22,8 @@ export interface ICreatePost {
 }
 
 export interface IPostModel extends Model<IPost> {
-  isMyPost(postId: string, userId: string): Promise<boolean>;
-  findPostById(id: string, userId?: string): Promise<unknown>;
+  isMyPost(postId: string, channelId: string): Promise<boolean>;
+  findPostById(id: string, channelId: string): Promise<unknown>;
   isPublicPostById(id: string): Promise<boolean | unknown>;
-  deletePost(postId: string, userId: string): Promise<unknown>;
+  deletePost(postId: string, channelId: string): Promise<unknown>;
 }

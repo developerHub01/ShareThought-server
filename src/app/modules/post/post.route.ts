@@ -8,18 +8,25 @@ import verifyMyPost from "../../middleware/verify.my.post";
 import checkAuthStatus from "../../middleware/check.auth.status";
 import { PostMiddleware } from "./post.middleware";
 import getActiveChannel from "../../middleware/get.active.channel";
+import checkChannelStatus from "../../middleware/check.channel.status";
 
 const router = express.Router();
 
 router.get("/all", PostController.findPost);
 
 // get post by Id
-router.get("/:postId", checkAuthStatus, PostController.findPostByPostId);
+router.get(
+  "/:postId",
+  checkAuthStatus,
+  checkChannelStatus,
+  PostController.findPostByPostId,
+);
 
 // get post by channelId
 router.get(
   "/channel/:id" /* :id ====> channelId */,
   checkAuthStatus,
+  checkChannelStatus,
   PostController.findPostByChannelId,
 );
 
@@ -40,6 +47,8 @@ router.patch(
   PostMiddleware.createOrUpdatePostImages,
   validateRequest(PostValidation.updatePostValidationSchema),
   getLoggedInUser,
+  getActiveChannel,
+  verifyMyChannel,
   verifyMyPost /* checking is that my post or not */,
   PostController.updatePost,
 );
@@ -47,6 +56,8 @@ router.patch(
 router.delete(
   "/:postId" /* :postId ===> postId */,
   getLoggedInUser,
+  getActiveChannel,
+  verifyMyChannel,
   verifyMyPost /*checking is that my post or not */,
   PostController.deletePost,
 );
