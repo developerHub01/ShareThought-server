@@ -66,10 +66,6 @@ const moduleRoutes: Array<IRouteSchema> = [
     route: SearchHistoryRoutes,
   },
   {
-    path: "/media",
-    route: MediaRoutes,
-  },
-  {
     path: "/notification",
     route: NotificationRoutes,
   },
