@@ -131,7 +131,7 @@ commentReactionSchema.statics.reactOnComment = async (
           ? { channelId: authorId }
           : { userId: authorId }),
       },
-      { upsert: true },
+      { upsert: true, new: true },
     );
     return await CommentReactionModel.findByIdAndUpdate(doc?._id, {
       reactionType,
