@@ -17,7 +17,7 @@ const haveAccessDeleteComment = catchAsync(async (req, res, next) => {
   if (!result)
     throw new AppError(
       httpStatus.UNAUTHORIZED,
-      "This is not your channel category",
+      "you don't have access to delete that comment",
     );
 
   return next();
