@@ -181,7 +181,6 @@ postSchema.statics.isPublicPostById = async (
 
 postSchema.statics.deletePost = async (
   postId: string,
-  channelId: string,
 ): Promise<unknown> => {
   const session = await mongoose.startSession();
   try {
@@ -207,7 +206,6 @@ postSchema.statics.deletePost = async (
     (result as unknown) =
       await ReadLaterModel.removeFromReadLaterListWhenPostIsDeleting(
         postId,
-        channelId,
         session,
       );
 

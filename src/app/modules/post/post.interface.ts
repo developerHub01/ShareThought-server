@@ -25,5 +25,5 @@ export interface IPostModel extends Model<IPost> {
   isMyPost(postId: string, channelId: string): Promise<boolean>;
   findPostById(id: string, channelId: string): Promise<unknown>;
   isPublicPostById(id: string): Promise<boolean | unknown>;
-  deletePost(postId: string, channelId: string): Promise<unknown>;
+  deletePost(postId: string): Promise<unknown>;
 }

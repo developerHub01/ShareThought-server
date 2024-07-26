@@ -112,7 +112,6 @@ const updatePost = catchAsync(async (req, res) => {
 
 const deletePost = catchAsync(async (req, res) => {
   const { postId } = req.params;
-  const { channelId } = req as IRequestWithActiveDetails;
 
   const bannerImage = (await PostModel.findById(postId))?.banner;
 
@@ -120,7 +119,7 @@ const deletePost = catchAsync(async (req, res) => {
     await CloudinaryUtils.deleteFile([bannerImage]);
   }
 
-  const result = await PostServices.deletePost(postId, channelId as string);
+  const result = await PostServices.deletePost(postId);
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,

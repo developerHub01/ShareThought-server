@@ -124,9 +124,9 @@ const updatePost = async (payload: Partial<ICreatePost>, postId: string) => {
   }
 };
 
-const deletePost = async (postId: string, channelId: string) => {
+const deletePost = async (postId: string) => {
   try {
-    return await PostModel.deletePost(postId, channelId);
+    return await PostModel.deletePost(postId);
   } catch (error) {
     errorHandler(error);
   }

@@ -34,7 +34,6 @@ export interface IPostReactionModel extends Model<IPostReaction> {
   ): Promise<unknown>;
   deleteAllReactionByPostId(
     postId: string,
-    userId: string,
     session?: ClientSession,
   ): Promise<unknown>;
 }
