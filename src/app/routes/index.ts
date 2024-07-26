@@ -11,7 +11,6 @@ import { ReadLaterRoutes } from "../modules/read.later/read.later.route";
 import { SavedCategoryRoutes } from "../modules/saved.category/saved.category.route";
 import { HistoryRoutes } from "../modules/history/history.route";
 import { SearchHistoryRoutes } from "../modules/search.history/search.history.route";
-import { MediaRoutes } from "../modules/media/media.route";
 
 interface IRouteSchema {
   path: string;
