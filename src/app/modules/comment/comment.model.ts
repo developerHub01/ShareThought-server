@@ -121,6 +121,28 @@ commentSchema.statics.isMyComment = async (
   }
 };
 
+commentSchema.statics.haveAccessToDelete = async (
+  commentId: string,
+  userId: string,
+  channelId?: string,
+): Promise<unknown> => {
+  try {
+    const commentData = await CommentModel.findById(commentId);
+
+    if (!commentData)
+      throw new AppError(httpStatus.NOT_FOUND, "comment not found");
+
+    const { commentAuthorId, commentAuthorChannelId } = commentData;
+
+    return (
+      userId === commentAuthorId?.toString() ||
+      channelId === commentAuthorChannelId?.toString()
+    );
+  } catch (error) {
+    return errorHandler(error);
+  }
+};
+
 commentSchema.statics.createComment = async (
   payload: ICreateComment,
 ): Promise<unknown> => {
