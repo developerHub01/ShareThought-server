@@ -6,6 +6,7 @@ import { CommentValidation } from "./comment.validation";
 import verifyMyPost from "../../middleware/verify.my.post";
 import { CommentMiddleware } from "./comment.middleware";
 import verifyMyComment from "../../middleware/verify.my.comment";
+import checkChannelStatus from "../../middleware/check.channel.status";
 const router = express.Router();
 
 router.get(
@@ -25,6 +26,7 @@ router.post(
   CommentMiddleware.createOrUpdateCommentImages,
   validateRequest(CommentValidation.createOrUpdateComment),
   getLoggedInUser,
+  checkChannelStatus,
   CommentController.createComment,
 );
 
@@ -34,6 +36,7 @@ router.post(
   CommentMiddleware.createOrUpdateCommentImages,
   validateRequest(CommentValidation.createOrUpdateComment),
   getLoggedInUser,
+  checkChannelStatus,
   CommentController.replyComment,
 );
 
@@ -42,6 +45,7 @@ router.patch(
   CommentMiddleware.createOrUpdateCommentImages,
   validateRequest(CommentValidation.createOrUpdateComment),
   getLoggedInUser,
+  checkChannelStatus,
   verifyMyComment,
   CommentController.updateComment,
 );

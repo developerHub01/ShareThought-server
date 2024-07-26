@@ -7,6 +7,7 @@ import { CommentUtils } from "./comment.utils";
 import { CloudinaryConstant } from "../../constants/cloudinary.constant";
 import { CommentModel } from "./comment.model";
 import { CloudinaryUtils } from "../../utils/cloudinary.utils";
+import AppError from "../../errors/AppError";
 
 const findCommentByPostId = catchAsync(async (req, res) => {
   const { id: postId } = req.params;
@@ -35,7 +36,7 @@ const findCommentById = catchAsync(async (req, res) => {
 });
 
 const createComment = catchAsync(async (req, res) => {
-  const { userId } = req as IRequestWithActiveDetails;
+  const { userId, channelId } = req as IRequestWithActiveDetails;
   const { id: postId } = req.params;
 
   let commentImagePath;
@@ -52,7 +53,12 @@ const createComment = catchAsync(async (req, res) => {
     req.body.commentImage = commentImage;
   }
 
-  const result = await CommentServices.createComment(req.body, postId, userId);
+  const result = await CommentServices.createComment(
+    req.body,
+    postId,
+    channelId || userId,
+    channelId ? "channelId" : "userId",
+  );
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,

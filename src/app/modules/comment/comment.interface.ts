@@ -2,7 +2,8 @@ import { ClientSession, Model, Types } from "mongoose";
 
 export interface IComment {
   postId: Types.ObjectId;
-  commentAuthorId: Types.ObjectId;
+  commentAuthorId?: Types.ObjectId;
+  commentAuthorChannelId?: Types.ObjectId;
   parentCommentId: Types.ObjectId;
   content: string;
   replies: Array<Types.ObjectId>;
@@ -12,6 +13,7 @@ export interface IComment {
 export interface ICreateComment {
   postId: string;
   commentAuthorId?: string;
+  commentAuthorChannelId?: string;
   parentCommentId?: string;
   content?: string;
   commentImage: string;
@@ -31,6 +33,10 @@ export interface ICommentModel extends Model<IComment> {
     commentId: string,
     userId: string,
   ): Promise<unknown>;
-  isMyComment(commentId: string, userId: string): Promise<boolean | unknown>;
+  isMyComment(
+    commentId: string,
+    id: string,
+    idType: "userId" | "channelId",
+  ): Promise<boolean | unknown>;
   isMyPost(commentId: string, userId: string): Promise<boolean | unknown>;
 }

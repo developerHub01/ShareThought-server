@@ -45,14 +45,19 @@ const findCommentById = async (commentId: string) => {
 const createComment = async (
   payload: ICreateComment,
   postId: string,
-  userId: string,
+  authorId: string,
+  idType: "userId" | "channelId",
 ) => {
   try {
     payload = {
       ...payload,
       postId,
-      commentAuthorId: userId,
+      ...(idType === "channelId"
+        ? { commentAuthorChannelId: authorId }
+        : { commentAuthorId: authorId }),
     };
+
+
     return await CommentModel.createComment(payload);
   } catch (error) {
     errorHandler(error);

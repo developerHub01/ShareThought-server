@@ -9,6 +9,7 @@ import httpStatus from "http-status";
 import { PostModel } from "../post/post.model";
 import { Types } from "mongoose";
 import { CommentReactionModel } from "../comment.reaction/comment.reaction.model";
+import { ChannelConstant } from "../channel/channel.constant";
 // import mongooseAutoComplete from "mongoose-autopopulate";
 
 const commentSchema = new Schema<IComment, ICommentModel>(
@@ -21,7 +22,10 @@ const commentSchema = new Schema<IComment, ICommentModel>(
     commentAuthorId: {
       type: Schema.Types.ObjectId,
       ref: UserConstant.USER_COLLECTION_NAME,
-      required: true,
+    },
+    commentAuthorChannelId: {
+      type: Schema.Types.ObjectId,
+      ref: ChannelConstant.CHANNEL_COLLECTION_NAME,
     },
     parentCommentId: {
       type: Schema.Types.ObjectId,
@@ -62,6 +66,13 @@ commentSchema.virtual("totalRepies").get(function () {
   return this.replies.length;
 });
 
+commentSchema.pre("save", async function (next) {
+  if (!this.commentAuthorId && !this.commentAuthorChannelId)
+    throw new AppError(httpStatus.BAD_REQUEST, "comment author data not exist");
+
+  return next();
+});
+
 commentSchema.statics.findComment = async (id: string): Promise<unknown> => {
   try {
     return await CommentModel.findById(id).populate({
@@ -91,14 +102,20 @@ commentSchema.statics.isMyPost = async (
 
 commentSchema.statics.isMyComment = async (
   commentId: string,
-  userId: string,
+  id: string,
+  idType: "userId" | "channelId",
 ): Promise<boolean | unknown> => {
   try {
     const commentData = await CommentModel.findById(commentId);
     if (!commentData)
       throw new AppError(httpStatus.NOT_FOUND, "comment not found");
 
-    return commentData?.commentAuthorId?.toString() === userId;
+    const authorId =
+      idType === "userId"
+        ? commentData?.commentAuthorId?.toString()
+        : commentData?.commentAuthorChannelId?.toString();
+
+    return authorId === id;
   } catch (error) {
     errorHandler(error);
   }
@@ -136,8 +153,6 @@ commentSchema.statics.createComment = async (
       }
     }
 
-    await session.commitTransaction();
-
     const commentData = (
       await CommentModel.create(
         [
@@ -162,6 +177,7 @@ commentSchema.statics.createComment = async (
     };
 
     if (!parentCommentId) {
+      await session.commitTransaction();
       await session.endSession();
       return commentData;
     }
@@ -185,6 +201,7 @@ commentSchema.statics.createComment = async (
         "Comment not created something went wrong",
       );
 
+    await session.commitTransaction();
     await session.endSession();
 
     return addToParentDoc;
