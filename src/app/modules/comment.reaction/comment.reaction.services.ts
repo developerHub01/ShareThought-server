@@ -3,9 +3,17 @@ import errorHandler from "../../errors/errorHandler";
 import { TCommentReactionType } from "./comment.reaction.interface";
 import { CommentReactionModel } from "./comment.reaction.model";
 
-const myReactionOnComment = async (userId: string, commentId: string) => {
+const myReactionOnComment = async (
+  commentId: string,
+  userId: string,
+  channelId: string | undefined,
+) => {
   try {
-    return await CommentReactionModel.myReactionOnComment(userId, commentId);
+    return await CommentReactionModel.myReactionOnComment(
+      commentId,
+      channelId || userId,
+      channelId ? "channelId" : "userId",
+    );
   } catch (error) {
     errorHandler(error);
   }
@@ -13,19 +21,22 @@ const myReactionOnComment = async (userId: string, commentId: string) => {
 
 const allReactionOnComment = async (
   query: Record<string, unknown>,
-  userId: string,
   commentId: string,
 ) => {
   try {
     try {
       const commentReactionQuery = new QueryBuilder(
         CommentReactionModel.find({
-          userId,
           commentId,
-        }).populate({
-          path: "userId",
-          select: "fullName avatar",
-        }),
+        })
+          .populate({
+            path: "userId",
+            select: "fullName avatar",
+          })
+          .populate({
+            path: "channelId",
+            select: "channelName channelAvatar",
+          }),
         query,
       )
         .filter()
@@ -49,19 +60,25 @@ const allReactionOnComment = async (
 };
 
 const reactOnComment = async (
-  userId: string,
   commentId: string,
+  userId: string,
+  channelId: string | undefined,
   reactionType?: TCommentReactionType | undefined,
 ) => {
   try {
     if (reactionType)
       return await CommentReactionModel.reactOnComment(
-        userId,
         commentId,
+        channelId || userId,
+        channelId ? "channelId" : "userId",
         reactionType,
       );
 
-    return await CommentReactionModel.toggleCommentReaction(userId, commentId);
+    return await CommentReactionModel.toggleCommentReaction(
+      commentId,
+      channelId || userId,
+      channelId ? "channelId" : "userId",
+    );
   } catch (error) {
     errorHandler(error);
   }

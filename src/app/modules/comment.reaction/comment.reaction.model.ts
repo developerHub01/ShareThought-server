@@ -8,6 +8,9 @@ import { CommentReactionConstant } from "./comment.reaction.constant";
 import { CommentConstant } from "../comment/comment.constant";
 import { UserConstant } from "../user/user.constant";
 import errorHandler from "../../errors/errorHandler";
+import { ChannelConstant } from "../channel/channel.constant";
+import AppError from "../../errors/AppError";
+import httpStatus from "http-status";
 
 const commentReactionSchema = new Schema<
   ICommentReaction,
@@ -21,12 +24,22 @@ const commentReactionSchema = new Schema<
   userId: {
     type: Schema.Types.ObjectId,
     ref: UserConstant.USER_COLLECTION_NAME,
-    required: true,
+  },
+  channelId: {
+    type: Schema.Types.ObjectId,
+    ref: ChannelConstant.CHANNEL_COLLECTION_NAME,
   },
   reactionType: {
     type: String,
     enum: Object.values(CommentReactionConstant.COMMENT_REACTION_TYPES),
   },
+});
+
+commentReactionSchema.pre("save", async function (next) {
+  if (!this.userId && !this.channelId)
+    throw new AppError(httpStatus.BAD_REQUEST, "author data not exist");
+
+  next();
 });
 
 commentReactionSchema.statics.totalCommentReactionByCommentId = async (
@@ -40,13 +53,16 @@ commentReactionSchema.statics.totalCommentReactionByCommentId = async (
 };
 
 commentReactionSchema.statics.myReactionOnComment = async (
-  userId: string,
   commentId: string,
+  authorId: string,
+  authorIdType: "userId" | "channelId",
 ): Promise<string | unknown> => {
   try {
     const result = await CommentReactionModel.findOne({
       commentId,
-      userId,
+      ...(authorIdType === "channelId"
+        ? { channelId: authorId }
+        : { userId: authorId }),
     });
 
     return result?.reactionType || null;
@@ -73,13 +89,16 @@ commentReactionSchema.statics.deleteCommentReactionByCommentId = async (
 };
 
 commentReactionSchema.statics.toggleCommentReaction = async (
-  userId: string,
   commentId: string,
+  authorId: string,
+  authorIdType: "userId" | "channelId",
 ): Promise<boolean | unknown> => {
   try {
     const isDeleted = await CommentReactionModel.findOneAndDelete({
       commentId,
-      userId,
+      ...(authorIdType === "channelId"
+        ? { channelId: authorId }
+        : { userId: authorId }),
     });
 
     if (isDeleted) return Boolean(isDeleted);
@@ -87,7 +106,9 @@ commentReactionSchema.statics.toggleCommentReaction = async (
     return Boolean(
       await CommentReactionModel.create({
         commentId,
-        userId,
+        ...(authorIdType === "channelId"
+          ? { channelId: authorId }
+          : { userId: authorId }),
         reactionType: CommentReactionConstant.COMMENT_REACTION_TYPES.LIKE,
       }),
     );
@@ -97,15 +118,18 @@ commentReactionSchema.statics.toggleCommentReaction = async (
 };
 
 commentReactionSchema.statics.reactOnComment = async (
-  userId: string,
   commentId: string,
+  authorId: string,
+  authorIdType: "userId" | "channelId",
   reactionType: TCommentReactionType,
 ): Promise<unknown> => {
   try {
     const doc = await CommentReactionModel.findOneAndUpdate(
       {
-        userId,
         commentId,
+        ...(authorIdType === "channelId"
+          ? { channelId: authorId }
+          : { userId: authorId }),
       },
       { upsert: true },
     );

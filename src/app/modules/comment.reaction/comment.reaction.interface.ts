@@ -9,26 +9,30 @@ export type TCommentReactionType = (typeof reactionTypeList)[number];
 
 export interface ICommentReaction {
   commentId: Types.ObjectId;
-  userId: Types.ObjectId;
+  userId?: Types.ObjectId;
+  channelId?: Types.ObjectId;
   reactionType: TCommentReactionType;
 }
 export interface ICommentReactionModel extends Model<ICommentReaction> {
   totalCommentReactionByCommentId(commentId: string): Promise<unknown>;
   myReactionOnComment(
-    userId: string,
     commentId: string,
+    authorId: string,
+    authorIdType: "userId" | "channelId",
   ): Promise<string | unknown>;
   deleteCommentReactionByCommentId(
     commentId: string,
     session?: ClientSession,
   ): Promise<unknown>;
   toggleCommentReaction(
-    userId: string,
     commentId: string,
+    authorId: string,
+    authorIdType: "userId" | "channelId",
   ): Promise<boolean | unknown>;
   reactOnComment(
-    userId: string,
     commentId: string,
+    authorId: string,
+    authorIdType: "userId" | "channelId",
     reactionType: TCommentReactionType,
   ): Promise<unknown>;
 }
