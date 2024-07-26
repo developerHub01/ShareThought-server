@@ -34,6 +34,7 @@ const findCommentByPostId = async (
     errorHandler(error);
   }
 };
+
 const findCommentById = async (commentId: string) => {
   try {
     return await CommentModel.findComment(commentId);
@@ -57,7 +58,6 @@ const createComment = async (
         : { commentAuthorId: authorId }),
     };
 
-
     return await CommentModel.createComment(payload);
   } catch (error) {
     errorHandler(error);
@@ -66,15 +66,19 @@ const createComment = async (
 
 const replyComment = async (
   payload: ICreateComment,
-  userId: string,
   parentCommentId: string,
+  authorId: string,
+  idType: "userId" | "channelId",
 ) => {
   try {
     payload = {
       ...payload,
       parentCommentId,
-      commentAuthorId: userId,
+      ...(idType === "channelId"
+        ? { commentAuthorChannelId: authorId }
+        : { commentAuthorId: authorId }),
     };
+
     return await CommentModel.createComment(payload);
   } catch (error) {
     errorHandler(error);
@@ -84,10 +88,9 @@ const replyComment = async (
 const updateComment = async (
   payload: ICreateComment,
   commentId: string,
-  userId: string,
 ) => {
   try {
-    return await CommentModel.updateComment(payload, commentId, userId);
+    return await CommentModel.updateComment(payload, commentId);
   } catch (error) {
     errorHandler(error);
   }

@@ -215,14 +215,8 @@ commentSchema.statics.createComment = async (
 commentSchema.statics.updateComment = async (
   payload: ICreateComment,
   commentId: string,
-  userId: string,
 ): Promise<unknown> => {
   try {
-    const haveUpdateAccess = await CommentModel.isMyComment(commentId, userId);
-
-    if (!haveUpdateAccess)
-      throw new AppError(httpStatus.UNAUTHORIZED, "this is not your comment");
-
     return await CommentModel.findByIdAndUpdate(
       commentId,
       {
