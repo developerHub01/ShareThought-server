@@ -28,11 +28,7 @@ export interface ICommentModel extends Model<IComment> {
   ): Promise<unknown>;
   deleteComment(id: string, userId: string): Promise<boolean | unknown>;
   deleteAllCommentByPostId(postId: string, userId: string): Promise<unknown>;
-  updateComment(
-    payload: ICreateComment,
-    commentId: string,
-    userId: string,
-  ): Promise<unknown>;
+  updateComment(payload: ICreateComment, commentId: string): Promise<unknown>;
   isMyComment(
     commentId: string,
     id: string,
