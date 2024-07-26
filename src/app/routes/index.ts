@@ -10,6 +10,7 @@ import { CategoryRoutes } from "../modules/category/category.route";
 import { ReadLaterRoutes } from "../modules/read.later/read.later.route";
 import { SavedCategoryRoutes } from "../modules/saved.category/saved.category.route";
 import { HistoryRoutes } from "../modules/history/history.route";
+import { SearchHistoryRoutes } from "../modules/search.history/search.history.route";
 
 interface IRouteSchema {
   path: string;
@@ -58,6 +59,10 @@ const moduleRoutes: Array<IRouteSchema> = [
   {
     path: "/history",
     route: HistoryRoutes,
+  },
+  {
+    path: "/search_history",
+    route: SearchHistoryRoutes,
   },
   {
     path: "/notification",
