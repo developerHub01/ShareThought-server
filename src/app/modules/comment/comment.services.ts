@@ -12,7 +12,10 @@ const findCommentByPostId = async (
 ) => {
   try {
     const commentQuery = new QueryBuilder(
-      CommentModel.find({ postId }).populate({
+      CommentModel.find({
+        postId,
+        parentCommentId: { $exists: false },
+      }).populate({
         path: "commentAuthorId",
         select: "fullName avatar",
       }),
@@ -85,10 +88,7 @@ const replyComment = async (
   }
 };
 
-const updateComment = async (
-  payload: ICreateComment,
-  commentId: string,
-) => {
+const updateComment = async (payload: ICreateComment, commentId: string) => {
   try {
     return await CommentModel.updateComment(payload, commentId);
   } catch (error) {
@@ -96,9 +96,9 @@ const updateComment = async (
   }
 };
 
-const deleteComment = async (commentId: string, userId: string) => {
+const deleteComment = async (commentId: string) => {
   try {
-    return await CommentModel.deleteComment(commentId, userId);
+    return await CommentModel.deleteComment(commentId);
   } catch (error) {
     errorHandler(error);
   }
