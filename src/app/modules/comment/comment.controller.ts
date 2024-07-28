@@ -9,9 +9,13 @@ import { CommentModel } from "./comment.model";
 import { CloudinaryUtils } from "../../utils/cloudinary.utils";
 
 const findCommentByPostId = catchAsync(async (req, res) => {
-  const { id: postId } = req.params;
+  const { postId, communityPostId } = req.params;
 
-  const result = await CommentServices.findCommentByPostId(req.query, postId);
+  const result = await CommentServices.findCommentByPostId(
+    req.query,
+    postId,
+    communityPostId,
+  );
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,

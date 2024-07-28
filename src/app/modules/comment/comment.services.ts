@@ -6,11 +6,12 @@ import { CommentModel } from "./comment.model";
 const findCommentByPostId = async (
   query: Record<string, unknown>,
   postId: string,
+  communityPostId: string,
 ) => {
   try {
     const commentQuery = new QueryBuilder(
       CommentModel.find({
-        postId,
+        ...(postId ? { postId } : { communityPostId }),
         parentCommentId: { $exists: false },
       }).populate({
         path: "commentAuthorId",
