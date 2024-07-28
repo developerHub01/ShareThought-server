@@ -1,11 +1,21 @@
 import QueryBuilder from "../../builder/QueryBuilder";
 import errorHandler from "../../errors/errorHandler";
-import { TPostReactionType } from "./post.reaction.interface";
+import { TAuthorType, TPostReactionType, TPostType } from "./post.reaction.interface";
 import { PostReactionModel } from "./post.reaction.model";
 
-const myReactionOnPost = async (userId: string, postId: string) => {
+const myReactionOnPost = async (
+  authorId: string,
+  authorType: TAuthorType,
+  postId: string,
+  postType: TPostType,
+) => {
   try {
-    return await PostReactionModel.myReactionOnPost(userId, postId);
+    return await PostReactionModel.myReactionOnPost(
+      postId,
+      postType,
+      authorId,
+      authorType,
+    );
   } catch (error) {
     errorHandler(error);
   }
@@ -13,51 +23,71 @@ const myReactionOnPost = async (userId: string, postId: string) => {
 
 const allReactionOnPost = async (
   query: Record<string, unknown>,
-  userId: string,
+  authorId: string,
+  authorType: TAuthorType,
   postId: string,
+  postType: TPostType,
 ) => {
   try {
-    try {
-      const postReactionQuery = new QueryBuilder(
-        PostReactionModel.find({
-          userId,
-          postId,
-        }).populate({
+    const postReactionQuery = new QueryBuilder(
+      PostReactionModel.find({
+        ...(authorType === "channelId"
+          ? { channelId: authorId }
+          : { userId: authorId }),
+        ...(postType === "blogPost"
+          ? { postId: postId }
+          : { communityPostId: postId }),
+      })
+        .populate({
           path: "userId",
           select: "fullName avatar",
+        })
+        .populate({
+          path: "channelId",
+          select: "channelName channelAvatar",
         }),
-        query,
-      )
-        .filter()
-        .sort()
-        .paginate()
-        .fields();
+      query,
+    )
+      .filter()
+      .sort()
+      .paginate()
+      .fields();
 
-      const meta = await postReactionQuery.countTotal();
-      const result = await postReactionQuery.modelQuery;
+    const meta = await postReactionQuery.countTotal();
+    const result = await postReactionQuery.modelQuery;
 
-      return {
-        meta,
-        result,
-      };
-    } catch (error) {
-      errorHandler(error);
-    }
+    return {
+      meta,
+      result,
+    };
   } catch (error) {
     errorHandler(error);
   }
 };
 
 const reactOnPost = async (
-  userId: string,
+  authorId: string,
+  authorType: TAuthorType,
   postId: string,
+  postType: TPostType,
   reactionType?: TPostReactionType | undefined,
 ) => {
   try {
     if (reactionType)
-      return await PostReactionModel.reactOnPost(userId, postId, reactionType);
+      return await PostReactionModel.reactOnPost(
+        postId,
+        postType,
+        authorId,
+        authorType,
+        reactionType,
+      );
 
-    return await PostReactionModel.togglePostReaction(userId, postId);
+    return await PostReactionModel.togglePostReaction(
+      postId,
+      postType,
+      authorId,
+      authorType,
+    );
   } catch (error) {
     errorHandler(error);
   }
