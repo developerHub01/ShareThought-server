@@ -64,6 +64,23 @@ export interface ICommunity {
   postQuizDetails?: ICommunityPostQuizType;
 }
 
+export interface ICreateCommunity {
+  text: string;
+  isPublished?: boolean;
+  scheduledTime?: Date;
+  postType?: TCommunityPostType;
+  postImageDetails?: ICommunityPostImageType;
+  postSharedPostDetails?: ICommunitySharedPostType;
+  postPollDetails?: ICommunityPostPollType;
+  postPollWithImageDetails?: ICommunityPostPollWithImageType;
+  postQuizDetails?: ICommunityPostQuizType;
+}
+
 export interface ICommunityModel extends Model<ICommunity> {
   isMyPost(communityPostId: string, channelId: string): Promise<boolean>;
+  findPostById(communityPostId: string, channelId: string): Promise<unknown>;
+  isPublicPostById(communityPostId: string): Promise<boolean | unknown>;
+  deletePost(communityPostId: string): Promise<unknown>;
+  createPost(payload: ICreateCommunity): Promise<unknown>; 
+  updatePost(payload: Partial<ICreateCommunity>): Promise<unknown>; 
 }
