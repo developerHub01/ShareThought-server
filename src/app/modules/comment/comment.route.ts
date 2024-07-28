@@ -8,10 +8,29 @@ import { CommentMiddleware } from "./comment.middleware";
 import verifyMyComment from "../../middleware/verify.my.comment";
 import checkChannelStatus from "../../middleware/check.channel.status";
 import haveAccessDeleteComment from "../../middleware/have.access.delete.comment";
+import verifyMyCommunityPost from "../../middleware/verify.my.community.post";
+
+
 const router = express.Router();
 
+/**
+ * 
+ *  get blog post all comments
+ * 
+ * ***/
 router.get(
-  "/post/:id" /* :id ===> postId */,
+  "/post/:postId",
+  getLoggedInUser,
+  CommentController.findCommentByPostId,
+);
+
+/**
+ * 
+ *  get community post all comments
+ * 
+ * ***/
+router.get(
+  "/post/:communityPostId",
   getLoggedInUser,
   CommentController.findCommentByPostId,
 );
@@ -22,8 +41,27 @@ router.get(
   CommentController.findCommentById,
 );
 
+/**
+ * 
+ *  post comments in blog post
+ * 
+ * ***/
 router.post(
-  "/:id" /* :id ===> postId */,
+  "/:postId" /* :id ===> postId */,
+  CommentMiddleware.createOrUpdateCommentImages,
+  validateRequest(CommentValidation.createOrUpdateComment),
+  getLoggedInUser,
+  checkChannelStatus,
+  CommentController.createComment,
+);
+
+/**
+ * 
+ *  post comments in community post
+ * 
+ * ***/
+router.post(
+  "/:communityPostId" /* :id ===> postId */,
   CommentMiddleware.createOrUpdateCommentImages,
   validateRequest(CommentValidation.createOrUpdateComment),
   getLoggedInUser,
@@ -59,10 +97,27 @@ router.delete(
   CommentController.deleteComment,
 );
 
+/**
+ * 
+ *  delete blog post all comments
+ * 
+ * ***/
 router.delete(
-  "/post/:id" /* :id ===> postId */,
+  "/post/:postId" /* :id ===> postId */,
   getLoggedInUser,
   verifyMyPost,
+  CommentController.deleteAllComment,
+);
+
+/**
+ * 
+ *  delete community post all comments
+ * 
+ * ***/
+router.delete(
+  "/post/:communityPostId" /* :id ===> postId */,
+  getLoggedInUser,
+  verifyMyCommunityPost,
   CommentController.deleteAllComment,
 );
 
