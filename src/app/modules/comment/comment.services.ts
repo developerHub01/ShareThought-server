@@ -46,6 +46,7 @@ const findCommentById = async (commentId: string) => {
 const createComment = async (
   payload: ICreateComment,
   postId: string,
+  communityPostId: string,
   authorId: string,
   idType: "userId" | "channelId",
 ) => {
@@ -53,6 +54,7 @@ const createComment = async (
     payload = {
       ...payload,
       postId,
+      communityPostId,
       ...(idType === "channelId"
         ? { commentAuthorChannelId: authorId }
         : { commentAuthorId: authorId }),
@@ -101,9 +103,9 @@ const deleteComment = async (commentId: string) => {
   }
 };
 
-const deleteAllComment = async (commentId: string) => {
+const deleteAllComment = async (postId: string, communityPostId: string) => {
   try {
-    return await CommentModel.deleteAllCommentByPostId(commentId);
+    return await CommentModel.deleteAllCommentByPostId(postId, communityPostId);
   } catch (error) {
     errorHandler(error);
   }

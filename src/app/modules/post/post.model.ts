@@ -138,9 +138,11 @@ postSchema.statics.isMyPost = async (
   postId: string,
   channelId: string,
 ): Promise<boolean> => {
-  const { channelId: postChannelId } =
-    (await PostModel.findById(postId).select("channelId -_id")) || {};
 
+  
+  const { channelId: postChannelId } =
+  (await PostModel.findById(postId).select("channelId -_id")) || {};
+  
   if (!postChannelId)
     throw new AppError(httpStatus.NOT_FOUND, "Post not found");
 

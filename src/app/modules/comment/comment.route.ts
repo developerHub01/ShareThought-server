@@ -9,14 +9,14 @@ import verifyMyComment from "../../middleware/verify.my.comment";
 import checkChannelStatus from "../../middleware/check.channel.status";
 import haveAccessDeleteComment from "../../middleware/have.access.delete.comment";
 import verifyMyCommunityPost from "../../middleware/verify.my.community.post";
-
+import getActiveChannel from "../../middleware/get.active.channel";
 
 const router = express.Router();
 
 /**
- * 
+ *
  *  get blog post all comments
- * 
+ *
  * ***/
 router.get(
   "/post/:postId",
@@ -25,12 +25,12 @@ router.get(
 );
 
 /**
- * 
+ *
  *  get community post all comments
- * 
+ *
  * ***/
 router.get(
-  "/post/:communityPostId",
+  "/community/:communityPostId",
   getLoggedInUser,
   CommentController.findCommentByPostId,
 );
@@ -42,9 +42,9 @@ router.get(
 );
 
 /**
- * 
+ *
  *  post comments in blog post
- * 
+ *
  * ***/
 router.post(
   "/:postId" /* :id ===> postId */,
@@ -52,20 +52,22 @@ router.post(
   validateRequest(CommentValidation.createOrUpdateComment),
   getLoggedInUser,
   checkChannelStatus,
+  verifyMyPost,
   CommentController.createComment,
 );
 
 /**
- * 
+ *
  *  post comments in community post
- * 
+ *
  * ***/
 router.post(
-  "/:communityPostId" /* :id ===> postId */,
+  "/community/:communityPostId" /* :id ===> postId */,
   CommentMiddleware.createOrUpdateCommentImages,
   validateRequest(CommentValidation.createOrUpdateComment),
   getLoggedInUser,
   checkChannelStatus,
+  verifyMyCommunityPost,
   CommentController.createComment,
 );
 
@@ -98,25 +100,27 @@ router.delete(
 );
 
 /**
- * 
+ *
  *  delete blog post all comments
- * 
+ *
  * ***/
 router.delete(
-  "/post/:postId" /* :id ===> postId */,
+  "/post/:postId",
   getLoggedInUser,
+  getActiveChannel,
   verifyMyPost,
   CommentController.deleteAllComment,
 );
 
 /**
- * 
+ *
  *  delete community post all comments
- * 
+ *
  * ***/
 router.delete(
-  "/post/:communityPostId" /* :id ===> postId */,
+  "/community/:communityPostId" /* :id ===> postId */,
   getLoggedInUser,
+  getActiveChannel,
   verifyMyCommunityPost,
   CommentController.deleteAllComment,
 );

@@ -36,7 +36,7 @@ const findCommentById = catchAsync(async (req, res) => {
 
 const createComment = catchAsync(async (req, res) => {
   const { userId, channelId } = req as IRequestWithActiveDetails;
-  const { id: postId } = req.params;
+  const { postId, communityPostId } = req.params;
 
   let commentImagePath;
 
@@ -55,6 +55,7 @@ const createComment = catchAsync(async (req, res) => {
   const result = await CommentServices.createComment(
     req.body,
     postId,
+    communityPostId,
     channelId || userId,
     channelId ? "channelId" : "userId",
   );
@@ -162,9 +163,12 @@ const deleteComment = catchAsync(async (req, res) => {
 });
 
 const deleteAllComment = catchAsync(async (req, res) => {
-  const { id } = req.params;
+  const { postId, communityPostId } = req.params;
 
-  const result = await CommentServices.deleteAllComment(id);
+  const result = await CommentServices.deleteAllComment(
+    postId,
+    communityPostId,
+  );
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,

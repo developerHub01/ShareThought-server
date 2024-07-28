@@ -11,6 +11,8 @@ import { Types } from "mongoose";
 import { CommentReactionModel } from "../comment.reaction/comment.reaction.model";
 import { ChannelConstant } from "../channel/channel.constant";
 import { CloudinaryUtils } from "../../utils/cloudinary.utils";
+import { CommunityModel } from "../community/community.model";
+import { CommunityConstant } from "../community/community.constant";
 // import mongooseAutoComplete from "mongoose-autopopulate";
 
 const commentSchema = new Schema<IComment, ICommentModel>(
@@ -18,7 +20,10 @@ const commentSchema = new Schema<IComment, ICommentModel>(
     postId: {
       type: Schema.Types.ObjectId,
       ref: PostConstant.POST_COLLECTION_NAME,
-      required: true,
+    },
+    communityPostId: {
+      type: Schema.Types.ObjectId,
+      ref: CommunityConstant.COMMUNITY_COLLECTION_NAME,
     },
     commentAuthorId: {
       type: Schema.Types.ObjectId,
@@ -68,6 +73,9 @@ commentSchema.virtual("totalRepies").get(function () {
 });
 
 commentSchema.pre("save", async function (next) {
+  if (!this.postId && !this.communityPostId)
+    throw new AppError(httpStatus.BAD_REQUEST, "post id is required");
+
   if (!this.commentAuthorId && !this.commentAuthorChannelId)
     throw new AppError(httpStatus.BAD_REQUEST, "comment author data not exist");
 
@@ -90,12 +98,17 @@ commentSchema.statics.isMyPost = async (
   userId: string,
 ): Promise<boolean | unknown> => {
   try {
-    const commentData = await CommentModel.findById(commentId);
+    let { postId, communityPostId } =
+      (await CommentModel.findById(commentId)) || {};
 
-    if (!commentData)
+    (postId as string | undefined) = postId?.toString();
+    (communityPostId as string | undefined) = communityPostId?.toString();
+
+    const id = postId || communityPostId;
+    if (!id)
       throw new AppError(httpStatus.NOT_FOUND, "post and comment not found");
 
-    return await PostModel.isMyPost(commentData?.postId?.toString(), userId);
+    return await PostModel.isMyPost(id as unknown as string, userId);
   } catch (error) {
     errorHandler(error);
   }
@@ -152,11 +165,16 @@ commentSchema.statics.createComment = async (
 
   try {
     const parentCommentId = payload.parentCommentId;
-    let postId = payload.postId;
+    let { postId, communityPostId } = payload;
 
     if (
-      postId &&
-      !(await PostModel.findOne({ _id: postId, isPublished: true }))
+      (postId &&
+        !(await PostModel.findOne({ _id: postId, isPublished: true }))) ||
+      (communityPostId &&
+        !(await CommunityModel.findOne({
+          _id: communityPostId,
+          isPublished: true,
+        })))
     )
       throw new AppError(httpStatus.NOT_FOUND, "post not found");
 
@@ -167,13 +185,25 @@ commentSchema.statics.createComment = async (
       if (!parentComment)
         throw new AppError(httpStatus.NOT_FOUND, "comment not found");
 
+      let idDetails: Record<string, unknown> = {};
       if (!postId) {
         postId = parentComment?.postId?.toString();
-        payload = {
-          ...payload,
+
+        idDetails = {
+          ...idDetails,
           postId,
         };
+      } else if (!communityPostId) {
+        communityPostId = parentComment?.communityPostId?.toString();
+        idDetails = {
+          ...idDetails,
+          communityPostId,
+        };
       }
+      payload = {
+        ...payload,
+        ...idDetails,
+      };
     }
 
     const commentData = (
@@ -318,12 +348,13 @@ commentSchema.statics.deleteComment = async (
 
 commentSchema.statics.deleteAllCommentByPostId = async (
   postId: string,
+  communityPostId: string,
 ): Promise<unknown> => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
     const result = await CommentModel.find({
-      postId,
+      ...(postId ? { postId } : { communityPostId }),
     }).select("_id");
 
     for (const commentData of result) {
