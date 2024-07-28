@@ -51,6 +51,7 @@ export interface ICommunityPostQuizType {
 }
 
 export interface ICommunity {
+  channelId: Types.ObjectId;
   text: string;
   isPublished: boolean;
   publihedAt?: Date;
@@ -63,4 +64,6 @@ export interface ICommunity {
   postQuizDetails?: ICommunityPostQuizType;
 }
 
-export interface ICommunityModel extends Model<ICommunity> {}
+export interface ICommunityModel extends Model<ICommunity> {
+  isMyPost(communityPostId: string, channelId: string): Promise<boolean>;
+}
