@@ -1,6 +1,7 @@
 import QueryBuilder from "../../builder/QueryBuilder";
 import errorHandler from "../../errors/errorHandler";
-import { TAuthorType, TPostReactionType, TPostType } from "./post.reaction.interface";
+import { TAuthorType, TPostType } from "../../interface/interface";
+import { TPostReactionType} from "./post.reaction.interface";
 import { PostReactionModel } from "./post.reaction.model";
 
 const myReactionOnPost = async (

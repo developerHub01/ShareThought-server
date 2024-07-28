@@ -1,5 +1,6 @@
 import { ClientSession, Model, Types } from "mongoose";
 import { PostReactionConstant } from "./post.reaction.constant";
+import { TAuthorType, TPostType } from "../../interface/interface";
 
 const reactionTypeList: Array<string> = Object.values(
   PostReactionConstant.POST_REACTION_TYPES,
@@ -14,9 +15,6 @@ export interface IPostReaction {
   channelId?: Types.ObjectId;
   reactionType: TPostReactionType;
 }
-
-export type TPostType = "blogPost" | "communityPost";
-export type TAuthorType = "userId" | "channelId";
 
 export interface IPostReactionModel extends Model<IPostReaction> {
   totalPostReactionByPostId(

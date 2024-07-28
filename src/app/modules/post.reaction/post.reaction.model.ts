@@ -3,9 +3,7 @@ import { PostReactionConstant } from "./post.reaction.constant";
 import {
   IPostReaction,
   IPostReactionModel,
-  TAuthorType,
   TPostReactionType,
-  TPostType,
 } from "./post.reaction.interface";
 import errorHandler from "../../errors/errorHandler";
 import { PostConstant } from "../post/post.constant";
@@ -14,6 +12,7 @@ import AppError from "../../errors/AppError";
 import httpStatus from "http-status";
 import { ChannelConstant } from "../channel/channel.constant";
 import { CommunityConstant } from "../community/community.constant";
+import { TAuthorType, TPostType } from "../../interface/interface";
 
 const postReactionSchema = new Schema<IPostReaction, IPostReactionModel>({
   postId: {

@@ -19,3 +19,6 @@ export interface IFileObject {
 export interface IReqFiles {
   [key: string]: IFileObject[];
 }
+
+export type TPostType = "blogPost" | "communityPost";
+export type TAuthorType = "userId" | "channelId";
