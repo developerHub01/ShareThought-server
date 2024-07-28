@@ -11,6 +11,7 @@ import errorHandler from "../../errors/errorHandler";
 import { ChannelConstant } from "../channel/channel.constant";
 import AppError from "../../errors/AppError";
 import httpStatus from "http-status";
+import { TAuthorType } from "../../interface/interface";
 
 const commentReactionSchema = new Schema<
   ICommentReaction,
@@ -55,7 +56,7 @@ commentReactionSchema.statics.totalCommentReactionByCommentId = async (
 commentReactionSchema.statics.myReactionOnComment = async (
   commentId: string,
   authorId: string,
-  authorIdType: "userId" | "channelId",
+  authorIdType: TAuthorType,
 ): Promise<string | unknown> => {
   try {
     const result = await CommentReactionModel.findOne({
@@ -75,13 +76,12 @@ commentReactionSchema.statics.deleteCommentReactionByCommentId = async (
   commentId: string,
   session: ClientSession,
 ): Promise<unknown> => {
-  const options = session ? { session } : {};
   try {
     return await CommentReactionModel.findOneAndDelete(
       {
         commentId,
       },
-      { options },
+      session ? { session } : {},
     );
   } catch (error) {
     return errorHandler(error);
@@ -91,7 +91,7 @@ commentReactionSchema.statics.deleteCommentReactionByCommentId = async (
 commentReactionSchema.statics.toggleCommentReaction = async (
   commentId: string,
   authorId: string,
-  authorIdType: "userId" | "channelId",
+  authorIdType: TAuthorType,
 ): Promise<boolean | unknown> => {
   try {
     const isDeleted = await CommentReactionModel.findOneAndDelete({
@@ -120,7 +120,7 @@ commentReactionSchema.statics.toggleCommentReaction = async (
 commentReactionSchema.statics.reactOnComment = async (
   commentId: string,
   authorId: string,
-  authorIdType: "userId" | "channelId",
+  authorIdType: TAuthorType,
   reactionType: TCommentReactionType,
 ): Promise<unknown> => {
   try {

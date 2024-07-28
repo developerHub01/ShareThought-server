@@ -1,3 +1,4 @@
+import { TAuthorType } from "../../interface/interface";
 import { CommentConstant } from "./../comment/comment.constant";
 import { ClientSession, Model, Types } from "mongoose";
 
@@ -18,7 +19,7 @@ export interface ICommentReactionModel extends Model<ICommentReaction> {
   myReactionOnComment(
     commentId: string,
     authorId: string,
-    authorIdType: "userId" | "channelId",
+    authorIdType: TAuthorType,
   ): Promise<string | unknown>;
   deleteCommentReactionByCommentId(
     commentId: string,
@@ -27,12 +28,12 @@ export interface ICommentReactionModel extends Model<ICommentReaction> {
   toggleCommentReaction(
     commentId: string,
     authorId: string,
-    authorIdType: "userId" | "channelId",
+    authorIdType: TAuthorType,
   ): Promise<boolean | unknown>;
   reactOnComment(
     commentId: string,
     authorId: string,
-    authorIdType: "userId" | "channelId",
+    authorIdType: TAuthorType,
     reactionType: TCommentReactionType,
   ): Promise<unknown>;
 }
