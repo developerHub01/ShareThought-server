@@ -14,6 +14,7 @@ import { CommunityConstant } from "./community.constant";
 import { UserConstant } from "../user/user.constant";
 import AppError from "../../errors/AppError";
 import httpStatus from "http-status";
+import { ChannelConstant } from "../channel/channel.constant";
 
 const communityPostImageSchema = new Schema<ICommunityPostImageType>({
   image: {
@@ -158,6 +159,11 @@ const communityPostQuizSchema = new Schema<ICommunityPostQuizType>({
 
 const communitySchema = new Schema<ICommunity, ICommunityModel>(
   {
+    channelId: {
+      type: Schema.Types.ObjectId,
+      ref: ChannelConstant.CHANNEL_COLLECTION_NAME,
+      required: true,
+    },
     text: {
       type: String,
       required: true,
@@ -314,6 +320,23 @@ communitySchema.pre<ICommunity>("save", async function (next) {
 
   return next();
 });
+
+/* static methods start ============================================= */
+communitySchema.statics.isMyPost = async (
+  communityPostId: string,
+  channelId: string,
+): Promise<boolean> => {
+   const { channelId: postChannelId } =
+     (await CommunityModel.findById(communityPostId).select(
+       "channelId -_id",
+     )) || {};
+
+   if (!postChannelId)
+     throw new AppError(httpStatus.NOT_FOUND, "Post not found");
+
+   return channelId === postChannelId?.toString();
+};
+/* static methods end ============================================= */
 
 export const CommunityModel = model<ICommunity, ICommunityModel>(
   CommunityConstant.COMMUNITY_COLLECTION_NAME,
