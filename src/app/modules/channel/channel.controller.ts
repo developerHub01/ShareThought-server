@@ -129,6 +129,10 @@ const deleteChannel = catchAsync(async (req, res) => {
 
 const switchChannel = catchAsync(async (req, res) => {
   const { id: channelId } = req.params;
+  const { userId } = req as IRequestWithActiveDetails;
+
+  if (!(await ChannelModel.isChannelMine(channelId, userId)))
+    throw new AppError(httpStatus.UNAUTHORIZED, "This is not your channel");
 
   const channelToken = AuthUtils.createToken(
     { channelId },
