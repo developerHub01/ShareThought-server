@@ -55,7 +55,6 @@ router.post(
   validateRequest(CommentValidation.createOrUpdateComment),
   getLoggedInUser,
   checkChannelStatus,
-  verifyMyPost,
   CommentController.createComment,
 );
 
@@ -72,7 +71,6 @@ router.post(
   validateRequest(CommentValidation.createOrUpdateComment),
   getLoggedInUser,
   checkChannelStatus,
-  verifyMyCommunityPost,
   CommentController.createComment,
 );
 
