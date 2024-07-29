@@ -39,8 +39,8 @@ const updateChannelValidationSchema = zod.object({
     )
     .trim()
     .optional(),
-  channelAvatar: zod.string().trim().array().optional(),
-  channelCover: zod.string().trim().array().optional(),
+  channelAvatar: zod.string().trim().optional(),
+  channelCover: zod.string().trim().optional(),
 });
 
 export const ChannelValidation = {

@@ -81,12 +81,9 @@ const updateChannel = catchAsync(async (req, res) => {
 
   const { channelAvatar, channelCover } = req.body;
 
-  const channelAvatarPath = Array.isArray(channelAvatar) && channelAvatar[0];
-  const channelCoverPath = Array.isArray(channelCover) && channelCover[0];
-
-  if (channelAvatarPath) {
+  if (channelAvatar) {
     const url = await ChannelUtils.updateChannelImage(
-      channelAvatarPath,
+      channelAvatar,
       previousAvatar,
       CloudinaryConstant.SHARE_THOUGHT_CHANNEL_AVATAR_FOLDER_NAME,
     );
@@ -94,9 +91,9 @@ const updateChannel = catchAsync(async (req, res) => {
     if (url) req.body.channelAvatar = url;
   }
 
-  if (channelCoverPath) {
+  if (channelCover) {
     const url = await ChannelUtils.updateChannelImage(
-      channelCoverPath,
+      channelCover,
       previousCover,
       CloudinaryConstant.SHARE_THOUGHT_CHANNEL_COVER_FOLDER_NAME,
     );

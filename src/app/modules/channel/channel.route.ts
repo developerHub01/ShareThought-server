@@ -7,6 +7,7 @@ import channelExist from "../../middleware/channel.exist";
 import verifyMyChannel from "../../middleware/verify.my.channel";
 import { ChannelMiddleware } from "./channel.middleware";
 import getActiveChannel from "../../middleware/get.active.channel";
+import readReqBodyFiles from "../../middleware/read.req.body.files";
 
 const router = express.Router();
 
@@ -38,6 +39,8 @@ router.patch(
 router.patch(
   "/",
   ChannelMiddleware.updateChannelImages,
+  readReqBodyFiles /* read files info from formData */,
+  ChannelMiddleware.matchReqBodyFilesWithValidationSchema,
   validateRequest(ChannelValidation.updateChannelValidationSchema),
   getLoggedInUser,
   getActiveChannel,
