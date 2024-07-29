@@ -9,6 +9,7 @@ import checkAuthStatus from "../../middleware/check.auth.status";
 import { PostMiddleware } from "./post.middleware";
 import getActiveChannel from "../../middleware/get.active.channel";
 import checkChannelStatus from "../../middleware/check.channel.status";
+import readReqBodyFiles from "../../middleware/read.req.body.files";
 
 const router = express.Router();
 
@@ -34,6 +35,8 @@ router.get(
 router.post(
   "/",
   PostMiddleware.createOrUpdatePostImages,
+  readReqBodyFiles /* read files info from formData */,
+  PostMiddleware.matchReqBodyFilesWithValidationSchema,
   validateRequest(PostValidation.createPostValidationSchema),
   getLoggedInUser,
   getActiveChannel,
@@ -45,6 +48,8 @@ router.post(
 router.patch(
   "/:postId" /* :postId ===> postId */,
   PostMiddleware.createOrUpdatePostImages,
+  readReqBodyFiles /* read files info from formData */,
+  PostMiddleware.matchReqBodyFilesWithValidationSchema,
   validateRequest(PostValidation.updatePostValidationSchema),
   getLoggedInUser,
   getActiveChannel,

@@ -58,13 +58,9 @@ const createPost = catchAsync(async (req, res) => {
 
   req.body.channelId = channelId;
 
-  let bannerPath;
-
-  if (req?.body?.banner?.length) bannerPath = req?.body?.banner[0];
-
-  if (bannerPath) {
+  if (req.body?.banner) {
     const bannerImage = await PostUtils.createOrUpdatePostImage(
-      bannerPath,
+      req.body?.banner,
       CloudinaryConstant.SHARE_THOUGHT_POST_BANNER_FOLDER_NAME,
       false,
     );
@@ -86,13 +82,9 @@ const updatePost = catchAsync(async (req, res) => {
 
   const previousBannerImage = (await PostModel.findById(postId))?.banner;
 
-  let bannerPath;
-
-  if (req?.body?.banner?.length) bannerPath = req?.body?.banner[0];
-
-  if (bannerPath) {
+  if (req.body?.banner) {
     const bannerImage = await PostUtils.createOrUpdatePostImage(
-      bannerPath,
+      req.body?.banner,
       CloudinaryConstant.SHARE_THOUGHT_POST_BANNER_FOLDER_NAME,
       true,
       previousBannerImage,
@@ -115,9 +107,7 @@ const deletePost = catchAsync(async (req, res) => {
 
   const bannerImage = (await PostModel.findById(postId))?.banner;
 
-  if (bannerImage) {
-    await CloudinaryUtils.deleteFile([bannerImage]);
-  }
+  if (bannerImage) await CloudinaryUtils.deleteFile([bannerImage]);
 
   const result = await PostServices.deletePost(postId);
 
