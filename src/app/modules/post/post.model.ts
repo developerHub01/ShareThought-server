@@ -138,11 +138,9 @@ postSchema.statics.isMyPost = async (
   postId: string,
   channelId: string,
 ): Promise<boolean> => {
-
-  
   const { channelId: postChannelId } =
-  (await PostModel.findById(postId).select("channelId -_id")) || {};
-  
+    (await PostModel.findById(postId).select("channelId -_id")) || {};
+
   if (!postChannelId)
     throw new AppError(httpStatus.NOT_FOUND, "Post not found");
 
@@ -181,19 +179,21 @@ postSchema.statics.isPublicPostById = async (
   }
 };
 
-postSchema.statics.deletePost = async (
-  postId: string,
-): Promise<unknown> => {
+postSchema.statics.deletePost = async (postId: string): Promise<unknown> => {
   const session = await mongoose.startSession();
   try {
     session.startTransaction();
 
     /* Deleting all comments of post */
-    let result = await CommentModel.deleteAllCommentByPostId(postId);
+    let result = await CommentModel.deleteAllCommentByPostId(
+      postId,
+      "blogPost",
+    );
 
     /* Deleting all reactions of post */
     (result as unknown) = await PostReactionModel.deleteAllReactionByPostId(
       postId,
+      "blogPost",
       session,
     );
 
