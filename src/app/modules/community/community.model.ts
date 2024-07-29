@@ -7,6 +7,7 @@ import {
   ICommunityPostPollOptionWithImage,
   ICommunityPostPollType,
   ICommunityPostPollWithImageType,
+  ICommunityPostQuizOption,
   ICommunityPostQuizType,
   ICommunitySharedPostType,
   ICreateCommunity,
@@ -34,6 +35,8 @@ const communitySharedPostSchema = new Schema<ICommunitySharedPostType>({
     required: true,
   },
 });
+
+/* ================ Community post pull schema start ================================ */
 
 const communityPostPullOptionShcema = new Schema<ICommunityPostPollOption>({
   text: {
@@ -93,6 +96,13 @@ const communityPostPullSchema = new Schema<ICommunityPostPollType>(
   {
     options: {
       type: [communityPostPullOptionShcema],
+      validate: {
+        validator: function (v: Array<unknown>) {
+          return v.length >= 2;
+        },
+        message: "Minimum 2 pull option is required",
+      },
+      required: true,
     },
   },
   {
@@ -107,6 +117,13 @@ const communityPostPullWithImageSchema =
     {
       options: {
         type: [communityPostPullWithImageOptionShcema],
+        validate: {
+          validator: function (v: Array<unknown>) {
+            return v.length >= 2;
+          },
+          message: "Minimum 2 pull option is required",
+        },
+        required: true,
       },
     },
     {
@@ -125,42 +142,80 @@ const communityPostPullWithImageSchema =
   }),
 );
 
-const communityPostQuizSchema = new Schema<ICommunityPostQuizType>({
-  options: {
-    type: [
-      {
-        text: {
-          type: String,
-          trim: true,
-          required: true,
-          minlength: 1,
-          maxlength: 80,
+/* ================ Community post pull schema end ================================ */
+
+/* ================ Community post quiz schema start ================================ */
+
+const communityPostQuizOptionShcema = new Schema<ICommunityPostQuizOption>(
+  {
+    text: {
+      type: String,
+      trim: true,
+      required: true,
+      minlength: 1,
+      maxlength: 80,
+    },
+    isCurrectAnswer: {
+      type: Boolean,
+      required: true,
+      default: false,
+    },
+    currectAnswerExplaination: {
+      type: String,
+      trim: true,
+    },
+    answeredUsers: {
+      type: [
+        {
+          type: Schema.Types.ObjectId,
+          ref: UserConstant.USER_COLLECTION_NAME,
+          unique: true,
         },
-        isCurrectAnswer: {
-          type: Boolean,
-          required: true,
-          default: false,
-        },
-        currectAnswerExplaination: {
-          type: String,
-          trim: true,
-        },
-        answeredUsers: {
-          type: [
-            {
-              type: Schema.Types.ObjectId,
-              ref: UserConstant.USER_COLLECTION_NAME,
-              unique: true,
-            },
-          ],
-          default: [],
-        },
-      },
-    ],
-    minLength: 2,
+      ],
+      default: [],
+    },
   },
+  {
+    toJSON: {
+      virtuals: true,
+    },
+  },
+);
+
+communityPostQuizOptionShcema.virtual("totalPolled").get(function () {
+  return this?.answeredUsers?.length;
 });
 
+const communityPostQuizSchema = new Schema<ICommunityPostQuizType>(
+  {
+    options: {
+      type: [communityPostQuizOptionShcema],
+      validate: {
+        validator: function (v: Array<unknown>) {
+          return v.length >= 2;
+        },
+        message: "Minimum 2 quiz option is required",
+      },
+      required: true,
+    },
+  },
+  {
+    toJSON: {
+      virtuals: true,
+    },
+  },
+);
+
+communityPostQuizSchema.virtual("totalAnswered").get(function () {
+  return this?.options?.reduce(
+    (acc, curr) => acc + curr?.answeredUsers?.length,
+    0,
+  );
+});
+
+/* ================ Community post quiz schema end ================================ */
+
+/* ================ Community main schema start ================================ */
 const communitySchema = new Schema<ICommunity, ICommunityModel>(
   {
     channelId: {
@@ -230,6 +285,8 @@ communitySchema.virtual("totalAnswer").get(function () {
     ) || 0
   );
 });
+
+/* ================ Community main schema end ================================ */
 
 communitySchema.pre<ICommunity>("save", async function (next) {
   if (this.scheduledTime && this.isPublished)
