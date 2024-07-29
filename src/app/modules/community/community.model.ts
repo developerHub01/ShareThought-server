@@ -9,6 +9,7 @@ import {
   ICommunityPostPollWithImageType,
   ICommunityPostQuizType,
   ICommunitySharedPostType,
+  ICreateCommunity,
 } from "./community.interface";
 import { CommunityConstant } from "./community.constant";
 import { UserConstant } from "../user/user.constant";
@@ -376,6 +377,27 @@ communitySchema.statics.isPublicPostById = async (
   }
 };
 
+communitySchema.statics.createPost = async (
+  payload: ICreateCommunity,
+): Promise<unknown> => {
+  try {
+    return await CommunityModel.create({ ...payload });
+  } catch (error) {
+    return errorHandler(error);
+  }
+};
+
+communitySchema.statics.updatePost = async (
+  payload: Partial<ICreateCommunity>,
+  postId: string,
+): Promise<unknown> => {
+  try {
+    return await CommunityModel.findByIdAndUpdate(postId, { ...payload });
+  } catch (error) {
+    return errorHandler(error);
+  }
+};
+
 communitySchema.statics.deletePost = async (
   communityPostId: string,
 ): Promise<unknown> => {
@@ -385,14 +407,14 @@ communitySchema.statics.deletePost = async (
 
     /* Deleting all comments of post */
     let result = await CommentModel.deleteAllCommentByPostId(
-      undefined,
       communityPostId,
+      "communityPost",
     );
 
     /* Deleting all reactions of post */
     (result as unknown) = await PostReactionModel.deleteAllReactionByPostId(
-      undefined,
       communityPostId,
+      "communityPost",
       session,
     );
 
@@ -419,6 +441,7 @@ communitySchema.statics.deletePost = async (
     return errorHandler(error);
   }
 };
+
 /* static methods end ============================================= */
 
 export const CommunityModel = model<ICommunity, ICommunityModel>(

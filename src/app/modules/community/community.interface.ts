@@ -80,7 +80,7 @@ export interface ICommunityModel extends Model<ICommunity> {
   isMyPost(communityPostId: string, channelId: string): Promise<boolean>;
   findPostById(communityPostId: string, channelId: string): Promise<unknown>;
   isPublicPostById(communityPostId: string): Promise<boolean | unknown>;
-  deletePost(communityPostId: string): Promise<unknown>;
   createPost(payload: ICreateCommunity): Promise<unknown>; 
-  updatePost(payload: Partial<ICreateCommunity>): Promise<unknown>; 
+  updatePost(payload: Partial<ICreateCommunity>, postId: string): Promise<unknown>; 
+  deletePost(communityPostId: string): Promise<unknown>;
 }
