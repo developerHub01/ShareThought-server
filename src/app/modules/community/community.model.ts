@@ -42,8 +42,8 @@ const communityPostPullOptionShcema = new Schema<ICommunityPostPollOption>({
   text: {
     type: String,
     required: true,
-    minlength: 1,
-    maxlength: 80,
+    minlength: CommunityConstant.COMMUNITY_OPTION_MIN_LENGTH,
+    maxlength: CommunityConstant.COMMUNITY_OPTION_MAX_LENGTH,
   },
   polledUsers: {
     type: [
@@ -64,8 +64,8 @@ const communityPostPullWithImageOptionShcema =
       type: String,
       trim: true,
       required: true,
-      minlength: 1,
-      maxlength: 80,
+      minlength: CommunityConstant.COMMUNITY_OPTION_MIN_LENGTH,
+      maxlength: CommunityConstant.COMMUNITY_OPTION_MAX_LENGTH,
     },
     image: {
       type: String,
@@ -98,9 +98,11 @@ const communityPostPullSchema = new Schema<ICommunityPostPollType>(
       type: [communityPostPullOptionShcema],
       validate: {
         validator: function (v: Array<unknown>) {
-          return v.length >= 2;
+          return (
+            v.length >= CommunityConstant.COMMUNITY_MIN_OPTION_IN_EACH_POST
+          );
         },
-        message: "Minimum 2 pull option is required",
+        message: `Minimum ${CommunityConstant.COMMUNITY_MIN_OPTION_IN_EACH_POST} pull option is required`,
       },
       required: true,
     },
@@ -119,9 +121,11 @@ const communityPostPullWithImageSchema =
         type: [communityPostPullWithImageOptionShcema],
         validate: {
           validator: function (v: Array<unknown>) {
-            return v.length >= 2;
+            return (
+              v.length >= CommunityConstant.COMMUNITY_MIN_OPTION_IN_EACH_POST
+            );
           },
-          message: "Minimum 2 pull option is required",
+          message: `Minimum ${CommunityConstant.COMMUNITY_MIN_OPTION_IN_EACH_POST} pull option is required`,
         },
         required: true,
       },
@@ -152,8 +156,8 @@ const communityPostQuizOptionShcema = new Schema<ICommunityPostQuizOption>(
       type: String,
       trim: true,
       required: true,
-      minlength: 1,
-      maxlength: 80,
+      minlength: CommunityConstant.COMMUNITY_OPTION_MIN_LENGTH,
+      maxlength: CommunityConstant.COMMUNITY_OPTION_MAX_LENGTH,
     },
     isCurrectAnswer: {
       type: Boolean,
@@ -192,9 +196,11 @@ const communityPostQuizSchema = new Schema<ICommunityPostQuizType>(
       type: [communityPostQuizOptionShcema],
       validate: {
         validator: function (v: Array<unknown>) {
-          return v.length >= 2;
+          return (
+            v.length >= CommunityConstant.COMMUNITY_MIN_OPTION_IN_EACH_POST
+          );
         },
-        message: "Minimum 2 quiz option is required",
+        message: `Minimum ${CommunityConstant.COMMUNITY_MIN_OPTION_IN_EACH_POST} quiz option is required`,
       },
       required: true,
     },
