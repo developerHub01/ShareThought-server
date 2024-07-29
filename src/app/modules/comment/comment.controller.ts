@@ -42,14 +42,9 @@ const createComment = catchAsync(async (req, res) => {
   const { userId, channelId } = req as IRequestWithActiveDetails;
   const { postId, communityPostId } = req.params;
 
-  let commentImagePath;
-
-  if (req?.body?.commentImage?.length)
-    commentImagePath = req?.body?.commentImage[0];
-
-  if (commentImagePath) {
+  if (req.body?.commentImage) {
     const commentImage = await CommentUtils.uploadCommentImage(
-      commentImagePath,
+      req.body?.commentImage,
       CloudinaryConstant.SHARE_THOUGHT_COMMENT_FOLDER_NAME,
       false,
     );
@@ -76,14 +71,9 @@ const replyComment = catchAsync(async (req, res) => {
   const { userId, channelId } = req as IRequestWithActiveDetails;
   const { id: parentCommentId } = req.params; // commentId of parent comment
 
-  let commentImagePath;
-
-  if (req?.body?.commentImage?.length)
-    commentImagePath = req?.body?.commentImage[0];
-
-  if (commentImagePath) {
+  if (req.body?.commentImage) {
     const commentImage = await CommentUtils.uploadCommentImage(
-      commentImagePath,
+      req.body?.commentImage,
       CloudinaryConstant.SHARE_THOUGHT_COMMENT_FOLDER_NAME,
       false,
     );
@@ -110,19 +100,13 @@ const updateComment = catchAsync(async (req, res) => {
   const { id } = req.params;
 
   const isRemovingImage =
-    typeof req.body?.commentImage === "string" &&
-    !req.body?.commentImage?.length;
+    req.body.commentImage && !req.body?.commentImage?.length;
 
   const previousCommentImage = (await CommentModel.findById(id))?.commentImage;
 
-  let commentImagePath;
-
-  if (req?.body?.commentImage?.length)
-    commentImagePath = req?.body?.commentImage[0];
-
-  if (commentImagePath) {
+  if (req.body?.commentImage) {
     const commentImage = await CommentUtils.uploadCommentImage(
-      commentImagePath,
+      req.body?.commentImage,
       CloudinaryConstant.SHARE_THOUGHT_COMMENT_FOLDER_NAME,
       true,
       previousCommentImage,

@@ -10,6 +10,7 @@ import checkChannelStatus from "../../middleware/check.channel.status";
 import haveAccessDeleteComment from "../../middleware/have.access.delete.comment";
 import verifyMyCommunityPost from "../../middleware/verify.my.community.post";
 import getActiveChannel from "../../middleware/get.active.channel";
+import readReqBodyFiles from "../../middleware/read.req.body.files";
 
 const router = express.Router();
 
@@ -47,8 +48,10 @@ router.get(
  *
  * ***/
 router.post(
-  "/:postId" /* :id ===> postId */,
+  "/:postId",
   CommentMiddleware.createOrUpdateCommentImages,
+  readReqBodyFiles /* read files info from formData */,
+  CommentMiddleware.matchReqBodyFilesWithValidationSchema,
   validateRequest(CommentValidation.createOrUpdateComment),
   getLoggedInUser,
   checkChannelStatus,
@@ -62,8 +65,10 @@ router.post(
  *
  * ***/
 router.post(
-  "/community/:communityPostId" /* :id ===> postId */,
+  "/community/:communityPostId",
   CommentMiddleware.createOrUpdateCommentImages,
+  readReqBodyFiles /* read files info from formData */,
+  CommentMiddleware.matchReqBodyFilesWithValidationSchema,
   validateRequest(CommentValidation.createOrUpdateComment),
   getLoggedInUser,
   checkChannelStatus,
@@ -75,6 +80,8 @@ router.post(
 router.post(
   "/reply/:id" /* :id ===> commentId */,
   CommentMiddleware.createOrUpdateCommentImages,
+  readReqBodyFiles /* read files info from formData */,
+  CommentMiddleware.matchReqBodyFilesWithValidationSchema,
   validateRequest(CommentValidation.createOrUpdateComment),
   getLoggedInUser,
   checkChannelStatus,
@@ -84,6 +91,8 @@ router.post(
 router.patch(
   "/:id" /* :id ===> commentId */,
   CommentMiddleware.createOrUpdateCommentImages,
+  readReqBodyFiles /* read files info from formData */,
+  CommentMiddleware.matchReqBodyFilesWithValidationSchema,
   validateRequest(CommentValidation.createOrUpdateComment),
   getLoggedInUser,
   checkChannelStatus,
