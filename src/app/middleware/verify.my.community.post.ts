@@ -2,7 +2,7 @@ import httpStatus from "http-status";
 import AppError from "../errors/AppError";
 import { IRequestWithActiveDetails } from "../interface/interface";
 import catchAsync from "../utils/catch.async";
-import { CommunityPostModel } from "../modules/community/community.model";
+import { CommunityPostModel } from "../modules/community.post/community.post.model";
 
 const verifyMyCommunityPost = catchAsync(async (req, res, next) => {
   const { communityPostId } = req.params;
