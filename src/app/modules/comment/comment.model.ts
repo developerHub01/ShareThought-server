@@ -11,9 +11,9 @@ import { Types } from "mongoose";
 import { CommentReactionModel } from "../comment.reaction/comment.reaction.model";
 import { ChannelConstant } from "../channel/channel.constant";
 import { CloudinaryUtils } from "../../utils/cloudinary.utils";
-import { CommunityModel } from "../community/community.model";
-import { CommunityConstant } from "../community/community.constant";
 import { TAuthorType, TPostType } from "../../interface/interface";
+import { CommunityPostConstant } from "../community.post/community.post.constant";
+import { CommunityPostModel } from "../community.post/community.post.model";
 // import mongooseAutoComplete from "mongoose-autopopulate";
 
 const commentSchema = new Schema<IComment, ICommentModel>(
@@ -24,7 +24,7 @@ const commentSchema = new Schema<IComment, ICommentModel>(
     },
     communityPostId: {
       type: Schema.Types.ObjectId,
-      ref: CommunityConstant.COMMUNITY_COLLECTION_NAME,
+      ref: CommunityPostConstant.COMMUNITY_POST_COLLECTION_NAME,
     },
     commentAuthorId: {
       type: Schema.Types.ObjectId,
@@ -172,7 +172,7 @@ commentSchema.statics.createComment = async (
       (postId &&
         !(await PostModel.findOne({ _id: postId, isPublished: true }))) ||
       (communityPostId &&
-        !(await CommunityModel.findOne({
+        !(await CommunityPostModel.findOne({
           _id: communityPostId,
           isPublished: true,
         })))

@@ -1,29 +1,29 @@
 import express from "express";
-import { CommunityController } from "./community.controller";
+import { CommunityPostController } from "./community.post.controller";
 import getLoggedInUser from "../../middleware/get.loggedin.user";
 import getActiveChannel from "../../middleware/get.active.channel";
 import verifyMyCommunityPost from "../../middleware/verify.my.community.post";
 
 const router = express.Router();
 
-router.get("/", CommunityController.findCommuityPosts);
+router.get("/", CommunityPostController.findCommuityPosts);
 
-router.get("/channel/:id", CommunityController.findCommuityPostsByChannelId);
+router.get("/channel/:id", CommunityPostController.findCommuityPostsByChannelId);
 
 router.get(
   "/my",
   getLoggedInUser,
   getActiveChannel,
-  CommunityController.findCommuityPostsByChannelId,
+  CommunityPostController.findCommuityPostsByChannelId,
 );
 
-router.get("/:id", CommunityController.findCommuityPostById);
+router.get("/:id", CommunityPostController.findCommuityPostById);
 
 router.post(
   "/",
   getLoggedInUser,
   getActiveChannel,
-  CommunityController.createPost,
+  CommunityPostController.createPost,
 );
 
 router.patch(
@@ -31,7 +31,7 @@ router.patch(
   getLoggedInUser,
   getActiveChannel,
   verifyMyCommunityPost,
-  CommunityController.updatePost,
+  CommunityPostController.updatePost,
 );
 
 router.delete(
@@ -39,7 +39,7 @@ router.delete(
   getLoggedInUser,
   getActiveChannel,
   verifyMyCommunityPost,
-  CommunityController.deletePost,
+  CommunityPostController.deletePost,
 );
 
 export const CommunityRoutes = router;

@@ -1,13 +1,13 @@
 import QueryBuilder from "../../builder/QueryBuilder";
 import errorHandler from "../../errors/errorHandler";
-import { CommunityConstant } from "./community.constant";
-import { ICreateCommunity } from "./community.interface";
-import { CommunityModel } from "./community.model";
+import { CommunityPostConstant } from "./community.post.constant";
+import { ICreateCommunityPost } from "./community.post.interface";
+import { CommunityPostModel } from "./community.post.model";
 
 const findCommuityPosts = async (query: Record<string, unknown>) => {
   try {
     const postQuery = new QueryBuilder(
-      CommunityModel.find({
+      CommunityPostModel.find({
         isPublished: true,
       }).populate({
         path: "channelId",
@@ -15,7 +15,7 @@ const findCommuityPosts = async (query: Record<string, unknown>) => {
       }),
       query,
     )
-      .search(CommunityConstant.COMMUNITY_POST_SEARCHABLE_FIELD)
+      .search(CommunityPostConstant.COMMUNITY_POST_SEARCHABLE_FIELD)
       .filter()
       .sort()
       .paginate()
@@ -39,7 +39,7 @@ const findCommuityPostsByChannelId = async (
 ) => {
   try {
     const postQuery = new QueryBuilder(
-      CommunityModel.find({
+      CommunityPostModel.find({
         isPublished: true,
         channelId,
       }).populate({
@@ -48,7 +48,7 @@ const findCommuityPostsByChannelId = async (
       }),
       query,
     )
-      .search(CommunityConstant.COMMUNITY_POST_SEARCHABLE_FIELD)
+      .search(CommunityPostConstant.COMMUNITY_POST_SEARCHABLE_FIELD)
       .filter()
       .sort()
       .paginate()
@@ -68,23 +68,23 @@ const findCommuityPostsByChannelId = async (
 
 const findCommuityPostById = async (id: string) => {
   try {
-    return CommunityModel.findById(id);
+    return CommunityPostModel.findById(id);
   } catch (error) {
     errorHandler(error);
   }
 };
 
-const createPost = async (payload: ICreateCommunity) => {
+const createPost = async (payload: ICreateCommunityPost) => {
   try {
-    return CommunityModel.createPost(payload);
+    return CommunityPostModel.createPost(payload);
   } catch (error) {
     errorHandler(error);
   }
 };
 
-const updatePost = async (payload: Partial<ICreateCommunity>, id: string) => {
+const updatePost = async (payload: Partial<ICreateCommunityPost>, id: string) => {
   try {
-    return CommunityModel.updatePost(payload, id);
+    return CommunityPostModel.updatePost(payload, id);
   } catch (error) {
     errorHandler(error);
   }
@@ -92,13 +92,13 @@ const updatePost = async (payload: Partial<ICreateCommunity>, id: string) => {
 
 const deletePost = async (id: string) => {
   try {
-    return CommunityModel.deletePost(id);
+    return CommunityPostModel.deletePost(id);
   } catch (error) {
     errorHandler(error);
   }
 };
 
-export const CommunityServices = {
+export const CommunityPostServices = {
   findCommuityPosts,
   findCommuityPostsByChannelId,
   findCommuityPostById,

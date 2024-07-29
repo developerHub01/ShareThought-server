@@ -1,7 +1,8 @@
 import mongoose, { model, Schema } from "mongoose";
 import {
-  ICommunity,
-  ICommunityModel,
+  ICommunityPost,
+  ICreateCommunityPost,
+  ICommunityPostModel,
   ICommunityPostImageType,
   ICommunityPostPollOption,
   ICommunityPostPollOptionWithImage,
@@ -10,9 +11,7 @@ import {
   ICommunityPostQuizOption,
   ICommunityPostQuizType,
   ICommunitySharedPostType,
-  ICreateCommunity,
-} from "./community.interface";
-import { CommunityConstant } from "./community.constant";
+} from "./community.post.interface";
 import { UserConstant } from "../user/user.constant";
 import AppError from "../../errors/AppError";
 import httpStatus from "http-status";
@@ -20,6 +19,7 @@ import { ChannelConstant } from "../channel/channel.constant";
 import errorHandler from "../../errors/errorHandler";
 import { CommentModel } from "../comment/comment.model";
 import { PostReactionModel } from "../post.reaction/post.reaction.model";
+import { CommunityPostConstant } from "./community.post.constant";
 
 const communityPostImageSchema = new Schema<ICommunityPostImageType>({
   image: {
@@ -31,7 +31,7 @@ const communityPostImageSchema = new Schema<ICommunityPostImageType>({
 const communitySharedPostSchema = new Schema<ICommunitySharedPostType>({
   postId: {
     type: Schema.Types.ObjectId,
-    ref: CommunityConstant.COMMUNITY_COLLECTION_NAME,
+    ref: CommunityPostConstant.COMMUNITY_POST_COLLECTION_NAME,
     required: true,
   },
 });
@@ -42,8 +42,8 @@ const communityPostPullOptionShcema = new Schema<ICommunityPostPollOption>({
   text: {
     type: String,
     required: true,
-    minlength: CommunityConstant.COMMUNITY_OPTION_MIN_LENGTH,
-    maxlength: CommunityConstant.COMMUNITY_OPTION_MAX_LENGTH,
+    minlength: CommunityPostConstant.COMMUNITY_POST_OPTION_MIN_LENGTH,
+    maxlength: CommunityPostConstant.COMMUNITY_POST_OPTION_MAX_LENGTH,
   },
   polledUsers: {
     type: [
@@ -64,8 +64,8 @@ const communityPostPullWithImageOptionShcema =
       type: String,
       trim: true,
       required: true,
-      minlength: CommunityConstant.COMMUNITY_OPTION_MIN_LENGTH,
-      maxlength: CommunityConstant.COMMUNITY_OPTION_MAX_LENGTH,
+      minlength: CommunityPostConstant.COMMUNITY_POST_OPTION_MIN_LENGTH,
+      maxlength: CommunityPostConstant.COMMUNITY_POST_OPTION_MAX_LENGTH,
     },
     image: {
       type: String,
@@ -99,10 +99,11 @@ const communityPostPullSchema = new Schema<ICommunityPostPollType>(
       validate: {
         validator: function (v: Array<unknown>) {
           return (
-            v.length >= CommunityConstant.COMMUNITY_MIN_OPTION_IN_EACH_POST
+            v.length >=
+            CommunityPostConstant.COMMUNITY_POST_MIN_OPTION_IN_EACH_POST
           );
         },
-        message: `Minimum ${CommunityConstant.COMMUNITY_MIN_OPTION_IN_EACH_POST} pull option is required`,
+        message: `Minimum ${CommunityPostConstant.COMMUNITY_POST_MIN_OPTION_IN_EACH_POST} pull option is required`,
       },
       required: true,
     },
@@ -122,10 +123,11 @@ const communityPostPullWithImageSchema =
         validate: {
           validator: function (v: Array<unknown>) {
             return (
-              v.length >= CommunityConstant.COMMUNITY_MIN_OPTION_IN_EACH_POST
+              v.length >=
+              CommunityPostConstant.COMMUNITY_POST_MIN_OPTION_IN_EACH_POST
             );
           },
-          message: `Minimum ${CommunityConstant.COMMUNITY_MIN_OPTION_IN_EACH_POST} pull option is required`,
+          message: `Minimum ${CommunityPostConstant.COMMUNITY_POST_MIN_OPTION_IN_EACH_POST} pull option is required`,
         },
         required: true,
       },
@@ -156,8 +158,8 @@ const communityPostQuizOptionShcema = new Schema<ICommunityPostQuizOption>(
       type: String,
       trim: true,
       required: true,
-      minlength: CommunityConstant.COMMUNITY_OPTION_MIN_LENGTH,
-      maxlength: CommunityConstant.COMMUNITY_OPTION_MAX_LENGTH,
+      minlength: CommunityPostConstant.COMMUNITY_POST_OPTION_MIN_LENGTH,
+      maxlength: CommunityPostConstant.COMMUNITY_POST_OPTION_MAX_LENGTH,
     },
     isCurrectAnswer: {
       type: Boolean,
@@ -197,10 +199,11 @@ const communityPostQuizSchema = new Schema<ICommunityPostQuizType>(
       validate: {
         validator: function (v: Array<unknown>) {
           return (
-            v.length >= CommunityConstant.COMMUNITY_MIN_OPTION_IN_EACH_POST
+            v.length >=
+            CommunityPostConstant.COMMUNITY_POST_MIN_OPTION_IN_EACH_POST
           );
         },
-        message: `Minimum ${CommunityConstant.COMMUNITY_MIN_OPTION_IN_EACH_POST} quiz option is required`,
+        message: `Minimum ${CommunityPostConstant.COMMUNITY_POST_MIN_OPTION_IN_EACH_POST} quiz option is required`,
       },
       required: true,
     },
@@ -222,7 +225,7 @@ communityPostQuizSchema.virtual("totalAnswered").get(function () {
 /* ================ Community post quiz schema end ================================ */
 
 /* ================ Community main schema start ================================ */
-const communitySchema = new Schema<ICommunity, ICommunityModel>(
+const communityPostSchema = new Schema<ICommunityPost, ICommunityPostModel>(
   {
     channelId: {
       type: Schema.Types.ObjectId,
@@ -233,14 +236,14 @@ const communitySchema = new Schema<ICommunity, ICommunityModel>(
       type: String,
       required: true,
       trim: true,
-      maxLength: CommunityConstant.COMMUNITY_TEXT_MAX_LENGTH,
-      minLength: CommunityConstant.COMMUNITY_TEXT_MIN_LENGTH,
+      maxLength: CommunityPostConstant.COMMUNITY_POST_TEXT_MAX_LENGTH,
+      minLength: CommunityPostConstant.COMMUNITY_POST_TEXT_MIN_LENGTH,
     },
     postType: {
       type: String,
-      enum: Object.keys(CommunityConstant.COMMUNITY_POST_TYPES),
+      enum: Object.keys(CommunityPostConstant.COMMUNITY_POST_TYPES),
       required: true,
-      default: CommunityConstant.COMMUNITY_POST_TYPES["TEXT"],
+      default: CommunityPostConstant.COMMUNITY_POST_TYPES["TEXT"],
     },
     publihedAt: {
       type: Date,
@@ -267,7 +270,7 @@ const communitySchema = new Schema<ICommunity, ICommunityModel>(
   },
 );
 
-communitySchema.virtual("totalVote").get(function () {
+communityPostSchema.virtual("totalVote").get(function () {
   if (
     !(Number(!!this.postPollDetails) + Number(!!this.postPollWithImageDetails))
   )
@@ -281,7 +284,7 @@ communitySchema.virtual("totalVote").get(function () {
   );
 });
 
-communitySchema.virtual("totalAnswer").get(function () {
+communityPostSchema.virtual("totalAnswer").get(function () {
   if (!this.postQuizDetails) return;
 
   return (
@@ -294,7 +297,7 @@ communitySchema.virtual("totalAnswer").get(function () {
 
 /* ================ Community main schema end ================================ */
 
-communitySchema.pre<ICommunity>("save", async function (next) {
+communityPostSchema.pre<ICommunityPost>("save", async function (next) {
   if (this.scheduledTime && this.isPublished)
     throw new AppError(
       httpStatus.BAD_REQUEST,
@@ -389,13 +392,14 @@ communitySchema.pre<ICommunity>("save", async function (next) {
 });
 
 /* static methods start ============================================= */
-communitySchema.statics.isMyPost = async (
+communityPostSchema.statics.isMyPost = async (
   communityPostId: string,
   channelId: string,
 ): Promise<boolean> => {
   const { channelId: postChannelId } =
-    (await CommunityModel.findById(communityPostId).select("channelId -_id")) ||
-    {};
+    (await CommunityPostModel.findById(communityPostId).select(
+      "channelId -_id",
+    )) || {};
 
   if (!postChannelId)
     throw new AppError(httpStatus.NOT_FOUND, "Post not found");
@@ -403,12 +407,12 @@ communitySchema.statics.isMyPost = async (
   return channelId === postChannelId?.toString();
 };
 
-communitySchema.statics.findPostById = async (
+communityPostSchema.statics.findPostById = async (
   communityPostId: string,
   channelId: string,
 ): Promise<unknown> => {
   try {
-    const postDetails = await CommunityModel.findById(communityPostId);
+    const postDetails = await CommunityPostModel.findById(communityPostId);
 
     if (!postDetails)
       throw new AppError(httpStatus.NOT_FOUND, "post not found");
@@ -418,7 +422,7 @@ communitySchema.statics.findPostById = async (
     if (
       channelId &&
       !isPublished &&
-      !(await CommunityModel.isMyPost(communityPostId, channelId))
+      !(await CommunityPostModel.isMyPost(communityPostId, channelId))
     )
       throw new AppError(httpStatus.NOT_FOUND, "post not found");
 
@@ -428,40 +432,40 @@ communitySchema.statics.findPostById = async (
   }
 };
 
-communitySchema.statics.isPublicPostById = async (
+communityPostSchema.statics.isPublicPostById = async (
   communityPostId: string,
 ): Promise<boolean | unknown> => {
   try {
     const { isPublished } =
-      (await CommunityModel.findById(communityPostId)) || {};
+      (await CommunityPostModel.findById(communityPostId)) || {};
     return Boolean(isPublished);
   } catch (error) {
     return errorHandler(error);
   }
 };
 
-communitySchema.statics.createPost = async (
-  payload: ICreateCommunity,
+communityPostSchema.statics.createPost = async (
+  payload: ICreateCommunityPost,
 ): Promise<unknown> => {
   try {
-    return await CommunityModel.create({ ...payload });
+    return await CommunityPostModel.create({ ...payload });
   } catch (error) {
     return errorHandler(error);
   }
 };
 
-communitySchema.statics.updatePost = async (
-  payload: Partial<ICreateCommunity>,
+communityPostSchema.statics.updatePost = async (
+  payload: Partial<ICreateCommunityPost>,
   postId: string,
 ): Promise<unknown> => {
   try {
-    return await CommunityModel.findByIdAndUpdate(postId, { ...payload });
+    return await CommunityPostModel.findByIdAndUpdate(postId, { ...payload });
   } catch (error) {
     return errorHandler(error);
   }
 };
 
-communitySchema.statics.deletePost = async (
+communityPostSchema.statics.deletePost = async (
   communityPostId: string,
 ): Promise<unknown> => {
   const session = await mongoose.startSession();
@@ -507,7 +511,7 @@ communitySchema.statics.deletePost = async (
 
 /* static methods end ============================================= */
 
-export const CommunityModel = model<ICommunity, ICommunityModel>(
-  CommunityConstant.COMMUNITY_COLLECTION_NAME,
-  communitySchema,
+export const CommunityPostModel = model<ICommunityPost, ICommunityPostModel>(
+  CommunityPostConstant.COMMUNITY_POST_COLLECTION_NAME,
+  communityPostSchema,
 );

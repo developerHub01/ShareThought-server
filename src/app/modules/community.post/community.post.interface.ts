@@ -1,8 +1,8 @@
 import { Model, Types } from "mongoose";
-import { CommunityConstant } from "./community.constant";
+import { CommunityPostConstant } from "./community.post.constant";
 
 const communityPostTypeList: Array<string> = Object.keys(
-  CommunityConstant?.COMMUNITY_POST_TYPES,
+  CommunityPostConstant?.COMMUNITY_POST_TYPES,
 );
 
 export type TCommunityPostType = (typeof communityPostTypeList)[number];
@@ -50,7 +50,7 @@ export interface ICommunityPostQuizType {
   options: Array<ICommunityPostQuizOption>;
 }
 
-export interface ICommunity {
+export interface ICommunityPost {
   channelId: Types.ObjectId;
   text: string;
   isPublished: boolean;
@@ -64,7 +64,7 @@ export interface ICommunity {
   postQuizDetails?: ICommunityPostQuizType;
 }
 
-export interface ICreateCommunity {
+export interface ICreateCommunityPost {
   text: string;
   isPublished?: boolean;
   scheduledTime?: Date;
@@ -76,11 +76,19 @@ export interface ICreateCommunity {
   postQuizDetails?: ICommunityPostQuizType;
 }
 
-export interface ICommunityModel extends Model<ICommunity> {
+export interface ICommunityPostModel extends Model<ICommunityPost> {
   isMyPost(communityPostId: string, channelId: string): Promise<boolean>;
+
   findPostById(communityPostId: string, channelId: string): Promise<unknown>;
+
   isPublicPostById(communityPostId: string): Promise<boolean | unknown>;
-  createPost(payload: ICreateCommunity): Promise<unknown>; 
-  updatePost(payload: Partial<ICreateCommunity>, postId: string): Promise<unknown>; 
+  
+  createPost(payload: ICreateCommunityPost): Promise<unknown>;
+
+  updatePost(
+    payload: Partial<ICreateCommunityPost>,
+    postId: string,
+  ): Promise<unknown>;
+
   deletePost(communityPostId: string): Promise<unknown>;
 }

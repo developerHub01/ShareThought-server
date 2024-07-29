@@ -1,12 +1,12 @@
 import httpStatus from "http-status";
 import catchAsync from "../../utils/catch.async";
 import { sendResponse } from "../../utils/send.response";
-import { CommunityServices } from "./community.services";
 import { IRequestWithActiveDetails } from "../../interface/interface";
 import AppError from "../../errors/AppError";
+import { CommunityPostServices } from "./community.post.services";
 
 const findCommuityPosts = catchAsync(async (req, res) => {
-  const result = await CommunityServices.findCommuityPosts(req.query);
+  const result = await CommunityPostServices.findCommuityPosts(req.query);
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -19,7 +19,7 @@ const findCommuityPosts = catchAsync(async (req, res) => {
 const findCommuityPostsByChannelId = catchAsync(async (req, res) => {
   const { id } = req.params;
 
-  const result = await CommunityServices.findCommuityPostsByChannelId(
+  const result = await CommunityPostServices.findCommuityPostsByChannelId(
     req.query,
     id,
   );
@@ -41,7 +41,7 @@ const findCommuityPostsMine = catchAsync(async (req, res) => {
       "you don't have any activated channel",
     );
 
-  const result = await CommunityServices.findCommuityPostsByChannelId(
+  const result = await CommunityPostServices.findCommuityPostsByChannelId(
     req.query,
     channelId,
   );
@@ -57,7 +57,7 @@ const findCommuityPostsMine = catchAsync(async (req, res) => {
 const findCommuityPostById = catchAsync(async (req, res) => {
   const { id } = req.params;
 
-  const result = await CommunityServices.findCommuityPostById(id);
+  const result = await CommunityPostServices.findCommuityPostById(id);
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -68,7 +68,7 @@ const findCommuityPostById = catchAsync(async (req, res) => {
 });
 
 const createPost = catchAsync(async (req, res) => {
-  const result = await CommunityServices.createPost(req.body);
+  const result = await CommunityPostServices.createPost(req.body);
 
   return sendResponse(res, {
     statusCode: httpStatus.CREATED,
@@ -81,7 +81,7 @@ const createPost = catchAsync(async (req, res) => {
 const updatePost = catchAsync(async (req, res) => {
   const { id } = req.params;
 
-  const result = await CommunityServices.updatePost(req.body, id);
+  const result = await CommunityPostServices.updatePost(req.body, id);
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -94,7 +94,7 @@ const updatePost = catchAsync(async (req, res) => {
 const deletePost = catchAsync(async (req, res) => {
   const { id } = req.params;
 
-  const result = await CommunityServices.deletePost(id);
+  const result = await CommunityPostServices.deletePost(id);
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -104,7 +104,7 @@ const deletePost = catchAsync(async (req, res) => {
   });
 });
 
-export const CommunityController = {
+export const CommunityPostController = {
   findCommuityPosts,
   findCommuityPostsByChannelId,
   findCommuityPostsMine,

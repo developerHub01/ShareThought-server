@@ -1,6 +1,6 @@
 import { z as zod } from "zod";
-import { CommunityConstant } from "./community.constant";
 import { Validation } from "../../validaton/validation";
+import { CommunityPostConstant } from "./community.post.constant";
 
 const postImageDetailsValidationSchema = zod.object({
   image: zod.string({
@@ -30,12 +30,12 @@ const postPullWithImageOptionValidationSchema = zod.object({
       invalid_type_error: "option text must be string",
     })
     .max(
-      CommunityConstant.COMMUNITY_OPTION_MAX_LENGTH,
-      `option text max length is ${CommunityConstant.COMMUNITY_OPTION_MAX_LENGTH}`,
+      CommunityPostConstant.COMMUNITY_POST_OPTION_MAX_LENGTH,
+      `option text max length is ${CommunityPostConstant.COMMUNITY_POST_OPTION_MAX_LENGTH}`,
     )
     .min(
-      CommunityConstant.COMMUNITY_OPTION_MIN_LENGTH,
-      `option text max length is ${CommunityConstant.COMMUNITY_OPTION_MIN_LENGTH}`,
+      CommunityPostConstant.COMMUNITY_POST_OPTION_MIN_LENGTH,
+      `option text max length is ${CommunityPostConstant.COMMUNITY_POST_OPTION_MIN_LENGTH}`,
     ),
   image: zod.string({
     required_error: "option image is required",
@@ -46,13 +46,13 @@ const postPullWithImageOptionValidationSchema = zod.object({
 const postPollDetailsValidationSchema = zod.object({
   options: postPollOptionValidationSchema
     .array()
-    .min(CommunityConstant.COMMUNITY_MIN_OPTION_IN_EACH_POST),
+    .min(CommunityPostConstant.COMMUNITY_POST_MIN_OPTION_IN_EACH_POST),
 });
 
 const postPollWithImageDetailsValidationSchema = zod.object({
   options: postPullWithImageOptionValidationSchema
     .array()
-    .min(CommunityConstant.COMMUNITY_MIN_OPTION_IN_EACH_POST),
+    .min(CommunityPostConstant.COMMUNITY_POST_MIN_OPTION_IN_EACH_POST),
 });
 
 const postQuizDetailsOptionValidationSchema = zod.object({
@@ -62,12 +62,12 @@ const postQuizDetailsOptionValidationSchema = zod.object({
       invalid_type_error: "quiz option text must be string",
     })
     .max(
-      CommunityConstant.COMMUNITY_OPTION_MAX_LENGTH,
-      `quiz option text max length is ${CommunityConstant.COMMUNITY_OPTION_MAX_LENGTH}`,
+      CommunityPostConstant.COMMUNITY_POST_OPTION_MAX_LENGTH,
+      `quiz option text max length is ${CommunityPostConstant.COMMUNITY_POST_OPTION_MAX_LENGTH}`,
     )
     .min(
-      CommunityConstant.COMMUNITY_OPTION_MIN_LENGTH,
-      `quiz option text max length is ${CommunityConstant.COMMUNITY_OPTION_MIN_LENGTH}`,
+      CommunityPostConstant.COMMUNITY_POST_OPTION_MIN_LENGTH,
+      `quiz option text max length is ${CommunityPostConstant.COMMUNITY_POST_OPTION_MIN_LENGTH}`,
     ),
   isCurrectAnswer: zod.boolean().default(false),
   currectAnswerExplaination: zod.string().trim().optional(),
@@ -76,7 +76,7 @@ const postQuizDetailsOptionValidationSchema = zod.object({
 const postQuizDetailsValidationSchema = zod.object({
   options: postQuizDetailsOptionValidationSchema
     .array()
-    .min(CommunityConstant.COMMUNITY_MIN_OPTION_IN_EACH_POST),
+    .min(CommunityPostConstant.COMMUNITY_POST_MIN_OPTION_IN_EACH_POST),
 });
 
 const createPostValidationSchema = zod.object({
@@ -86,12 +86,12 @@ const createPostValidationSchema = zod.object({
       invalid_type_error: "post title must be string",
     })
     .max(
-      CommunityConstant.COMMUNITY_TEXT_MAX_LENGTH,
-      `post title max length is ${CommunityConstant.COMMUNITY_TEXT_MAX_LENGTH}`,
+      CommunityPostConstant.COMMUNITY_POST_TEXT_MAX_LENGTH,
+      `post title max length is ${CommunityPostConstant.COMMUNITY_POST_TEXT_MAX_LENGTH}`,
     )
     .min(
-      CommunityConstant.COMMUNITY_TEXT_MIN_LENGTH,
-      `post title max length is ${CommunityConstant.COMMUNITY_TEXT_MIN_LENGTH}`,
+      CommunityPostConstant.COMMUNITY_POST_TEXT_MIN_LENGTH,
+      `post title max length is ${CommunityPostConstant.COMMUNITY_POST_TEXT_MIN_LENGTH}`,
     ),
   postImageDetails: postImageDetailsValidationSchema.optional(),
   postSharedPostDetails: postSharedPostDetailsValidationSchema.optional(),
@@ -114,16 +114,16 @@ const updatePostValidationSchema = zod.object({
       invalid_type_error: "post title must be string",
     })
     .max(
-      CommunityConstant.COMMUNITY_TEXT_MAX_LENGTH,
-      `post title max length is ${CommunityConstant.COMMUNITY_TEXT_MAX_LENGTH}`,
+      CommunityPostConstant.COMMUNITY_POST_TEXT_MAX_LENGTH,
+      `post title max length is ${CommunityPostConstant.COMMUNITY_POST_TEXT_MAX_LENGTH}`,
     )
     .min(
-      CommunityConstant.COMMUNITY_TEXT_MIN_LENGTH,
-      `post title max length is ${CommunityConstant.COMMUNITY_TEXT_MIN_LENGTH}`,
+      CommunityPostConstant.COMMUNITY_POST_TEXT_MIN_LENGTH,
+      `post title max length is ${CommunityPostConstant.COMMUNITY_POST_TEXT_MIN_LENGTH}`,
     ),
 });
 
-export const CommunityValidation = {
+export const CommunityPostValidation = {
   createPostValidationSchema,
   updatePostValidationSchema,
 };

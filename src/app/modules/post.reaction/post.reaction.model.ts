@@ -11,8 +11,8 @@ import { UserConstant } from "../user/user.constant";
 import AppError from "../../errors/AppError";
 import httpStatus from "http-status";
 import { ChannelConstant } from "../channel/channel.constant";
-import { CommunityConstant } from "../community/community.constant";
 import { TAuthorType, TPostType } from "../../interface/interface";
+import { CommunityPostConstant } from "../community.post/community.post.constant";
 
 const postReactionSchema = new Schema<IPostReaction, IPostReactionModel>({
   postId: {
@@ -21,7 +21,7 @@ const postReactionSchema = new Schema<IPostReaction, IPostReactionModel>({
   },
   communityPostId: {
     type: Schema.Types.ObjectId,
-    ref: CommunityConstant.COMMUNITY_COLLECTION_NAME,
+    ref: CommunityPostConstant.COMMUNITY_POST_COLLECTION_NAME,
   },
   userId: {
     type: Schema.Types.ObjectId,
