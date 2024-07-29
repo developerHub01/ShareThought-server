@@ -13,8 +13,8 @@ const findCommentByPostId = catchAsync(async (req, res) => {
 
   const result = await CommentServices.findCommentByPostId(
     req.query,
-    postId,
-    communityPostId,
+    postId || communityPostId,
+    postId ? "blogPost" : "communityPost",
   );
 
   return sendResponse(res, {
@@ -58,8 +58,8 @@ const createComment = catchAsync(async (req, res) => {
 
   const result = await CommentServices.createComment(
     req.body,
-    postId,
-    communityPostId,
+    postId || communityPostId,
+    postId ? "blogPost" : "communityPost",
     channelId || userId,
     channelId ? "channelId" : "userId",
   );
@@ -170,8 +170,8 @@ const deleteAllComment = catchAsync(async (req, res) => {
   const { postId, communityPostId } = req.params;
 
   const result = await CommentServices.deleteAllComment(
-    postId,
-    communityPostId,
+    postId || communityPostId,
+    postId ? "blogPost" : "communityPost",
   );
 
   return sendResponse(res, {

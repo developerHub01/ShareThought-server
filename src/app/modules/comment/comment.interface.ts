@@ -1,4 +1,5 @@
 import { ClientSession, Model, Types } from "mongoose";
+import { TAuthorType, TPostType } from "../../interface/interface";
 
 export interface IComment {
   postId?: Types.ObjectId;
@@ -24,25 +25,33 @@ export interface ICreateComment {
 export interface ICommentModel extends Model<IComment> {
   isMyComment(
     commentId: string,
-    id: string,
-    idType: "userId" | "channelId",
+    authorId: string,
+    authorType: TAuthorType,
   ): Promise<boolean | unknown>;
+
   isMyPost(commentId: string, userId: string): Promise<boolean | unknown>;
+
   haveAccessToDelete(
     commentId: string,
-    userId: string,
-    channelId?: string,
+    authorId: string,
+    authorType: TAuthorType,
   ): Promise<unknown>;
+
   findComment(id: string): Promise<unknown>;
+
   createComment(payload: ICreateComment): Promise<unknown>;
+
   deleteCommentsWithReplies(
     commentId: string,
     session?: ClientSession,
   ): Promise<unknown>;
+
   deleteComment(id: string): Promise<boolean | unknown>;
+
   deleteAllCommentByPostId(
     postId: string,
-    communityPostId: string,
+    postType: TPostType,
   ): Promise<unknown>;
+
   updateComment(payload: ICreateComment, commentId: string): Promise<unknown>;
 }

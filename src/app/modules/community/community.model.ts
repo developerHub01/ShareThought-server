@@ -1,4 +1,4 @@
-import { model, Schema } from "mongoose";
+import mongoose, { model, Schema } from "mongoose";
 import {
   ICommunity,
   ICommunityModel,
@@ -15,6 +15,9 @@ import { UserConstant } from "../user/user.constant";
 import AppError from "../../errors/AppError";
 import httpStatus from "http-status";
 import { ChannelConstant } from "../channel/channel.constant";
+import errorHandler from "../../errors/errorHandler";
+import { CommentModel } from "../comment/comment.model";
+import { PostReactionModel } from "../post.reaction/post.reaction.model";
 
 const communityPostImageSchema = new Schema<ICommunityPostImageType>({
   image: {
@@ -326,15 +329,95 @@ communitySchema.statics.isMyPost = async (
   communityPostId: string,
   channelId: string,
 ): Promise<boolean> => {
-   const { channelId: postChannelId } =
-     (await CommunityModel.findById(communityPostId).select(
-       "channelId -_id",
-     )) || {};
+  const { channelId: postChannelId } =
+    (await CommunityModel.findById(communityPostId).select("channelId -_id")) ||
+    {};
 
-   if (!postChannelId)
-     throw new AppError(httpStatus.NOT_FOUND, "Post not found");
+  if (!postChannelId)
+    throw new AppError(httpStatus.NOT_FOUND, "Post not found");
 
-   return channelId === postChannelId?.toString();
+  return channelId === postChannelId?.toString();
+};
+
+communitySchema.statics.findPostById = async (
+  communityPostId: string,
+  channelId: string,
+): Promise<unknown> => {
+  try {
+    const postDetails = await CommunityModel.findById(communityPostId);
+
+    if (!postDetails)
+      throw new AppError(httpStatus.NOT_FOUND, "post not found");
+
+    const { isPublished } = postDetails;
+
+    if (
+      channelId &&
+      !isPublished &&
+      !(await CommunityModel.isMyPost(communityPostId, channelId))
+    )
+      throw new AppError(httpStatus.NOT_FOUND, "post not found");
+
+    return postDetails;
+  } catch (error) {
+    return errorHandler(error);
+  }
+};
+
+communitySchema.statics.isPublicPostById = async (
+  communityPostId: string,
+): Promise<boolean | unknown> => {
+  try {
+    const { isPublished } =
+      (await CommunityModel.findById(communityPostId)) || {};
+    return Boolean(isPublished);
+  } catch (error) {
+    return errorHandler(error);
+  }
+};
+
+communitySchema.statics.deletePost = async (
+  communityPostId: string,
+): Promise<unknown> => {
+  const session = await mongoose.startSession();
+  try {
+    session.startTransaction();
+
+    /* Deleting all comments of post */
+    let result = await CommentModel.deleteAllCommentByPostId(
+      undefined,
+      communityPostId,
+    );
+
+    /* Deleting all reactions of post */
+    (result as unknown) = await PostReactionModel.deleteAllReactionByPostId(
+      undefined,
+      communityPostId,
+      session,
+    );
+
+    (result as unknown) = await CommentModel.findByIdAndDelete(
+      communityPostId,
+      {
+        session,
+      },
+    );
+
+    if (!result)
+      throw new AppError(
+        httpStatus.INTERNAL_SERVER_ERROR,
+        "Something went wrong",
+      );
+
+    await session.commitTransaction();
+    await session.endSession();
+
+    return result;
+  } catch (error) {
+    await session.abortTransaction();
+    await session.endSession();
+    return errorHandler(error);
+  }
 };
 /* static methods end ============================================= */
 

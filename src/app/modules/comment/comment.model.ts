@@ -13,6 +13,7 @@ import { ChannelConstant } from "../channel/channel.constant";
 import { CloudinaryUtils } from "../../utils/cloudinary.utils";
 import { CommunityModel } from "../community/community.model";
 import { CommunityConstant } from "../community/community.constant";
+import { TAuthorType, TPostType } from "../../interface/interface";
 // import mongooseAutoComplete from "mongoose-autopopulate";
 
 const commentSchema = new Schema<IComment, ICommentModel>(
@@ -116,20 +117,19 @@ commentSchema.statics.isMyPost = async (
 
 commentSchema.statics.isMyComment = async (
   commentId: string,
-  id: string,
-  idType: "userId" | "channelId",
+  authorId: string,
+  authorType: TAuthorType,
 ): Promise<boolean | unknown> => {
   try {
     const commentData = await CommentModel.findById(commentId);
     if (!commentData)
       throw new AppError(httpStatus.NOT_FOUND, "comment not found");
 
-    const authorId =
-      idType === "userId"
+    return (
+      (authorType === "userId"
         ? commentData?.commentAuthorId?.toString()
-        : commentData?.commentAuthorChannelId?.toString();
-
-    return authorId === id;
+        : commentData?.commentAuthorChannelId?.toString()) === authorId
+    );
   } catch (error) {
     errorHandler(error);
   }
@@ -137,8 +137,8 @@ commentSchema.statics.isMyComment = async (
 
 commentSchema.statics.haveAccessToDelete = async (
   commentId: string,
-  userId: string,
-  channelId?: string,
+  authorId: string,
+  authorType: TAuthorType,
 ): Promise<unknown> => {
   try {
     const commentData = await CommentModel.findById(commentId);
@@ -149,8 +149,9 @@ commentSchema.statics.haveAccessToDelete = async (
     const { commentAuthorId, commentAuthorChannelId } = commentData;
 
     return (
-      userId === commentAuthorId?.toString() ||
-      channelId === commentAuthorChannelId?.toString()
+      (authorType === "channelId"
+        ? commentAuthorChannelId?.toString()
+        : commentAuthorId?.toString()) === authorId
     );
   } catch (error) {
     return errorHandler(error);
@@ -266,7 +267,7 @@ commentSchema.statics.createComment = async (
 };
 
 commentSchema.statics.updateComment = async (
-  payload: ICreateComment,
+  payload: Partial<ICreateComment>,
   commentId: string,
 ): Promise<unknown> => {
   try {
@@ -348,14 +349,14 @@ commentSchema.statics.deleteComment = async (
 
 commentSchema.statics.deleteAllCommentByPostId = async (
   postId: string,
-  communityPostId: string,
+  postType: TPostType,
 ): Promise<unknown> => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
-    const result = await CommentModel.find({
-      ...(postId ? { postId } : { communityPostId }),
-    }).select("_id");
+    const result = await CommentModel.find(
+      postType === "blogPost" ? { postId } : { communityPostId: postId },
+    ).select("_id");
 
     for (const commentData of result) {
       const { _id } = commentData;

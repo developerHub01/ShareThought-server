@@ -1,17 +1,18 @@
 import QueryBuilder from "../../builder/QueryBuilder";
 import errorHandler from "../../errors/errorHandler";
+import { TAuthorType, TPostType } from "../../interface/interface";
 import { ICreateComment } from "./comment.interface";
 import { CommentModel } from "./comment.model";
 
 const findCommentByPostId = async (
   query: Record<string, unknown>,
   postId: string,
-  communityPostId: string,
+  postType: TPostType,
 ) => {
   try {
     const commentQuery = new QueryBuilder(
       CommentModel.find({
-        ...(postId ? { postId } : { communityPostId }),
+        ...(postType === "blogPost" ? { postId } : { communityPostId: postId }),
         parentCommentId: { $exists: false },
       }).populate({
         path: "commentAuthorId",
@@ -47,16 +48,15 @@ const findCommentById = async (commentId: string) => {
 const createComment = async (
   payload: ICreateComment,
   postId: string,
-  communityPostId: string,
+  postType: TPostType,
   authorId: string,
-  idType: "userId" | "channelId",
+  authorType: TAuthorType,
 ) => {
   try {
     payload = {
       ...payload,
-      postId,
-      communityPostId,
-      ...(idType === "channelId"
+      ...(postType === "blogPost" ? { postId } : { communityPostId: postId }),
+      ...(authorType === "channelId"
         ? { commentAuthorChannelId: authorId }
         : { commentAuthorId: authorId }),
     };
@@ -71,13 +71,13 @@ const replyComment = async (
   payload: ICreateComment,
   parentCommentId: string,
   authorId: string,
-  idType: "userId" | "channelId",
+  authorType: TAuthorType,
 ) => {
   try {
     payload = {
       ...payload,
       parentCommentId,
-      ...(idType === "channelId"
+      ...(authorType === "channelId"
         ? { commentAuthorChannelId: authorId }
         : { commentAuthorId: authorId }),
     };
@@ -104,9 +104,9 @@ const deleteComment = async (commentId: string) => {
   }
 };
 
-const deleteAllComment = async (postId: string, communityPostId: string) => {
+const deleteAllComment = async (postId: string, postType: TPostType) => {
   try {
-    return await CommentModel.deleteAllCommentByPostId(postId, communityPostId);
+    return await CommentModel.deleteAllCommentByPostId(postId, postType);
   } catch (error) {
     errorHandler(error);
   }
