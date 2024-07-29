@@ -11,7 +11,7 @@ import { ReadLaterRoutes } from "../modules/read.later/read.later.route";
 import { SavedCategoryRoutes } from "../modules/saved.category/saved.category.route";
 import { HistoryRoutes } from "../modules/history/history.route";
 import { SearchHistoryRoutes } from "../modules/search.history/search.history.route";
-import { CommunityRoutes } from "../modules/community/community.route";
+import { CommunityPostRoutes } from "../modules/community.post/community.post.route";
 
 interface IRouteSchema {
   path: string;
@@ -42,8 +42,8 @@ const moduleRoutes: Array<IRouteSchema> = [
     route: PostRoutes,
   },
   {
-    path: "/community",
-    route: CommunityRoutes,
+    path: "/community_post",
+    route: CommunityPostRoutes,
   },
   {
     path: "/comment",

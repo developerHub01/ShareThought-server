@@ -42,4 +42,4 @@ router.delete(
   CommunityPostController.deletePost,
 );
 
-export const CommunityRoutes = router;
+export const CommunityPostRoutes = router;
