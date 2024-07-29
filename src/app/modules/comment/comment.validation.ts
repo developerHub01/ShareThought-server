@@ -15,9 +15,7 @@ const createOrUpdateComment = zod.object({
       CommentConstant.COMMENT_CONTENT_MIN_LENGTH,
       `post title max length is ${CommentConstant.COMMENT_CONTENT_MIN_LENGTH}`,
     ),
-  commentImage: zod
-    .union([zod.string(), zod.string().trim().array()])
-    .optional(),
+  commentImage: zod.string().optional(),
 });
 
 export const CommentValidation = { createOrUpdateComment };
