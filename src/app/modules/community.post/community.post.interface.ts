@@ -66,6 +66,7 @@ export interface ICommunityPost {
 
 export interface ICreateCommunityPost {
   text: string;
+  channelId: string;
   isPublished?: boolean;
   scheduledTime?: Date;
   postType?: TCommunityPostType;
@@ -82,7 +83,7 @@ export interface ICommunityPostModel extends Model<ICommunityPost> {
   findPostById(communityPostId: string, channelId: string): Promise<unknown>;
 
   isPublicPostById(communityPostId: string): Promise<boolean | unknown>;
-  
+
   createPost(payload: ICreateCommunityPost): Promise<unknown>;
 
   updatePost(

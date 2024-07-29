@@ -68,7 +68,12 @@ const findCommuityPostById = catchAsync(async (req, res) => {
 });
 
 const createPost = catchAsync(async (req, res) => {
-  const result = await CommunityPostServices.createPost(req.body);
+  const { channelId } = req as IRequestWithActiveDetails;
+
+  const result = await CommunityPostServices.createPost({
+    ...req.body,
+    channelId,
+  });
 
   return sendResponse(res, {
     statusCode: httpStatus.CREATED,

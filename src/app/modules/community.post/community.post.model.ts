@@ -242,7 +242,6 @@ const communityPostSchema = new Schema<ICommunityPost, ICommunityPostModel>(
     postType: {
       type: String,
       enum: Object.keys(CommunityPostConstant.COMMUNITY_POST_TYPES),
-      required: true,
       default: CommunityPostConstant.COMMUNITY_POST_TYPES["TEXT"],
     },
     publihedAt: {
