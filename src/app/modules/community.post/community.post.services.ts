@@ -82,7 +82,10 @@ const createPost = async (payload: ICreateCommunityPost) => {
   }
 };
 
-const updatePost = async (payload: Partial<ICreateCommunityPost>, id: string) => {
+const updatePost = async (
+  payload: Partial<ICreateCommunityPost>,
+  id: string,
+) => {
   try {
     return CommunityPostModel.updatePost(payload, id);
   } catch (error) {
