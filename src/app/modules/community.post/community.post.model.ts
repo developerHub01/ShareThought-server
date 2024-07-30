@@ -490,7 +490,11 @@ communityPostSchema.statics.updatePost = async (
   postId: string,
 ): Promise<unknown> => {
   try {
-    return await CommunityPostModel.findByIdAndUpdate(postId, { ...payload });
+    return await CommunityPostModel.findByIdAndUpdate(
+      postId,
+      { ...payload },
+      { new: true },
+    );
   } catch (error) {
     return errorHandler(error);
   }

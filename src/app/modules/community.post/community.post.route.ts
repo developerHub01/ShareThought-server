@@ -21,7 +21,7 @@ router.get(
   "/my",
   getLoggedInUser,
   getActiveChannel,
-  CommunityPostController.findCommuityPostsByChannelId,
+  CommunityPostController.findCommuityPostsMine,
 );
 
 router.get("/:id", CommunityPostController.findCommuityPostById);

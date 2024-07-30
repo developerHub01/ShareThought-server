@@ -35,7 +35,7 @@ export interface ICommunityPostPollOptionWithImage {
 }
 
 export interface ICommunityPostPollWithImageType {
-  options: Array<ICommunityPostPollOption>;
+  options: Array<ICommunityPostPollOptionWithImage>;
 }
 
 /* quiz post type ================================ */

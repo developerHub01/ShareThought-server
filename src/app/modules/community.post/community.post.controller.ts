@@ -4,6 +4,10 @@ import { sendResponse } from "../../utils/send.response";
 import { IRequestWithActiveDetails } from "../../interface/interface";
 import AppError from "../../errors/AppError";
 import { CommunityPostServices } from "./community.post.services";
+import { CommunityPostModel } from "./community.post.model";
+import { CommunityPostConstant } from "./community.post.constant";
+import { ICommunityPost } from "./community.post.interface";
+import { CloudinaryUtils } from "../../utils/cloudinary.utils";
 
 const findCommuityPosts = catchAsync(async (req, res) => {
   const result = await CommunityPostServices.findCommuityPosts(req.query);
@@ -99,10 +103,47 @@ const updatePost = catchAsync(async (req, res) => {
 const deletePost = catchAsync(async (req, res) => {
   const { id } = req.params;
 
+  const { channelId } = req as IRequestWithActiveDetails;
+
+  const postData = await CommunityPostModel.findPostById(
+    id,
+    channelId as string,
+  );
+
+  if (!postData) throw new AppError(httpStatus.NOT_FOUND, "post not found");
+
+  const { postType, postImageDetails, postPollWithImageDetails } =
+    postData as ICommunityPost;
+
+  /* deleting images that are in that post */
+  if (postType) {
+    switch (postType) {
+      case CommunityPostConstant.COMMUNITY_POST_TYPES.POLL_WITH_IMAGE: {
+        const { options } = postPollWithImageDetails || {};
+
+        if (options && options?.length) {
+          const images = options.map((value) => value?.image);
+
+          CloudinaryUtils.deleteFile([...images]);
+        }
+
+        break;
+      }
+      case CommunityPostConstant.COMMUNITY_POST_TYPES.IMAGE: {
+        const { image } = postImageDetails || {};
+
+        if (image) {
+          CloudinaryUtils.deleteFile([image]);
+        }
+        break;
+      }
+    }
+  }
+
   const result = await CommunityPostServices.deletePost(id);
 
   return sendResponse(res, {
-    statusCode: httpStatus.OK,
+    statusCode: httpStatus.NO_CONTENT,
     success: true,
     message: "post deleted succesfully",
     data: result,
