@@ -33,11 +33,20 @@ const matchReqBodyFilesWithValidationSchema = catchAsync(
           break;
         }
         case CommunityPostConstant.COMMUNITY_POST_TYPES.POST_SHARE: {
-          if (!details || !details?.postId) break;
+          try {
+            const detailsData = JSON.parse(details);
 
-          req.body.postSharedPostDetails = {
-            postId: details.postId,
-          };
+            if (!detailsData || !detailsData?.postId) break;
+
+            req.body.postSharedPostDetails = {
+              postId: detailsData.postId,
+            };
+          } catch (error) {
+            throw new AppError(
+              httpStatus.BAD_REQUEST,
+              "post details is not valid",
+            );
+          }
 
           break;
         }
