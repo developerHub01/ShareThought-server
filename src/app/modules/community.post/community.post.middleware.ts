@@ -16,6 +16,12 @@ const matchReqBodyFilesWithValidationSchema = catchAsync(
     try {
       const { postType, images, details } = req.body;
 
+      delete req.body["postImageDetails"];
+      delete req.body["postSharedPostDetails"];
+      delete req.body["postQuizDetails"];
+      delete req.body["postPollDetails"];
+      delete req.body["postPollWithImageDetails"];
+
       switch (postType) {
         case CommunityPostConstant.COMMUNITY_POST_TYPES.IMAGE: {
           if (!images || !images?.length) break;
