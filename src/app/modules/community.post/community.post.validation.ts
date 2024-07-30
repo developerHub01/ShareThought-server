@@ -2,6 +2,10 @@ import { z as zod } from "zod";
 import { Validation } from "../../validaton/validation";
 import { CommunityPostConstant } from "./community.post.constant";
 
+const postTypeList = Object.keys(
+  CommunityPostConstant.COMMUNITY_POST_TYPES,
+) as [keyof typeof CommunityPostConstant.COMMUNITY_POST_TYPES];
+
 const postImageDetailsValidationSchema = zod.object({
   image: zod.string({
     required_error: "post image is required",
@@ -69,7 +73,7 @@ const postQuizDetailsOptionValidationSchema = zod.object({
       CommunityPostConstant.COMMUNITY_POST_OPTION_MIN_LENGTH,
       `quiz option text max length is ${CommunityPostConstant.COMMUNITY_POST_OPTION_MIN_LENGTH}`,
     ),
-  isCurrectAnswer: zod.boolean().default(false),
+  isCurrectAnswer: zod.boolean(),
   currectAnswerExplaination: zod.string().trim().optional(),
 });
 
@@ -98,11 +102,12 @@ const createPostValidationSchema = zod.object({
   postPollDetails: postPollDetailsValidationSchema.optional(),
   postPollWithImageDetails: postPollWithImageDetailsValidationSchema.optional(),
   postQuizDetails: postQuizDetailsValidationSchema.optional(),
+  postType: zod.enum(postTypeList).default("TEXT").optional(),
   isPublished: zod
     .string()
     .transform(Validation.parseBoolean)
     .optional()
-    .default("false")
+    .default("true")
     .pipe(zod.boolean()),
   scheduledTime: zod.string().optional(),
 });
@@ -126,4 +131,5 @@ const updatePostValidationSchema = zod.object({
 export const CommunityPostValidation = {
   createPostValidationSchema,
   updatePostValidationSchema,
+  postQuizDetailsValidationSchema,
 };
