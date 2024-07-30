@@ -21,69 +21,87 @@ import { CommentModel } from "../comment/comment.model";
 import { PostReactionModel } from "../post.reaction/post.reaction.model";
 import { CommunityPostConstant } from "./community.post.constant";
 
-const communityPostImageSchema = new Schema<ICommunityPostImageType>({
-  image: {
-    type: String,
-    required: true,
+const communityPostImageSchema = new Schema<ICommunityPostImageType>(
+  {
+    image: {
+      type: String,
+      required: true,
+    },
   },
-});
+  {
+    _id: false,
+  },
+);
 
-const communitySharedPostSchema = new Schema<ICommunitySharedPostType>({
-  postId: {
-    type: Schema.Types.ObjectId,
-    ref: CommunityPostConstant.COMMUNITY_POST_COLLECTION_NAME,
-    required: true,
+const communitySharedPostSchema = new Schema<ICommunitySharedPostType>(
+  {
+    postId: {
+      type: Schema.Types.ObjectId,
+      ref: CommunityPostConstant.COMMUNITY_POST_COLLECTION_NAME,
+      required: true,
+    },
   },
-});
+  {
+    _id: false,
+  },
+);
 
 /* ================ Community post pull schema start ================================ */
 
-const communityPostPullOptionShcema = new Schema<ICommunityPostPollOption>({
-  text: {
-    type: String,
-    required: true,
-    minlength: CommunityPostConstant.COMMUNITY_POST_OPTION_MIN_LENGTH,
-    maxlength: CommunityPostConstant.COMMUNITY_POST_OPTION_MAX_LENGTH,
-  },
-  polledUsers: {
-    type: [
-      {
-        type: Schema.Types.ObjectId,
-        ref: UserConstant.USER_COLLECTION_NAME,
-        unique: true,
-      },
-    ],
-    default: [],
-    select: false,
-  },
-});
-
-const communityPostPullWithImageOptionShcema =
-  new Schema<ICommunityPostPollOptionWithImage>({
+const communityPostPullOptionShcema = new Schema<ICommunityPostPollOption>(
+  {
     text: {
       type: String,
-      trim: true,
       required: true,
       minlength: CommunityPostConstant.COMMUNITY_POST_OPTION_MIN_LENGTH,
       maxlength: CommunityPostConstant.COMMUNITY_POST_OPTION_MAX_LENGTH,
-    },
-    image: {
-      type: String,
-      trim: true,
-      required: true,
     },
     polledUsers: {
       type: [
         {
           type: Schema.Types.ObjectId,
           ref: UserConstant.USER_COLLECTION_NAME,
-          unique: true,
         },
       ],
       default: [],
-      select: true,
+      select: false,
     },
-  });
+  },
+  {
+    _id: false,
+  },
+);
+
+const communityPostPullWithImageOptionShcema =
+  new Schema<ICommunityPostPollOptionWithImage>(
+    {
+      text: {
+        type: String,
+        trim: true,
+        required: true,
+        minlength: CommunityPostConstant.COMMUNITY_POST_OPTION_MIN_LENGTH,
+        maxlength: CommunityPostConstant.COMMUNITY_POST_OPTION_MAX_LENGTH,
+      },
+      image: {
+        type: String,
+        trim: true,
+        required: true,
+      },
+      polledUsers: {
+        type: [
+          {
+            type: Schema.Types.ObjectId,
+            ref: UserConstant.USER_COLLECTION_NAME,
+          },
+        ],
+        default: [],
+        select: true,
+      },
+    },
+    {
+      _id: false,
+    },
+  );
 
 [communityPostPullOptionShcema, communityPostPullWithImageOptionShcema].map(
   (schema) =>
@@ -112,6 +130,7 @@ const communityPostPullSchema = new Schema<ICommunityPostPollType>(
     toJSON: {
       virtuals: true,
     },
+    _id: false,
   },
 );
 
@@ -136,6 +155,7 @@ const communityPostPullWithImageSchema =
       toJSON: {
         virtuals: true,
       },
+      _id: false,
     },
   );
 
@@ -175,7 +195,6 @@ const communityPostQuizOptionShcema = new Schema<ICommunityPostQuizOption>(
         {
           type: Schema.Types.ObjectId,
           ref: UserConstant.USER_COLLECTION_NAME,
-          unique: true,
         },
       ],
       default: [],
@@ -185,6 +204,7 @@ const communityPostQuizOptionShcema = new Schema<ICommunityPostQuizOption>(
     toJSON: {
       virtuals: true,
     },
+    _id: false,
   },
 );
 
@@ -212,6 +232,7 @@ const communityPostQuizSchema = new Schema<ICommunityPostQuizType>(
     toJSON: {
       virtuals: true,
     },
+    _id: false,
   },
 );
 
@@ -347,13 +368,24 @@ communityPostSchema.pre<ICommunityPost>("save", async function (next) {
       answeredUsersCount: 0,
     };
 
+    // console.log("===========");
+    // console.log(this.postQuizDetails.options);
+
     const {
       currectAnswerCount,
       currectAnswerExplainationCount,
       answeredUsersCount,
     } = this.postQuizDetails?.options?.reduce(
       (acc, curr) => {
+        if (!curr?.isCurrectAnswer && curr.currectAnswerExplaination)
+          throw new AppError(
+            httpStatus.BAD_REQUEST,
+            "quiz options wrong ans can't have explaination",
+          );
+
         if (curr?.isCurrectAnswer) acc.currectAnswerCount++;
+
+        // console.log(curr);
 
         if (curr?.currectAnswerExplaination)
           acc.currectAnswerExplainationCount++;
