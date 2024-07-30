@@ -4,6 +4,8 @@ import errorHandler from "../../errors/errorHandler";
 import catchAsync from "../../utils/catch.async";
 import { imageUpload } from "../../utils/multer.image.upload";
 import { CommunityPostConstant } from "./community.post.constant";
+import { CloudinaryConstant } from "../../constants/cloudinary.constant";
+import { CommunityPostUtils } from "./community.post.utils";
 
 const createOrUpdatePostImages = imageUpload.fields([
   {
@@ -24,7 +26,14 @@ const matchReqBodyFilesWithValidationSchema = catchAsync(
 
       switch (postType) {
         case CommunityPostConstant.COMMUNITY_POST_TYPES.IMAGE: {
-          if (!images || !images?.length) break;
+          if (!images || !images?.length)
+            throw new AppError(httpStatus.BAD_REQUEST, "image not found");
+
+          images[0] = await CommunityPostUtils.createOrUpdatePostImage(
+            req.body?.images[0],
+            CloudinaryConstant.SHARE_THOUGHT_COMMUNITY_POST_IMAGE_POST_FOLDER_NAME,
+            false,
+          );
 
           req.body.postImageDetails = {
             image: images[0],
