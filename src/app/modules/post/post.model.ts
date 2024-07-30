@@ -9,7 +9,7 @@ import { CommentModel } from "../comment/comment.model";
 import { PostReactionModel } from "../post.reaction/post.reaction.model";
 import { ReadLaterModel } from "../read.later/read.later.model";
 import { CategoryModel } from "../category/category.model";
-import { PostSchedule } from "./post.schedule";
+import { PostSchedule } from "../post.schedule/post.schedule";
 
 const postSchema = new Schema<IPost, IPostModel>(
   {
@@ -90,6 +90,7 @@ postSchema.post<IPost>("save", async function (doc) {
     await PostSchedule.handleSetPostSchedule(
       doc.scheduledTime,
       (doc as typeof doc & { _id: string })?._id?.toString(),
+      "blogPost",
     );
   }
 });
@@ -128,6 +129,7 @@ postSchema.pre("findOneAndUpdate", async function () {
     await PostSchedule.handleSetPostSchedule(
       scheduledTime,
       (update as typeof update & { _id: string })?._id?.toString(),
+      "blogPost"
     );
   }
 
