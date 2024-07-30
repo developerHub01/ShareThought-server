@@ -20,5 +20,11 @@ export interface IReqFiles {
   [key: string]: IFileObject[];
 }
 
+export type RequireExactlyOne<T, K extends keyof T = keyof T> = {
+  [P in K]-?: {
+    [Q in P]: T[Q];
+  } & Partial<Omit<T, P>>;
+};
+
 export type TPostType = "blogPost" | "communityPost";
 export type TAuthorType = "userId" | "channelId";
