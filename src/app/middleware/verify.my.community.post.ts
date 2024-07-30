@@ -5,11 +5,11 @@ import catchAsync from "../utils/catch.async";
 import { CommunityPostModel } from "../modules/community.post/community.post.model";
 
 const verifyMyCommunityPost = catchAsync(async (req, res, next) => {
-  const { communityPostId } = req.params;
+  const { id: communityPostId } = req.params;
   const { channelId } = req as IRequestWithActiveDetails;
 
   if (!channelId)
-    throw new AppError(httpStatus.UNAUTHORIZED, "no channel activated");
+    throw new AppError(httpStatus.UNAUTHORIZED, "No channel activated");
 
   const result = await CommunityPostModel.isMyPost(communityPostId, channelId);
 
