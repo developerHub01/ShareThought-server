@@ -85,6 +85,9 @@ const matchReqBodyFilesWithValidationSchema = catchAsync(
         }
         case CommunityPostConstant.COMMUNITY_POST_TYPES.POLL_WITH_IMAGE: {
           try {
+            if (!images)
+              throw new AppError(httpStatus.BAD_REQUEST, "images not found");
+
             const detailsData = JSON.parse(details);
 
             if (detailsData?.options?.length !== images?.length)
@@ -92,6 +95,14 @@ const matchReqBodyFilesWithValidationSchema = catchAsync(
                 httpStatus.BAD_REQUEST,
                 "post details is not valid",
               );
+
+            for (const index in images) {
+              images[index] = await CommunityPostUtils.createOrUpdatePostImage(
+                images[index],
+                CloudinaryConstant.SHARE_THOUGHT_COMMUNITY_POST_POLL_POST_FOLDER_NAME,
+                false,
+              );
+            }
 
             images.map((image: string, index: number) => {
               if (
