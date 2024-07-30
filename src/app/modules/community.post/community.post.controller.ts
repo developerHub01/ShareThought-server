@@ -36,6 +36,24 @@ const findCommuityPostsByChannelId = catchAsync(async (req, res) => {
   });
 });
 
+const findMySelectionPostOption = catchAsync(async (req, res) => {
+  const { id } = req.params;
+  const { userId, channelId } = req as IRequestWithActiveDetails;
+
+  const result = await CommunityPostServices.findMySelectionPostOption(
+    id,
+    channelId || userId,
+    channelId ? "channelId" : "userId",
+  );
+
+  return sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "posts found succesfully",
+    data: result,
+  });
+});
+
 const findCommuityPostsMine = catchAsync(async (req, res) => {
   const { channelId } = req as IRequestWithActiveDetails;
 
@@ -83,6 +101,30 @@ const createPost = catchAsync(async (req, res) => {
     statusCode: httpStatus.CREATED,
     success: true,
     message: "post created succesfully",
+    data: result,
+  });
+});
+
+const selectPollOrQuizOption = catchAsync(async (req, res) => {
+  const { id, optionIndex: optionIndexString } = req.params;
+  const { userId, channelId } = req as IRequestWithActiveDetails;
+
+  const optionIndex = Number(optionIndexString);
+
+  if (isNaN(optionIndex) || optionIndex < 0)
+    throw new AppError(httpStatus.BAD_REQUEST, "option index is not valid");
+
+  const result = await CommunityPostServices.selectPollOrQuizOption(
+    id,
+    optionIndex,
+    channelId || userId,
+    channelId ? "channelId" : "userId",
+  );
+
+  return sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "post option selected or unselected succesfully",
     data: result,
   });
 });
@@ -153,9 +195,11 @@ const deletePost = catchAsync(async (req, res) => {
 export const CommunityPostController = {
   findCommuityPosts,
   findCommuityPostsByChannelId,
+  findMySelectionPostOption,
   findCommuityPostsMine,
   findCommuityPostById,
   createPost,
   updatePost,
   deletePost,
+  selectPollOrQuizOption,
 };

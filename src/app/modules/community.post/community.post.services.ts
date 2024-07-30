@@ -1,5 +1,6 @@
 import QueryBuilder from "../../builder/QueryBuilder";
 import errorHandler from "../../errors/errorHandler";
+import { TAuthorType } from "../../interface/interface";
 import { CommunityPostConstant } from "./community.post.constant";
 import { ICreateCommunityPost } from "./community.post.interface";
 import { CommunityPostModel } from "./community.post.model";
@@ -66,6 +67,22 @@ const findCommuityPostsByChannelId = async (
   }
 };
 
+const findMySelectionPostOption = async (
+  communityPostId: string,
+  authorId: string,
+  authorType: TAuthorType,
+) => {
+  try {
+    return CommunityPostModel.findMySelectedOption(
+      communityPostId,
+      authorId,
+      authorType,
+    );
+  } catch (error) {
+    errorHandler(error);
+  }
+};
+
 const findCommuityPostById = async (id: string) => {
   try {
     return CommunityPostModel.findById(id);
@@ -101,11 +118,31 @@ const deletePost = async (id: string) => {
   }
 };
 
+const selectPollOrQuizOption = async (
+  communityPostId: string,
+  selectedOptionIndex: number,
+  authorId: string,
+  authorType: TAuthorType,
+) => {
+  try {
+    return CommunityPostModel.selectPollOrQuizOption(
+      communityPostId,
+      selectedOptionIndex,
+      authorId,
+      authorType,
+    );
+  } catch (error) {
+    errorHandler(error);
+  }
+};
+
 export const CommunityPostServices = {
   findCommuityPosts,
   findCommuityPostsByChannelId,
   findCommuityPostById,
+  findMySelectionPostOption,
   createPost,
   updatePost,
   deletePost,
+  selectPollOrQuizOption,
 };

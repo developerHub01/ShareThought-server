@@ -7,6 +7,7 @@ import { CommunityPostMiddleware } from "./community.post.middleware";
 import { CommunityPostValidation } from "./community.post.validation";
 import { validateRequest } from "../../middleware/validate.request";
 import readReqBodyFiles from "../../middleware/read.req.body.files";
+import checkChannelStatus from "../../middleware/check.channel.status";
 
 const router = express.Router();
 
@@ -15,6 +16,11 @@ router.get("/", CommunityPostController.findCommuityPosts);
 router.get(
   "/channel/:id",
   CommunityPostController.findCommuityPostsByChannelId,
+);
+
+router.get(
+  "/my_selection/:id",
+  CommunityPostController.findMySelectionPostOption,
 );
 
 router.get(
@@ -43,6 +49,13 @@ router.patch(
   getActiveChannel,
   verifyMyCommunityPost,
   CommunityPostController.updatePost,
+);
+
+router.patch(
+  "/:id/select_unselect/:optionIndex",
+  getLoggedInUser,
+  checkChannelStatus,
+  CommunityPostController.selectPollOrQuizOption,
 );
 
 router.delete(
