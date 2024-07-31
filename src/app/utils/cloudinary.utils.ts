@@ -36,7 +36,6 @@ const uploadFile = async (
     const { public_id } = imageData;
     let { secure_url: url } = imageData;
 
-    console.log({ imageData });
 
     if (!public_id)
       throw new AppError(
