@@ -27,7 +27,7 @@ const findChannel = async (query: Record<string, unknown>) => {
       }),
       query,
     )
-      .search(ChannelConstant.channelSearchableField)
+      .search(ChannelConstant.CHANNEL_SEARCHABLE_FIELD)
       .filter()
       .sort()
       .paginate()
@@ -55,7 +55,7 @@ const getChannelOfMine = async (
       }),
       query,
     )
-      .search(ChannelConstant.channelSearchableField)
+      .search(ChannelConstant.CHANNEL_SEARCHABLE_FIELD)
       .filter()
       .sort()
       .paginate()

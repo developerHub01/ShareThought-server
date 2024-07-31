@@ -4,6 +4,7 @@ import { UserValidation } from "./user.validation";
 import { UserController } from "./user.controller";
 import getLoggedInUser from "../../middleware/get.loggedin.user";
 import { UserMiddleware } from "./user.middleware";
+import readReqBodyFiles from "../../middleware/read.req.body.files";
 
 const router = express.Router();
 
@@ -18,6 +19,9 @@ router.get(
 
 router.post(
   "/",
+  UserMiddleware.createOrUpdateUserAvatar,
+  readReqBodyFiles,
+  UserMiddleware.matchReqBodyFilesWithValidationSchema,
   validateRequest(UserValidation.createUserValidationSchema),
   UserController.createUser,
 );
@@ -25,7 +29,9 @@ router.post(
 // update user
 router.patch(
   "/",
-  UserMiddleware.UpdateUserAvatar,
+  UserMiddleware.createOrUpdateUserAvatar,
+  readReqBodyFiles,
+  UserMiddleware.matchReqBodyFilesWithValidationSchema,
   validateRequest(UserValidation.updateUserValidationSchema),
   getLoggedInUser,
   UserController.updateUser,

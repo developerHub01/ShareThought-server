@@ -129,7 +129,7 @@ postSchema.pre("findOneAndUpdate", async function () {
     await PostSchedule.handleSetPostSchedule(
       scheduledTime,
       (update as typeof update & { _id: string })?._id?.toString(),
-      "blogPost"
+      "blogPost",
     );
   }
 

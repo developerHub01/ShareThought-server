@@ -16,7 +16,6 @@ const createUserValidationSchema = zod.object({
       required_error: "Avatar is required",
     })
     .trim()
-    .array()
     .optional(),
   email: zod
     .string({
@@ -34,7 +33,7 @@ const createUserValidationSchema = zod.object({
 const updateUserValidationSchema = zod.object({
   userName: zod.string().trim().optional(),
   fullName: zod.string().trim().optional(),
-  avatar: zod.string().trim().array().optional(),
+  avatar: zod.string().trim().optional(),
   email: zod.string().trim().email().optional(),
   password: zod.string().optional(),
 });

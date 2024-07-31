@@ -12,6 +12,7 @@ const findHistoryItem = async (
     const historyQuery = new QueryBuilder(
       HistoryItemModel.find({
         userId,
+        isDeleted: false,
       }).populate({
         path: "postId",
         select: "title banner publishedAt channelId isPublished",

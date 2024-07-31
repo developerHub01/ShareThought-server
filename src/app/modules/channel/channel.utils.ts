@@ -1,20 +1,21 @@
 import errorHandler from "../../errors/errorHandler";
 import { CloudinaryUtils } from "../../utils/cloudinary.utils";
+import { IMediaFileDimension } from "../../interface/interface";
 
 const updateChannelImage = async (
   imagePath: string,
   previousImage: string,
   cloudinaryMediaPath: string,
+  dimension: IMediaFileDimension,
 ) => {
   try {
     await CloudinaryUtils.deleteFile([previousImage]);
 
-    const coverImageDetails = await CloudinaryUtils.uploadFile(
+    return await CloudinaryUtils.uploadFile(
       imagePath,
       cloudinaryMediaPath,
+      dimension,
     );
-
-    return coverImageDetails?.secure_url;
   } catch (error) {
     return errorHandler(error);
   }

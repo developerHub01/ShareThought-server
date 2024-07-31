@@ -20,12 +20,15 @@ const historyItemSchema = new Schema<IHistoryItem, IHistoryItemModel>(
       ref: UserConstant.USER_COLLECTION_NAME,
       required: true,
     },
+    isDeleted: {
+      type: Boolean,
+      default: true,
+    },
   },
   {
     timestamps: true,
   },
 );
-
 
 historyItemSchema.statics.addPostInHistory = async (
   postId: string,
@@ -53,10 +56,15 @@ historyItemSchema.statics.removePostFromHistory = async (
   try {
     await HistorySettingModel.createHistorySetting(userId);
 
-    return await HistoryItemModel.deleteOne({
-      _id: historyItemId,
-      userId,
-    });
+    return await HistorySettingModel.findByIdAndUpdate(
+      historyItemId,
+      {
+        isDeleted: true,
+      },
+      {
+        new: true,
+      },
+    );
   } catch (error) {
     return errorHandler(error);
   }
@@ -68,9 +76,15 @@ historyItemSchema.statics.clearPostFromHistory = async (
   try {
     await HistorySettingModel.createHistorySetting(userId);
 
-    return await HistoryItemModel.deleteMany({
-      userId,
-    });
+    return await HistorySettingModel.updateMany(
+      { userId },
+      {
+        isDeleted: true,
+      },
+      {
+        new: true,
+      },
+    );
   } catch (error) {
     return errorHandler(error);
   }

@@ -1,10 +1,9 @@
 import errorHandler from "../../errors/errorHandler";
+import { TGender } from "../../interface/interface";
 import { CloudinaryUtils } from "../../utils/cloudinary.utils";
+import { UserConstant } from "./user.constant";
 
-type TGenerateAvatarURL = (
-  gender: "male" | "female",
-  userName: string,
-) => string;
+type TGenerateAvatarURL = (gender: TGender, userName: string) => string;
 
 const generateAvatarURL: TGenerateAvatarURL = (gender, userName) => {
   const genderValue = gender === "male" ? "boy" : "girl";
@@ -21,17 +20,14 @@ const updateUserAvatar = async (
     if (isUpdating && previousImage)
       await CloudinaryUtils.deleteFile([previousImage]);
 
-    const coverImageDetails = await CloudinaryUtils.uploadFile(
-      imagePath,
-      cloudinaryMediaPath,
-    );
-
-    return coverImageDetails?.secure_url;
+    return await CloudinaryUtils.uploadFile(imagePath, cloudinaryMediaPath, {
+      width: UserConstant.USER_AVATAR_SIZE.WIDTH,
+      height: UserConstant.USER_AVATAR_SIZE.HEIGHT,
+    });
   } catch (error) {
     return errorHandler(error);
   }
 };
-
 
 export const UserUtils = {
   generateAvatarURL,

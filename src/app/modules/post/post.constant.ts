@@ -6,6 +6,11 @@ const POST_CONTENT_MIN_LENGTH = 50;
 const POST_CONTENT_MAX_LENGTH = 3000;
 const POST_TAGS_MAX_NUMBER = 4;
 
+const POST_BANNER_SIZE = {
+  WIDTH: 1200,
+  HEIGHT: 480,
+};
+
 const POST_SEARCHABLE_FIELD: Array<string> = ["title", "content"];
 
 export const PostConstant = {
@@ -15,5 +20,6 @@ export const PostConstant = {
   POST_CONTENT_MIN_LENGTH,
   POST_CONTENT_MAX_LENGTH,
   POST_TAGS_MAX_NUMBER,
+  POST_BANNER_SIZE,
   POST_SEARCHABLE_FIELD,
 };

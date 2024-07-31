@@ -28,7 +28,7 @@ export type RequireExactlyOne<T, K extends keyof T = keyof T> = {
 
 export type TPostType = "blogPost" | "communityPost";
 export type TAuthorType = "userId" | "channelId";
-
+export type TGender = "male" | "female";
 
 export interface IMediaFileDimension {
   width: number;

@@ -31,6 +31,7 @@ const matchReqBodyFilesWithValidationSchema = catchAsync(
 
           images[0] = await CommunityPostUtils.createOrUpdatePostImage(
             req.body?.images[0],
+            postType,
             CloudinaryConstant.SHARE_THOUGHT_COMMUNITY_POST_IMAGE_POST_FOLDER_NAME,
             false,
           );
@@ -99,6 +100,7 @@ const matchReqBodyFilesWithValidationSchema = catchAsync(
             for (const index in images) {
               images[index] = await CommunityPostUtils.createOrUpdatePostImage(
                 images[index],
+                postType,
                 CloudinaryConstant.SHARE_THOUGHT_COMMUNITY_POST_POLL_POST_FOLDER_NAME,
                 false,
               );

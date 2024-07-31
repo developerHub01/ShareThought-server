@@ -66,7 +66,7 @@ const createPost = catchAsync(async (req, res) => {
     );
     req.body.banner = bannerImage;
   }
-
+  
   const result = await PostServices.createPost(req.body);
 
   return sendResponse(res, {

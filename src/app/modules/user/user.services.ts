@@ -15,7 +15,7 @@ const findUserById = async (userId: string) => {
 const findUser = async (query: Record<string, unknown>) => {
   try {
     const userQuery = new QueryBuilder(UserModel.find({}), query)
-      .search(UserConstant.userSearchableField)
+      .search(UserConstant.USER_SEARCHABLE_FIELD)
       .filter()
       .sort()
       .paginate()

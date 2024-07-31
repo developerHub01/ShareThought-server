@@ -11,12 +11,7 @@ const uploadCommentImage = async (
     if (isUpdating && previousImage)
       await CloudinaryUtils.deleteFile([previousImage]);
 
-    const coverImageDetails = await CloudinaryUtils.uploadFile(
-      imagePath,
-      cloudinaryMediaPath,
-    );
-
-    return coverImageDetails?.secure_url;
+    return await CloudinaryUtils.uploadFile(imagePath, cloudinaryMediaPath);
   } catch (error) {
     return errorHandler(error);
   }

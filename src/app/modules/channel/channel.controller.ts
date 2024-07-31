@@ -1,3 +1,4 @@
+import { ChannelConstant } from "./channel.constant";
 import httpStatus from "http-status";
 import catchAsync from "../../utils/catch.async";
 import { sendResponse } from "../../utils/send.response";
@@ -86,6 +87,10 @@ const updateChannel = catchAsync(async (req, res) => {
       channelAvatar,
       previousAvatar,
       CloudinaryConstant.SHARE_THOUGHT_CHANNEL_AVATAR_FOLDER_NAME,
+      {
+        width: ChannelConstant.CHANNEL_AVATAR_SIZE.WIDTH,
+        height: ChannelConstant.CHANNEL_AVATAR_SIZE.HEIGHT,
+      },
     );
 
     if (url) req.body.channelAvatar = url;
@@ -96,6 +101,10 @@ const updateChannel = catchAsync(async (req, res) => {
       channelCover,
       previousCover,
       CloudinaryConstant.SHARE_THOUGHT_CHANNEL_COVER_FOLDER_NAME,
+      {
+        width: ChannelConstant.CHANNEL_COVER_SIZE.WIDTH,
+        height: ChannelConstant.CHANNEL_COVER_SIZE.HEIGHT,
+      },
     );
 
     if (url) req.body.channelCover = url;

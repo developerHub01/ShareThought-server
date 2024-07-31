@@ -57,17 +57,12 @@ const createUser = catchAsync(async (req, res) => {
 
 const updateUser = catchAsync(async (req, res) => {
   const { userId } = req as IRequestWithActiveDetails;
-
+  
   const previousAvatarImage = (await UserModel.findById(userId))?.avatar;
-
-  let avatarPath;
-
-  if (req?.body?.avatar?.length) avatarPath = req?.body?.avatar[0];
-
-
-  if (avatarPath) {
+  
+  if (req.body?.avatar) {
     const avatarImage = await UserUtils.updateUserAvatar(
-      avatarPath,
+      req.body?.avatar,
       CloudinaryConstant.SHARE_THOUGHT_USER_FOLDER_NAME,
       true,
       previousAvatarImage,
@@ -75,7 +70,7 @@ const updateUser = catchAsync(async (req, res) => {
     
     req.body.avatar = avatarImage;
   }
-  
+
   const result = await UserServices.updateUser(req.body, userId);
 
   return sendResponse(res, {
