@@ -7,11 +7,11 @@ import notificationSchema from "./model.schema";
 /* notification schema end ==================== */
 
 /* notification schema middleware start ==================== */
-import "./model/notification.model.middleware";
+import "./model.middleware";
 /* notification schema middleware end ==================== */
 
 /* notification schema static methods start ==================== */
-import "./model/notification.model.static.method";
+import "./model.static.method";
 /* notification schema static methods end ==================== */
 
 export const NotificationModel = model<INotification, INotificationModel>(
