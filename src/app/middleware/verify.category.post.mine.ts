@@ -2,7 +2,7 @@ import AppError from "../errors/AppError";
 import httpStatus from "http-status";
 import { IRequestWithActiveDetails } from "../interface/interface";
 import catchAsync from "../utils/catch.async";
-import { PostModel } from "../modules/post/post.model";
+import { PostModel } from "../modules/post/model/model";
 
 const verifyCategoryPostMine = catchAsync(async (req, res, next) => {
   const { channelId } = req as IRequestWithActiveDetails;

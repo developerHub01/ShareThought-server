@@ -1,6 +1,6 @@
 import QueryBuilder from "../../builder/QueryBuilder";
 import errorHandler from "../../errors/errorHandler";
-import { SavedCategoryModel } from "./saved.category.model";
+import { SavedCategoryModel } from "./model/model";
 
 const findSavedCategory = async (
   query: Record<string, unknown>,

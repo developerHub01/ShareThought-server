@@ -1,6 +1,6 @@
 import QueryBuilder from "../../builder/QueryBuilder";
 import errorHandler from "../../errors/errorHandler";
-import { NotificationModel } from "./notificaiton.model";
+import { NotificationModel } from "./model/model";
 import { INotification } from "./notification.interface";
 
 const createNotification = async (payload: Partial<INotification>) => {

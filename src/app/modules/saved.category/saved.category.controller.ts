@@ -3,7 +3,7 @@ import catchAsync from "../../utils/catch.async";
 import { sendResponse } from "../../utils/send.response";
 import { IRequestWithActiveDetails } from "../../interface/interface";
 import { SavedCategoryServices } from "./saved.category.services";
-import { SavedCategoryModel } from "./saved.category.model";
+import { SavedCategoryModel } from "./model/model";
 
 const findSavedCategory = catchAsync(async (req, res) => {
   const { userId } = req as IRequestWithActiveDetails;

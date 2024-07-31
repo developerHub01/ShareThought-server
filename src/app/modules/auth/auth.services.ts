@@ -1,9 +1,9 @@
 import httpStatus from "http-status";
 import AppError from "../../errors/AppError";
-import { UserModel } from "../user/user.model";
 import { ILoginUser } from "./auth.interface";
 import { AuthUtils } from "./auth.utils";
 import config from "../../config";
+import { UserModel } from "../user/model/model";
 
 const loginUser = async (payload: ILoginUser) => {
   const { password, email } = payload;

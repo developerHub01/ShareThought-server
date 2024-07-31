@@ -1,9 +1,9 @@
 import { NextFunction, Request, Response } from "express";
 import { AuthUtils } from "../modules/auth/auth.utils";
 import config from "../config";
-import { UserModel } from "../modules/user/user.model";
 import catchAsync from "../utils/catch.async";
 import { IRequestWithActiveDetails } from "../interface/interface";
+import { UserModel } from "../modules/user/model/model";
 
 
 /* 

@@ -4,8 +4,8 @@ import { sendResponse } from "../../utils/send.response";
 import { UserServices } from "./user.services";
 import { IRequestWithActiveDetails } from "../../interface/interface";
 import { UserUtils } from "./user.utils";
-import { UserModel } from "./user.model";
 import { CloudinaryConstant } from "../../constants/cloudinary.constant";
+import { UserModel } from "./model/model";
 
 const getMyDetails = catchAsync(async (req, res) => {
   const { userId } = req as IRequestWithActiveDetails;

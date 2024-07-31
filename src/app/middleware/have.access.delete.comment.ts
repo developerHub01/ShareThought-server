@@ -2,7 +2,7 @@ import AppError from "../errors/AppError";
 import httpStatus from "http-status";
 import catchAsync from "../utils/catch.async";
 import { IRequestWithActiveDetails } from "../interface/interface";
-import { CommentModel } from "../modules/comment/comment.model";
+import { CommentModel } from "../modules/comment/model/model";
 
 const haveAccessDeleteComment = catchAsync(async (req, res, next) => {
   const { id: commentId } = req.params;
@@ -10,8 +10,8 @@ const haveAccessDeleteComment = catchAsync(async (req, res, next) => {
 
   const result = await CommentModel.haveAccessToDelete(
     commentId,
-    userId,
-    channelId,
+    channelId || userId,
+    channelId ? "channelId" : "userId",
   );
 
   if (!result)

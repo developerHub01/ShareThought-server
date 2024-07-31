@@ -1,6 +1,6 @@
 import QueryBuilder from "../../builder/QueryBuilder";
 import errorHandler from "../../errors/errorHandler";
-import { FollowerModel } from "./follower.model";
+import { FollowerModel } from "./model/model";
 
 const getChannelFollowing = async (
   query: Record<string, unknown>,

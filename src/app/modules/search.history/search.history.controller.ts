@@ -2,8 +2,8 @@ import httpStatus from "http-status";
 import catchAsync from "../../utils/catch.async";
 import { sendResponse } from "../../utils/send.response";
 import { SearchHistoryServices } from "./search.history.services";
-import { SearchHistoryModel } from "./search.history.model";
 import { IRequestWithActiveDetails } from "../../interface/interface";
+import { SearchHistoryModel } from "./model/model";
 
 export const findSearchHistory = catchAsync(async (req, res) => {
   const { searchTerm } = req.query;

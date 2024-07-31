@@ -1,8 +1,8 @@
 import QueryBuilder from "../../builder/QueryBuilder";
 import errorHandler from "../../errors/errorHandler";
+import { UserModel } from "./model/model";
 import { UserConstant } from "./user.constant";
 import { IUser, IUserChangePassword } from "./user.interface";
-import { UserModel } from "./user.model";
 
 const findUserById = async (userId: string) => {
   try {

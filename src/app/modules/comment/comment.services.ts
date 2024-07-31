@@ -2,7 +2,7 @@ import QueryBuilder from "../../builder/QueryBuilder";
 import errorHandler from "../../errors/errorHandler";
 import { TAuthorType, TPostType } from "../../interface/interface";
 import { ICreateComment } from "./comment.interface";
-import { CommentModel } from "./comment.model";
+import { CommentModel } from "./model/model";
 
 const findCommentByPostId = async (
   query: Record<string, unknown>,

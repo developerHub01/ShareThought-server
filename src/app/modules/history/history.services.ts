@@ -1,8 +1,8 @@
 import QueryBuilder from "../../builder/QueryBuilder";
 import errorHandler from "../../errors/errorHandler";
 import { HistoryConstant } from "./history.constant";
-import { HistoryItemModel } from "./history.item.model";
-import { HistorySettingModel } from "./history.setting.model";
+import { HistoryItemModel } from "./model/item.model";
+import { HistorySettingModel } from "./model/setting.model";
 
 const findHistoryItem = async (
   query: Record<string, unknown>,

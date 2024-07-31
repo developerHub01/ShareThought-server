@@ -2,7 +2,7 @@ import QueryBuilder from "../../builder/QueryBuilder";
 import errorHandler from "../../errors/errorHandler";
 import { ChannelConstant } from "./channel.constant";
 import { IChannel, ICreateChannel } from "./channel.interface";
-import { ChannelModel } from "./channel.model";
+import { ChannelModel } from "./model/model";
 
 const singleChannel = async (id: string, author: boolean) => {
   try {

@@ -4,10 +4,10 @@ import { sendResponse } from "../../utils/send.response";
 import { IRequestWithActiveDetails } from "../../interface/interface";
 import AppError from "../../errors/AppError";
 import { CommunityPostServices } from "./community.post.services";
-import { CommunityPostModel } from "./community.post.model";
 import { CommunityPostConstant } from "./community.post.constant";
 import { ICommunityPost } from "./community.post.interface";
 import { CloudinaryUtils } from "../../utils/cloudinary.utils";
+import { CommunityPostModel } from "./model/model";
 
 const findCommuityPosts = catchAsync(async (req, res) => {
   const result = await CommunityPostServices.findCommuityPosts(req.query);

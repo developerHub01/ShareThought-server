@@ -2,7 +2,7 @@ import QueryBuilder from "../../builder/QueryBuilder";
 import errorHandler from "../../errors/errorHandler";
 import { CategoryConstant } from "./category.constant";
 import { ICreateCategory, IUpdateCategory } from "./category.interface";
-import { CategoryModel } from "./category.model";
+import { CategoryModel } from "./model/model";
 
 const findCategoryById = async (categoryId: string) => {
   try {

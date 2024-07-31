@@ -4,7 +4,7 @@ import config from "../config";
 import catchAsync from "../utils/catch.async";
 import { IRequestWithActiveDetails } from "../interface/interface";
 import { Constatnt } from "../constants/constants";
-import { ChannelModel } from "../modules/channel/channel.model";
+import { ChannelModel } from "../modules/channel/model/model";
 
 /*
  *

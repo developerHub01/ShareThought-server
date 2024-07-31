@@ -1,7 +1,7 @@
 import QueryBuilder from "../../builder/QueryBuilder";
 import errorHandler from "../../errors/errorHandler";
 import { TCommentReactionType } from "./comment.reaction.interface";
-import { CommentReactionModel } from "./comment.reaction.model";
+import { CommentReactionModel } from "./model/model";
 
 const myReactionOnComment = async (
   commentId: string,

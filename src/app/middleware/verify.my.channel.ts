@@ -1,6 +1,6 @@
 import httpStatus from "http-status";
 import AppError from "../errors/AppError";
-import { ChannelModel } from "../modules/channel/channel.model";
+import { ChannelModel } from "../modules/channel/model/model";
 import catchAsync from "../utils/catch.async";
 import { IRequestWithActiveDetails } from "../interface/interface";
 

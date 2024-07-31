@@ -2,7 +2,7 @@ import httpStatus from "http-status";
 import AppError from "../errors/AppError";
 import { IRequestWithActiveDetails } from "../interface/interface";
 import catchAsync from "../utils/catch.async";
-import { CommentModel } from "../modules/comment/comment.model";
+import { CommentModel } from "../modules/comment/model/model";
 
 const verifyMyComment = catchAsync(async (req, res, next) => {
   const { id: commentId } = req.params;

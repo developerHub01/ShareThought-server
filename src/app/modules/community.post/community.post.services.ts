@@ -3,7 +3,7 @@ import errorHandler from "../../errors/errorHandler";
 import { TAuthorType } from "../../interface/interface";
 import { CommunityPostConstant } from "./community.post.constant";
 import { ICreateCommunityPost } from "./community.post.interface";
-import { CommunityPostModel } from "./community.post.model";
+import { CommunityPostModel } from "./model/model";
 
 const findCommuityPosts = async (query: Record<string, unknown>) => {
   try {

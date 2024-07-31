@@ -1,7 +1,7 @@
 import QueryBuilder from "../../builder/QueryBuilder";
 import errorHandler from "../../errors/errorHandler";
+import { SearchHistoryModel } from "./model/model";
 import { SearchHistoryConstant } from "./search.history.constant";
-import { SearchHistoryModel } from "./search.history.model";
 
 const findSearchHistory = async (query: Record<string, unknown>) => {
   try {

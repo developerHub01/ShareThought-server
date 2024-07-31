@@ -1,8 +1,8 @@
 import { ICreatePost } from "./post.interface";
 import errorHandler from "../../errors/errorHandler";
-import { PostModel } from "./post.model";
 import QueryBuilder from "../../builder/QueryBuilder";
 import { PostConstant } from "./post.constant";
+import { PostModel } from "./model/model";
 
 interface IFindPostByIdQuery {
   _id: string;

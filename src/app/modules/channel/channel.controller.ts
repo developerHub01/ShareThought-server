@@ -5,7 +5,7 @@ import { sendResponse } from "../../utils/send.response";
 import { ChannelServices } from "./channel.services";
 import { IRequestWithActiveDetails } from "../../interface/interface";
 import { CloudinaryConstant } from "../../constants/cloudinary.constant";
-import { ChannelModel } from "./channel.model";
+import { ChannelModel } from "./model/model";
 import AppError from "../../errors/AppError";
 import { ChannelUtils } from "./channel.utils";
 import { AuthUtils } from "../auth/auth.utils";

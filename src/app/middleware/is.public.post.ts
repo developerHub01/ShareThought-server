@@ -1,7 +1,7 @@
 import AppError from "../errors/AppError";
 import httpStatus from "http-status";
 import catchAsync from "../utils/catch.async";
-import { PostModel } from "../modules/post/post.model";
+import { PostModel } from "../modules/post/model/model";
 
 const isPublicPost = catchAsync(async (req, res, next) => {
   const { postId } = req.params;

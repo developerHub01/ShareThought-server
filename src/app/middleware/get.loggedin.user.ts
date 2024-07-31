@@ -3,10 +3,10 @@ import { AuthUtils } from "../modules/auth/auth.utils";
 import config from "../config";
 import AppError from "../errors/AppError";
 import httpStatus from "http-status";
-import { UserModel } from "../modules/user/user.model";
 import catchAsync from "../utils/catch.async";
 import { IRequestWithActiveDetails } from "../interface/interface";
 import { Constatnt } from "../constants/constants";
+import { UserModel } from "../modules/user/model/model";
 
 const getLoggedInUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {

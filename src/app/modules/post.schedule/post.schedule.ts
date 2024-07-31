@@ -1,7 +1,7 @@
 import schedule from "node-schedule";
 import { TPostType } from "../../interface/interface";
-import { PostModel } from "../post/post.model";
-import { CommunityPostModel } from "../community.post/community.post.model";
+import { PostModel } from "../post/model/model";
+import { CommunityPostModel } from "../community.post/model/model";
 
 const handleSetPostSchedule = async (
   date: Date,

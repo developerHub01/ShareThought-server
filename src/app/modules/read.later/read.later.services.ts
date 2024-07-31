@@ -1,7 +1,7 @@
 import QueryBuilder from "../../builder/QueryBuilder";
 import errorHandler from "../../errors/errorHandler";
+import { ReadLaterModel } from "./model/model";
 import { ReadLaterConstant } from "./read.later.constant";
-import { ReadLaterModel } from "./read.later.model";
 
 const findReadLaterList = async (
   query: Record<string, unknown>,

@@ -1,6 +1,7 @@
 import { NextFunction, Request, Response } from "express";
 
 export const globalErrorHandler = (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
   error: any,
   req: Request,
   res: Response,

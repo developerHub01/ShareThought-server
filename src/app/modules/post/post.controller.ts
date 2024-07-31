@@ -5,8 +5,8 @@ import { PostServices } from "./post.services";
 import { IRequestWithActiveDetails } from "../../interface/interface";
 import { PostUtils } from "./post.utils";
 import { CloudinaryConstant } from "../../constants/cloudinary.constant";
-import { PostModel } from "./post.model";
 import { CloudinaryUtils } from "../../utils/cloudinary.utils";
+import { PostModel } from "./model/model";
 
 const findPost = catchAsync(async (req, res) => {
   const result = await PostServices.findPost(req.query);

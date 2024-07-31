@@ -2,7 +2,7 @@ import AppError from "../errors/AppError";
 import httpStatus from "http-status";
 import { IRequestWithActiveDetails } from "../interface/interface";
 import catchAsync from "../utils/catch.async";
-import { CategoryModel } from "../modules/category/category.model";
+import { CategoryModel } from "../modules/category/model/model";
 
 const isMyCategory = catchAsync(async (req, res, next) => {
   const { id: categoryId } = req.params;

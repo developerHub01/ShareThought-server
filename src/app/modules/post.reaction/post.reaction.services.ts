@@ -1,8 +1,8 @@
 import QueryBuilder from "../../builder/QueryBuilder";
 import errorHandler from "../../errors/errorHandler";
 import { TAuthorType, TPostType } from "../../interface/interface";
+import { PostReactionModel } from "./model/model";
 import { TPostReactionType} from "./post.reaction.interface";
-import { PostReactionModel } from "./post.reaction.model";
 
 const myReactionOnPost = async (
   authorId: string,

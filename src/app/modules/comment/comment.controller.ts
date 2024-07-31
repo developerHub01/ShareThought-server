@@ -5,8 +5,8 @@ import { CommentServices } from "./comment.services";
 import { IRequestWithActiveDetails } from "../../interface/interface";
 import { CommentUtils } from "./comment.utils";
 import { CloudinaryConstant } from "../../constants/cloudinary.constant";
-import { CommentModel } from "./comment.model";
 import { CloudinaryUtils } from "../../utils/cloudinary.utils";
+import { CommentModel } from "./model/model";
 
 const findCommentByPostId = catchAsync(async (req, res) => {
   const { postId, communityPostId } = req.params;

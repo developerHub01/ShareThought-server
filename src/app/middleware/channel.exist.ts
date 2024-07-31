@@ -1,4 +1,4 @@
-import { ChannelModel } from "./../modules/channel/channel.model";
+import { ChannelModel } from "../modules/channel/model/model";
 import httpStatus from "http-status";
 import AppError from "../errors/AppError";
 import catchAsync from "../utils/catch.async";
