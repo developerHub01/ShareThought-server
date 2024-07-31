@@ -36,6 +36,8 @@ const uploadFile = async (
     const { public_id } = imageData;
     let { secure_url: url } = imageData;
 
+    console.log({ imageData });
+
     if (!public_id)
       throw new AppError(
         httpStatus.INTERNAL_SERVER_ERROR,
@@ -50,6 +52,12 @@ const uploadFile = async (
       width: dimension?.width || 500,
       height: dimension?.height || 500,
     });
+
+    if (!url)
+      throw new AppError(
+        httpStatus.INTERNAL_SERVER_ERROR,
+        "something went wrong please try again",
+      );
 
     return url;
   } catch (error) {
