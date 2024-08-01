@@ -11,19 +11,20 @@ import { UserModel } from "../modules/user/model/model";
 const getLoggedInUser = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const token = req.cookies[Constatnt.TOKENS.ACCESS_TOKEN];
-    
+
+    if (!token)
+      throw new AppError(httpStatus.UNAUTHORIZED, "you are not logged in");
+
     const { userId } = AuthUtils.verifyToken(
       token,
       config.JWT_SECRET as string,
     );
-    
+
     const isUserExist = await UserModel.isUserExist(userId);
-    
+
     if (!userId || !isUserExist)
       throw new AppError(httpStatus.UNAUTHORIZED, "You are not logged in");
-    
     (req as IRequestWithActiveDetails).userId = userId;
-    
 
     next();
   },
