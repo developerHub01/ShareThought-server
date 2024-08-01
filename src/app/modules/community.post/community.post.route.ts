@@ -18,8 +18,11 @@ router.get(
   CommunityPostController.findCommuityPostsByChannelId,
 );
 
+/* find my selected option in a post options */
 router.get(
   "/my_selection/:id",
+  getLoggedInUser,
+  checkChannelStatus,
   CommunityPostController.findMySelectionPostOption,
 );
 
