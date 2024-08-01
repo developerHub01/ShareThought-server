@@ -1,7 +1,11 @@
 import errorHandler from "../../errors/errorHandler";
 import { CloudinaryUtils } from "../../utils/cloudinary.utils";
 import { CommunityPostConstant } from "./community.post.constant";
-import { TCommunityPostType } from "./community.post.interface";
+import {
+  ICommunityPostPollOption,
+  ICommunityPostQuizOption,
+  TCommunityPostType,
+} from "./community.post.interface";
 
 const createOrUpdatePostImage = async (
   imagePath: string,
@@ -49,6 +53,16 @@ const createOrUpdatePostImage = async (
   }
 };
 
+const isQuizOption = (
+  option: ICommunityPostQuizOption | ICommunityPostPollOption,
+): option is ICommunityPostQuizOption => "answeredUsers" in option;
+
+const isPollOption = (
+  option: ICommunityPostQuizOption | ICommunityPostPollOption,
+): option is ICommunityPostPollOption => "polledUsers" in option;
+
 export const CommunityPostUtils = {
   createOrUpdatePostImage,
+  isPollOption,
+  isQuizOption,
 };
