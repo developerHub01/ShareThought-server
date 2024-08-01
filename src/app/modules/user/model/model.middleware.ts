@@ -13,6 +13,6 @@ userSchema.pre("save", async function (next) {
 });
 // remove password after saving
 userSchema.post("save", function (doc, next) {
-  doc.password = "";
+  (doc.password as unknown) = undefined;
   next();
 });
