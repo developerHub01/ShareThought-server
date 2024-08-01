@@ -4,10 +4,17 @@ import mongoose from "mongoose";
 import communityPostSchema from "./model.schema";
 import AppError from "../../../errors/AppError";
 import errorHandler from "../../../errors/errorHandler";
-import { ICreateCommunityPost } from "../community.post.interface";
+import {
+  ICommunityPost,
+  ICommunityPostPollOption,
+  ICommunityPostQuizOption,
+  ICreateCommunityPost,
+} from "../community.post.interface";
 import { CommentModel } from "../../comment/model/model";
 import { PostReactionModel } from "../../post.reaction/model/model";
-// const ObjectId = mongoose.Types.ObjectId;
+import { TAuthorType } from "../../../interface/interface";
+import { CommunityPostUtils } from "../community.post.utils";
+const ObjectId = mongoose.Types.ObjectId;
 
 /* static methods start ============================================= */
 communityPostSchema.statics.isMyPost = async (
@@ -131,36 +138,79 @@ communityPostSchema.statics.deletePost = async (
   }
 };
 
+/*
+ *
+ *  to find which index of option is selected from all options
+ *
+ */
+const postDetailsSelectedIndex = (doc: ICommunityPost, userId: string) => {
+  const { postPollDetails, postPollWithImageDetails, postQuizDetails } = doc;
 
-/* 
+  const { options } =
+    postPollDetails || postPollWithImageDetails || postQuizDetails || {};
+
+  if (!options)
+    throw new AppError(
+      httpStatus.NOT_ACCEPTABLE,
+      "selection is only possible in poll or quiz post",
+    );
+
+  return options.findIndex(
+    (option: ICommunityPostQuizOption | ICommunityPostPollOption) => {
+      if (CommunityPostUtils.isPollOption(option))
+        return option["polledUsers"].includes(new ObjectId(userId));
+
+      if (CommunityPostUtils.isQuizOption(option))
+        return option["answeredUsers"].includes(new ObjectId(userId));
+    },
+  );
+};
+
+/**
+ * 
+ * return the selected option index.
+ * 
+ * format: 
+ * { 
+ *  selectedOption: number 
+ * }
+ * 
+ * ***/
 communityPostSchema.statics.findMySelectedOption = async (
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   communityPostId: string,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   authorId: string,
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
   authorType: TAuthorType,
 ): Promise<unknown> => {
   try {
+    if (authorType === "channelId")
+      throw new AppError(
+        httpStatus.BAD_REQUEST,
+        "channel owner can't select option",
+      );
+
+    const postData = await CommunityPostModel.findById(communityPostId);
+
+    if (!postData) throw new AppError(httpStatus.NOT_FOUND, "post not found");
+
+    const { postPollDetails, postPollWithImageDetails, postQuizDetails } =
+      postData;
+
+    const { options } =
+      postPollDetails || postPollWithImageDetails || postQuizDetails || {};
+
+    if (!options)
+      throw new AppError(
+        httpStatus.NOT_ACCEPTABLE,
+        "selection is only possible in poll or quiz post",
+      );
+
+    const selectedOption = postDetailsSelectedIndex(postData, authorId);
+
+    return { selectedOption };
   } catch (error) {
     return errorHandler(error);
   }
 };
-
-
-const postDetailsSelectedIndex = (doc: ICommunityPost, userId: string)=>{
-  let postDetails;
-  if(doc?.postPollDetails) postDetails = doc.postPollDetails
-  else if(doc?.postPollWithImageDetails) postDetails = doc.postPollWithImageDetails
-  else if(doc?.postQuizDetails) postDetails = doc.postQuizDetails
-  else return null;
-
-   return postDetails?.options?.findIndex((option) => {
-    if(doc?.postQuizDetails && doc?.postQuizDetails.answeredUsers)
-    if(option.answeredUsers) option['answeredUsers'].includes(new ObjectId(userId))
-  })
-}
-
 
 communityPostSchema.statics.selectPollOrQuizOption = async (
   communityPostId: string,
@@ -205,40 +255,53 @@ communityPostSchema.statics.selectPollOrQuizOption = async (
 
     const userListFieldName = postQuizDetails ? "answeredUsers" : "polledUsers";
 
-    const alreadySelectedIndex = options.findIndex((option) =>{
-      if(postDetailsFieldName==="postQuizDetails" && option['answeredUsers'])
+    const alreadySelectedIndex = postDetailsSelectedIndex(postData, authorId);
+
+    let updateData;
+
+    /*
+     *
+     * converting already selected option to unselect
+     *
+     */
+    if (alreadySelectedIndex >= 0) {
+      updateData = await CommunityPostModel.findByIdAndUpdate(
+        communityPostId,
+        {
+          $pull: {
+            [`${postDetailsFieldName}.options.${alreadySelectedIndex}.${userListFieldName}`]:
+              authorId,
+          },
+        },
+        {
+          new: true,
+        },
+      );
     }
-      option[userListFieldName].includes(new ObjectId(authorId)),
-    );
 
-    console.log({ alreadySelectedIndex });
-
-    console.log({ postDetailsFieldName, userListFieldName });
-    console.log(
-      `${postDetailsFieldName}.options[${selectedOptionIndex}].${userListFieldName}`,
-    );
-
-    const data = await CommunityPostModel.findByIdAndUpdate(
-      communityPostId,
-      {
-        $addToSet: {
-          [`${postDetailsFieldName}.options[${selectedOptionIndex}].${userListFieldName}`]:
-            authorId,
+    /*
+     *
+     * if selected item is not already selected
+     * because if that is already selected then in our previous query we removed it so it will work as toggle
+     *
+     */
+    if (alreadySelectedIndex !== selectedOptionIndex) {
+      updateData = await CommunityPostModel.findByIdAndUpdate(
+        communityPostId,
+        {
+          $addToSet: {
+            [`${postDetailsFieldName}.options.${selectedOptionIndex}.${userListFieldName}`]:
+              authorId,
+          },
         },
-        $pull: {
-          [`${postDetailsFieldName}.options[${{
-            $ne: selectedOptionIndex,
-          }}].${userListFieldName}`]: authorId,
+        {
+          new: true,
         },
-      },
-      { new: true },
-    );
+      );
+    }
 
-    console.log(data);
-
-    return data;
+    return updateData;
   } catch (error) {
     return errorHandler(error);
   }
 };
- */
