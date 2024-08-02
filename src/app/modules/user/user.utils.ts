@@ -6,7 +6,8 @@ import { UserConstant } from "./user.constant";
 type TGenerateAvatarURL = (gender: TGender, userName: string) => string;
 
 const generateAvatarURL: TGenerateAvatarURL = (gender, userName) => {
-  const genderValue = gender === "male" ? "boy" : "girl";
+  const genderValue =
+    gender === UserConstant.GENDER_TYPES.MALE ? "boy" : "girl";
   return `https://avatar.iran.liara.run/public/${genderValue}?username=${userName}`;
 };
 

@@ -6,7 +6,7 @@ import {
 } from "../history.setting.interface";
 
 /* history setting schema start ================= */
-import historySettingSchema from "./setting.method.schema";
+import historySettingSchema from "./setting.model.schema";
 /* history setting schema end ================= */
 
 /* history setting schema middleware start ================= */

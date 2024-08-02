@@ -1,30 +1,30 @@
 import { Schema } from "mongoose";
 import { IUser, IUserModel } from "../user.interface";
+import { UserConstant } from "../user.constant";
 
 const userSchema = new Schema<IUser, IUserModel>(
   {
     userName: {
       type: String,
-      required: true,
       unique: true,
       trim: true,
+      required: true,
     },
     fullName: {
       type: String,
-      required: true,
       trim: true,
+      required: true,
     },
     email: {
       type: String,
-      required: true,
       unique: true,
       trim: true,
+      required: true,
     },
     gender: {
       type: String,
-      required: true,
       trim: true,
-      enum: ["male", "female"],
+      enum: Object.values(UserConstant.GENDER_TYPES),
     },
     avatar: {
       type: String,
@@ -32,8 +32,8 @@ const userSchema = new Schema<IUser, IUserModel>(
     },
     password: {
       type: String,
-      required: true,
       select: false,
+      required: true,
     },
   },
   {
