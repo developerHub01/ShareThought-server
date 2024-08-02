@@ -21,7 +21,8 @@ export interface ICommunitySharedPostType {
 /* poll post type ================================ */
 export interface ICommunityPostPollOption {
   text: string;
-  polledUsers: Array<Types.ObjectId>;
+  participateList: Array<Types.ObjectId>;
+  successRate?: number;
 }
 
 export interface ICommunityPostPollType {
@@ -32,7 +33,7 @@ export interface ICommunityPostPollType {
 export interface ICommunityPostPollOptionWithImage {
   text: string;
   image: string;
-  polledUsers: Array<Types.ObjectId>;
+  participateList: Array<Types.ObjectId>;
 }
 
 export interface ICommunityPostPollWithImageType {
@@ -44,7 +45,8 @@ export interface ICommunityPostQuizOption {
   text: string;
   isCurrectAnswer: boolean;
   currectAnswerExplaination?: string;
-  answeredUsers: Array<Types.ObjectId>;
+  participateList: Array<Types.ObjectId>;
+  successRate?: number;
 }
 
 export interface ICommunityPostQuizType {
@@ -63,6 +65,8 @@ export interface ICommunityPost {
   postPollDetails?: ICommunityPostPollType;
   postPollWithImageDetails?: ICommunityPostPollWithImageType;
   postQuizDetails?: ICommunityPostQuizType;
+  totalAnswered?: number;
+  totalPolled?: number;
 }
 
 export interface ICreateCommunityPost {
@@ -81,7 +85,10 @@ export interface ICreateCommunityPost {
 export interface ICommunityPostModel extends Model<ICommunityPost> {
   isMyPost(communityPostId: string, channelId: string): Promise<boolean>;
 
-  findPostById(communityPostId: string, channelId: string): Promise<unknown>;
+  findPostById(
+    communityPostId: string,
+    channelId: string | undefined,
+  ): Promise<unknown>;
 
   isPublicPostById(communityPostId: string): Promise<boolean | unknown>;
 

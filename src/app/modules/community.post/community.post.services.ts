@@ -83,9 +83,12 @@ const findMySelectionPostOption = async (
   }
 };
 
-const findCommuityPostById = async (id: string) => {
+const findCommuityPostById = async (
+  id: string,
+  channelId: string | undefined,
+) => {
   try {
-    return CommunityPostModel.findById(id);
+    return await CommunityPostModel.findPostById(id, channelId);
   } catch (error) {
     errorHandler(error);
   }

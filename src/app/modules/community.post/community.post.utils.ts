@@ -61,8 +61,13 @@ const isPollOption = (
   option: ICommunityPostQuizOption | ICommunityPostPollOption,
 ): option is ICommunityPostPollOption => "polledUsers" in option;
 
+const calculateSuccessRate = (selectCount: number, total: number): number =>
+  Math.floor((selectCount * 100) / (total || 1));
+
+
 export const CommunityPostUtils = {
   createOrUpdatePostImage,
   isPollOption,
   isQuizOption,
+  calculateSuccessRate,
 };

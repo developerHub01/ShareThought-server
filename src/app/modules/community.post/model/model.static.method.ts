@@ -13,7 +13,6 @@ import {
 import { CommentModel } from "../../comment/model/model";
 import { PostReactionModel } from "../../post.reaction/model/model";
 import { TAuthorType } from "../../../interface/interface";
-import { CommunityPostUtils } from "../community.post.utils";
 const ObjectId = mongoose.Types.ObjectId;
 
 /* static methods start ============================================= */
@@ -34,15 +33,14 @@ communityPostSchema.statics.isMyPost = async (
 
 communityPostSchema.statics.findPostById = async (
   communityPostId: string,
-  channelId: string,
+  channelId: string | undefined,
 ): Promise<unknown> => {
   try {
-    const postDetails = await CommunityPostModel.findById(communityPostId);
+    const postData = await CommunityPostModel.findById(communityPostId);
 
-    if (!postDetails)
-      throw new AppError(httpStatus.NOT_FOUND, "post not found");
+    if (!postData) throw new AppError(httpStatus.NOT_FOUND, "post not found");
 
-    const { isPublished } = postDetails;
+    const { isPublished } = postData;
 
     if (
       channelId &&
@@ -51,7 +49,7 @@ communityPostSchema.statics.findPostById = async (
     )
       throw new AppError(httpStatus.NOT_FOUND, "post not found");
 
-    return postDetails;
+    return postData;
   } catch (error) {
     return errorHandler(error);
   }
@@ -157,24 +155,20 @@ const postDetailsSelectedIndex = (doc: ICommunityPost, userId: string) => {
 
   return options.findIndex(
     (option: ICommunityPostQuizOption | ICommunityPostPollOption) => {
-      if (CommunityPostUtils.isPollOption(option))
-        return option["polledUsers"].includes(new ObjectId(userId));
-
-      if (CommunityPostUtils.isQuizOption(option))
-        return option["answeredUsers"].includes(new ObjectId(userId));
+      return option["participateList"].includes(new ObjectId(userId));
     },
   );
 };
 
 /**
- * 
+ *
  * return the selected option index.
- * 
- * format: 
- * { 
- *  selectedOption: number 
+ *
+ * format:
+ * {
+ *  selectedOption: number
  * }
- * 
+ *
  * ***/
 communityPostSchema.statics.findMySelectedOption = async (
   communityPostId: string,
@@ -253,8 +247,6 @@ communityPostSchema.statics.selectPollOrQuizOption = async (
         ? "postPollDetails"
         : "postPollWithImageDetails";
 
-    const userListFieldName = postQuizDetails ? "answeredUsers" : "polledUsers";
-
     const alreadySelectedIndex = postDetailsSelectedIndex(postData, authorId);
 
     let updateData;
@@ -269,7 +261,7 @@ communityPostSchema.statics.selectPollOrQuizOption = async (
         communityPostId,
         {
           $pull: {
-            [`${postDetailsFieldName}.options.${alreadySelectedIndex}.${userListFieldName}`]:
+            [`${postDetailsFieldName}.options.${alreadySelectedIndex}.participateList`]:
               authorId,
           },
         },
@@ -290,7 +282,7 @@ communityPostSchema.statics.selectPollOrQuizOption = async (
         communityPostId,
         {
           $addToSet: {
-            [`${postDetailsFieldName}.options.${selectedOptionIndex}.${userListFieldName}`]:
+            [`${postDetailsFieldName}.options.${selectedOptionIndex}.participateList`]:
               authorId,
           },
         },

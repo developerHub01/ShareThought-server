@@ -35,7 +35,7 @@ communityPostSchema.pre<ICommunityPost>("save", async function (next) {
     const totalPolledUsers =
       (this.postPollDetails || this.postPollWithImageDetails)?.options?.reduce(
         (acc, curr) => {
-          if (curr?.polledUsers) acc += curr?.polledUsers?.length;
+          if (curr?.participateList) acc += curr?.participateList?.length;
 
           return acc;
         },
@@ -55,9 +55,6 @@ communityPostSchema.pre<ICommunityPost>("save", async function (next) {
       answeredUsersCount: 0,
     };
 
-    // console.log("===========");
-    // console.log(this.postQuizDetails.options);
-
     const {
       currectAnswerCount,
       currectAnswerExplainationCount,
@@ -72,13 +69,11 @@ communityPostSchema.pre<ICommunityPost>("save", async function (next) {
 
         if (curr?.isCurrectAnswer) acc.currectAnswerCount++;
 
-        // console.log(curr);
-
         if (curr?.currectAnswerExplaination)
           acc.currectAnswerExplainationCount++;
 
-        if (curr?.answeredUsers)
-          acc.answeredUsersCount += curr?.answeredUsers.length;
+        if (curr?.participateList)
+          acc.answeredUsersCount += curr?.participateList.length;
 
         return acc;
       },

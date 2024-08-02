@@ -79,7 +79,12 @@ const findCommuityPostsMine = catchAsync(async (req, res) => {
 const findCommuityPostById = catchAsync(async (req, res) => {
   const { id } = req.params;
 
-  const result = await CommunityPostServices.findCommuityPostById(id);
+  const { channelId } = req as IRequestWithActiveDetails;
+
+  const result = await CommunityPostServices.findCommuityPostById(
+    id,
+    channelId,
+  );
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,

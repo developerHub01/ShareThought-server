@@ -1,8 +1,20 @@
-import { Schema } from "mongoose";
-import { ICommunityPost, ICommunityPostImageType, ICommunityPostModel, ICommunityPostPollOption, ICommunityPostPollOptionWithImage, ICommunityPostPollType, ICommunityPostPollWithImageType, ICommunityPostQuizOption, ICommunityPostQuizType, ICommunitySharedPostType } from "../community.post.interface";
+import { Document, Schema } from "mongoose";
+import {
+  ICommunityPost,
+  ICommunityPostImageType,
+  ICommunityPostModel,
+  ICommunityPostPollOption,
+  ICommunityPostPollOptionWithImage,
+  ICommunityPostPollType,
+  ICommunityPostPollWithImageType,
+  ICommunityPostQuizOption,
+  ICommunityPostQuizType,
+  ICommunitySharedPostType,
+} from "../community.post.interface";
 import { CommunityPostConstant } from "../community.post.constant";
 import { UserConstant } from "../../user/user.constant";
 import { ChannelConstant } from "../../channel/channel.constant";
+import { CommunityPostUtils } from "../community.post.utils";
 
 const communityPostImageSchema = new Schema<ICommunityPostImageType>(
   {
@@ -39,7 +51,7 @@ const communityPostPullOptionShcema = new Schema<ICommunityPostPollOption>(
       minlength: CommunityPostConstant.COMMUNITY_POST_OPTION_MIN_LENGTH,
       maxlength: CommunityPostConstant.COMMUNITY_POST_OPTION_MAX_LENGTH,
     },
-    polledUsers: {
+    participateList: {
       type: [
         {
           type: Schema.Types.ObjectId,
@@ -47,7 +59,6 @@ const communityPostPullOptionShcema = new Schema<ICommunityPostPollOption>(
         },
       ],
       default: [],
-      select: false,
     },
   },
   {
@@ -70,7 +81,7 @@ const communityPostPullWithImageOptionShcema =
         trim: true,
         required: true,
       },
-      polledUsers: {
+      participateList: {
         type: [
           {
             type: Schema.Types.ObjectId,
@@ -78,20 +89,12 @@ const communityPostPullWithImageOptionShcema =
           },
         ],
         default: [],
-        select: true,
       },
     },
     {
       _id: false,
     },
   );
-
-[communityPostPullOptionShcema, communityPostPullWithImageOptionShcema].map(
-  (schema) =>
-    schema.virtual("totalPolled").get(function () {
-      return this?.polledUsers?.length;
-    }),
-);
 
 const communityPostPullSchema = new Schema<ICommunityPostPollType>(
   {
@@ -110,9 +113,6 @@ const communityPostPullSchema = new Schema<ICommunityPostPollType>(
     },
   },
   {
-    toJSON: {
-      virtuals: true,
-    },
     _id: false,
   },
 );
@@ -135,21 +135,9 @@ const communityPostPullWithImageSchema =
       },
     },
     {
-      toJSON: {
-        virtuals: true,
-      },
       _id: false,
     },
   );
-
-[communityPostPullSchema, communityPostPullWithImageSchema].map((schema) =>
-  schema.virtual("totalPolled").get(function () {
-    return this?.options?.reduce(
-      (acc, curr) => acc + curr?.polledUsers?.length,
-      0,
-    );
-  }),
-);
 
 /* ================ Community post pull schema end ================================ */
 
@@ -173,7 +161,7 @@ const communityPostQuizOptionShcema = new Schema<ICommunityPostQuizOption>(
       type: String,
       trim: true,
     },
-    answeredUsers: {
+    participateList: {
       type: [
         {
           type: Schema.Types.ObjectId,
@@ -184,16 +172,9 @@ const communityPostQuizOptionShcema = new Schema<ICommunityPostQuizOption>(
     },
   },
   {
-    toJSON: {
-      virtuals: true,
-    },
     _id: false,
   },
 );
-
-communityPostQuizOptionShcema.virtual("totalPolled").get(function () {
-  return this?.answeredUsers?.length;
-});
 
 const communityPostQuizSchema = new Schema<ICommunityPostQuizType>(
   {
@@ -212,19 +193,9 @@ const communityPostQuizSchema = new Schema<ICommunityPostQuizType>(
     },
   },
   {
-    toJSON: {
-      virtuals: true,
-    },
     _id: false,
   },
 );
-
-communityPostQuizSchema.virtual("totalAnswered").get(function () {
-  return this?.options?.reduce(
-    (acc, curr) => acc + curr?.answeredUsers?.length,
-    0,
-  );
-});
 
 /* ================ Community post quiz schema end ================================ */
 
@@ -267,35 +238,66 @@ const communityPostSchema = new Schema<ICommunityPost, ICommunityPostModel>(
   },
   {
     timestamps: true,
-    toJSON: {
-      virtuals: true,
-    },
   },
 );
 
-communityPostSchema.virtual("totalVote").get(function () {
+const modifyCommunityPost = (
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  doc: Document<any, any>,
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  ret: Record<string, any>,
+) => {
+  const postData = doc as unknown as ICommunityPost;
+  const { POLL, POLL_WITH_IMAGE, QUIZ } =
+    CommunityPostConstant.COMMUNITY_POST_TYPES;
+
   if (
-    !(Number(!!this.postPollDetails) + Number(!!this.postPollWithImageDetails))
+    postData?.postType &&
+    ![POLL, POLL_WITH_IMAGE, QUIZ].includes(postData.postType as string)
   )
-    return;
+    return ret;
 
-  return (
-    (this.postPollDetails || this.postPollWithImageDetails)?.options?.reduce(
-      (acc, curr) => acc + curr?.polledUsers?.length,
+  const postDetailsField = postData.postQuizDetails
+    ? "postQuizDetails"
+    : postData.postPollDetails
+      ? "postPollDetails"
+      : "postPollWithImageDetails";
+
+  ret.totalResponse = Number(
+    ret[postDetailsField].options.reduce(
+      (count: number, option: { participateList: Array<string> }) =>
+        count + option["participateList"]?.length,
       0,
-    ) || 0
+    ),
   );
+
+  ret[postDetailsField].options = ret[postDetailsField].options.map(
+    (option: Partial<ICommunityPostQuizOption>) => {
+      const totalUsers = Number(
+        option["participateList"] && option["participateList"].length,
+      );
+
+      delete option["participateList"];
+
+      return {
+        ...option,
+        totalUsers,
+        successRate: CommunityPostUtils.calculateSuccessRate(
+          totalUsers,
+          ret.totalResponse,
+        ),
+      };
+    },
+  );
+
+  return ret;
+};
+
+communityPostSchema.set("toJSON", {
+  transform: (doc, ret) => modifyCommunityPost(doc, ret),
 });
-
-communityPostSchema.virtual("totalAnswer").get(function () {
-  if (!this.postQuizDetails) return;
-
-  return (
-    this.postQuizDetails?.options?.reduce(
-      (acc, curr) => acc + curr?.answeredUsers?.length,
-      0,
-    ) || 0
-  );
+communityPostSchema.set("toObject", {
+  transform: (doc, ret) => modifyCommunityPost(doc, ret),
 });
 
 export default communityPostSchema;
