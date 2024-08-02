@@ -12,13 +12,21 @@ historyItemSchema.statics.addPostInHistory = async (
   try {
     await HistorySettingModel.createHistorySetting(userId);
 
-    if (!(await HistorySettingModel.isMyHistoryActive(userId)))
-      throw new AppError(httpStatus.BAD_REQUEST, "Your history is paused");
+    let isDeleted = false;
 
-    return await HistoryItemModel.create({
+    if (!(await HistorySettingModel.isMyHistoryActive(userId)))
+      isDeleted = true;
+
+    const historyData = await HistoryItemModel.create({
       postId,
       userId,
+      isDeleted,
     });
+
+    if (isDeleted)
+      throw new AppError(httpStatus.BAD_REQUEST, "Your history is paused");
+
+    return historyData;
   } catch (error) {
     return errorHandler(error);
   }
