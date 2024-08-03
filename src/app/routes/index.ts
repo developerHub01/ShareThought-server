@@ -12,6 +12,7 @@ import { SavedCategoryRoutes } from "../modules/saved.category/saved.category.ro
 import { HistoryRoutes } from "../modules/history/history.route";
 import { SearchHistoryRoutes } from "../modules/search.history/search.history.route";
 import { CommunityPostRoutes } from "../modules/community.post/community.post.route";
+import { ModeratorRoutes } from "../modules/modarator/moderator.route";
 
 interface IRouteSchema {
   path: string;
@@ -68,6 +69,10 @@ const moduleRoutes: Array<IRouteSchema> = [
   {
     path: "/search_history",
     route: SearchHistoryRoutes,
+  },
+  {
+    path: "/moderator",
+    route: ModeratorRoutes,
   },
   {
     path: "/notification",
