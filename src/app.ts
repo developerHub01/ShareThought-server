@@ -6,6 +6,7 @@ import IndexRoute from "./app/routes";
 import { notFound } from "./app/middleware/notfound";
 import { globalErrorHandler } from "./app/middleware/global.error.handler";
 import "./app/config/cloudinary.config";
+import createGuestUserIfNeed from "./app/middleware/create.guest.user";
 
 const app: Application = express();
 
@@ -24,9 +25,10 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+
+app.use(createGuestUserIfNeed);
 // application routes
 app.use("/api/v1", IndexRoute);
-
 
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello");

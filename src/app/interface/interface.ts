@@ -3,6 +3,7 @@ import { Request } from "express";
 export interface IRequestWithActiveDetails extends Request {
   userId: string;
   channelId?: string;
+  guestId?: string;
 }
 
 export interface IFileObject {

@@ -14,27 +14,29 @@ import { Constatnt } from "../constants/constants";
  *
  */
 
-const checkAuthStatus = catchAsync(
+const checkGuestStatus = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const token = req?.cookies[Constatnt.TOKENS.ACCESS_TOKEN];
+    const token = req?.cookies[Constatnt.TOKENS.GUEST_TOKEN];
 
+    
     if (!token) return next();
-
-    const { userId } = AuthUtils.verifyToken(
+    console.log({ token });
+    
+    const { guestId } = AuthUtils.verifyToken(
       token,
       config.JWT_SECRET as string,
     );
 
-    if (!userId) return next();
+    if (!guestId) return next();
 
-    const isUserExist = await UserModel.isUserExist(userId);
+    const isUserExist = await UserModel.isUserExist(guestId);
 
     if (!isUserExist) return next();
 
-    (req as IRequestWithActiveDetails).userId = userId;
+    (req as IRequestWithActiveDetails).guestId = guestId;
 
     next();
   },
 );
 
-export default checkAuthStatus;
+export default checkGuestStatus;

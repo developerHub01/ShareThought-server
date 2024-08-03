@@ -3,6 +3,7 @@ import { Model, Types } from "mongoose";
 export interface IHistorySetting {
   isHistoryActive?: boolean;
   userId: Types.ObjectId;
+  userType: "guest" | "user";
 }
 
 export interface IHistorySettingModel extends Model<IHistorySetting> {

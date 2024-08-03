@@ -4,5 +4,6 @@ export interface ILoginUser {
 }
 export interface IJWTPayload {
   userId?: string;
-  channelId?: string
+  channelId?: string;
+  guestId?: string;
 }

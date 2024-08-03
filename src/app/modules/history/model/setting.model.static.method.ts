@@ -1,5 +1,5 @@
 import errorHandler from "../../../errors/errorHandler";
-import historySettingSchema from "./setting.method.schema";
+import historySettingSchema from "./setting.model.schema";
 import { HistorySettingModel } from "./setting.model";
 
 historySettingSchema.statics.createHistorySetting = async (

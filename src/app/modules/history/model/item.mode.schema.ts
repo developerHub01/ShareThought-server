@@ -19,6 +19,11 @@ const historyItemSchema = new Schema<IHistoryItem, IHistoryItemModel>(
       type: Boolean,
       default: true,
     },
+    userType: {
+      type: String,
+      enum: ["guest", "user"],
+      default: "user",
+    },
   },
   {
     timestamps: true,
