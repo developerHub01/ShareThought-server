@@ -7,6 +7,7 @@ import { PostUtils } from "./post.utils";
 import { CloudinaryConstant } from "../../constants/cloudinary.constant";
 import { CloudinaryUtils } from "../../utils/cloudinary.utils";
 import { PostModel } from "./model/model";
+import { PostCache } from "./post.cache";
 
 const findPost = catchAsync(async (req, res) => {
   const result = await PostServices.findPost(req.query);
@@ -43,7 +44,7 @@ const findPostByPostId = catchAsync(async (req, res) => {
 
   const { channelId } = req as IRequestWithActiveDetails;
 
-  const result = await PostServices.findPostByPostId(postId, channelId);
+  const result = await PostCache.findPostByPostId(postId, channelId as string);
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -66,8 +67,8 @@ const createPost = catchAsync(async (req, res) => {
     );
     req.body.banner = bannerImage;
   }
-  
-  const result = await PostServices.createPost(req.body);
+
+  const result = await PostCache.createPost(req.body);
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -93,7 +94,7 @@ const updatePost = catchAsync(async (req, res) => {
     req.body.banner = bannerImage;
   }
 
-  const result = await PostServices.updatePost(req.body, postId);
+  const result = await PostCache.updatePost(req.body, postId);
   return sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
