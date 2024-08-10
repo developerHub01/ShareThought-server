@@ -1,5 +1,8 @@
-const userKeys = (key: string) => `user:${key}`;
+const userKey = (key: string) => `user:${key}`;
+
+const postKey = (key: string) => `post:${key}`;
 
 export const RedisKeys = {
-  userKeys,
+  userKey,
+  postKey,
 };

@@ -37,7 +37,7 @@ export interface IMediaFileDimension {
   height: number;
 }
 
-export type DocumentType<T> = Document<unknown, object, T> &
+export type TDocumentType<T> = Document<unknown, object, T> &
   T & {
     _id: Types.ObjectId;
     createdAt?: Date;

@@ -1,11 +1,11 @@
 import { redis } from "../../../app";
-import { DocumentType } from "../../interface/interface";
+import { TDocumentType } from "../../interface/interface";
 import { RedisKeys } from "../../redis.keys";
 import { IUser, IUserChangePassword } from "./user.interface";
 import { UserServices } from "./user.services";
 
 const findUserById = async (userId: string) => {
-  const userKey = RedisKeys.userKeys(userId);
+  const userKey = RedisKeys.userKey(userId);
   const userData = await redis.get(userKey);
 
   if (userData) return JSON.parse(userData);
@@ -20,9 +20,9 @@ const findUserById = async (userId: string) => {
 const createUser = async (payload: IUser) => {
   const result = (await UserServices.createUser(
     payload,
-  )) as DocumentType<IUser>;
+  )) as TDocumentType<IUser>;
 
-  const userKey = RedisKeys.userKeys(result?._id?.toString());
+  const userKey = RedisKeys.userKey(result?._id?.toString());
 
   await redis.set(userKey, JSON.stringify(result));
 
@@ -33,9 +33,9 @@ const updateUser = async (payload: IUser, userId: string) => {
   const result = (await UserServices.updateUser(
     payload,
     userId,
-  )) as DocumentType<IUser>;
+  )) as TDocumentType<IUser>;
 
-  const userKey = RedisKeys.userKeys(result?._id?.toString());
+  const userKey = RedisKeys.userKey(result?._id?.toString());
 
   await redis.set(userKey, JSON.stringify(result));
 
@@ -49,9 +49,9 @@ const updateUserPassword = async (
   const result = (await UserServices.updateUserPassword(
     payload,
     userId,
-  )) as DocumentType<IUser>;
+  )) as TDocumentType<IUser>;
 
-  const userKey = RedisKeys.userKeys(result?._id?.toString());
+  const userKey = RedisKeys.userKey(result?._id?.toString());
 
   await redis.set(userKey, JSON.stringify(result));
 
