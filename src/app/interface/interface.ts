@@ -1,4 +1,5 @@
 import { Request } from "express";
+import { Document, Types } from "mongoose";
 
 export interface IRequestWithActiveDetails extends Request {
   userId: string;
@@ -35,3 +36,10 @@ export interface IMediaFileDimension {
   width: number;
   height: number;
 }
+
+export type DocumentType<T> = Document<unknown, object, T> &
+  T & {
+    _id: Types.ObjectId;
+    createdAt?: Date;
+    updatedAt?: Date;
+  };
