@@ -28,12 +28,10 @@ export interface IUserModel extends Model<IUser> {
 
   isUserExist(id: string): Promise<boolean>;
 
-  changePassword(
+  updateUserPassword(
     payload: IUserChangePassword,
     userId: string,
   ): Promise<unknown>;
-
-  createGuestUser(): Promise<unknown>;
 
   deleteGuestUser(guestUserId: string, currentUserId: string): Promise<unknown>;
 }

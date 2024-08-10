@@ -7,20 +7,25 @@ import { IUserChangePassword } from "../user.interface";
 import AppError from "../../../errors/AppError";
 import errorHandler from "../../../errors/errorHandler";
 
-userSchema.statics.createHash = async (str: string) => {
+userSchema.statics.createHash = async (str: string): Promise<string> => {
   return await bcrypt.hash(str, Number(config?.BCRYPT_SALT_ROUND));
 };
 
-userSchema.statics.isPasswordMatch = async (plainPassword, hashedPassword) => {
+userSchema.statics.isPasswordMatch = async (
+  plainPassword,
+  hashedPassword,
+): Promise<boolean> => {
   return await bcrypt.compare(plainPassword, hashedPassword);
 };
-userSchema.statics.isUserExist = async (id: string) => {
-  return await UserModel.findById(id);
+
+userSchema.statics.isUserExist = async (id: string): Promise<boolean> => {
+  return Boolean(await UserModel.findById(id));
 };
-userSchema.statics.changePassword = async (
+
+userSchema.statics.updateUserPassword = async (
   payload: IUserChangePassword,
   userId: string,
-) => {
+): Promise<unknown> => {
   const { oldPassword, newPassword } = payload;
 
   try {

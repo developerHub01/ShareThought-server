@@ -27,8 +27,6 @@ guestUserSchema.statics.deleteGuestUser = async (
   guestUserId: string,
   currentUserId: string,
 ) => {
-  console.log({ guestUserId, currentUserId });
-
   try {
     if (
       !(await GuestUserModel.findById(guestUserId)) ||
@@ -46,8 +44,6 @@ guestUserSchema.statics.deleteGuestUser = async (
       userId: currentUserId,
       userType: "user",
     }));
-
-    console.log({ guestHistory });
 
     await HistorySettingModel.findOneAndDelete({
       userId: guestUserId,

@@ -58,12 +58,13 @@ const updateUser = async (payload: Partial<IUser>, id: string) => {
     errorHandler(error);
   }
 };
+
 const updateUserPassword = async (
   payload: IUserChangePassword,
   userId: string,
 ) => {
   try {
-    return await UserModel.changePassword(payload, userId);
+    return await UserModel.updateUserPassword(payload, userId);
   } catch (error) {
     errorHandler(error);
   }
