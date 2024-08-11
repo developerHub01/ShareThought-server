@@ -8,6 +8,7 @@ import { CommunityPostConstant } from "./community.post.constant";
 import { ICommunityPost } from "./community.post.interface";
 import { CloudinaryUtils } from "../../utils/cloudinary.utils";
 import { CommunityPostModel } from "./model/model";
+import { CommunityPostCache } from "./community.post.cache";
 
 const findCommuityPosts = catchAsync(async (req, res) => {
   const result = await CommunityPostServices.findCommuityPosts(req.query);
@@ -81,9 +82,9 @@ const findCommuityPostById = catchAsync(async (req, res) => {
 
   const { channelId } = req as IRequestWithActiveDetails;
 
-  const result = await CommunityPostServices.findCommuityPostById(
+  const result = await CommunityPostCache.findCommuityPostById(
     id,
-    channelId,
+    channelId as string,
   );
 
   return sendResponse(res, {
@@ -97,7 +98,7 @@ const findCommuityPostById = catchAsync(async (req, res) => {
 const createPost = catchAsync(async (req, res) => {
   const { channelId } = req as IRequestWithActiveDetails;
 
-  const result = await CommunityPostServices.createPost({
+  const result = await CommunityPostCache.createPost({
     ...req.body,
     channelId,
   });
@@ -137,7 +138,7 @@ const selectPollOrQuizOption = catchAsync(async (req, res) => {
 const updatePost = catchAsync(async (req, res) => {
   const { id } = req.params;
 
-  const result = await CommunityPostServices.updatePost(req.body, id);
+  const result = await CommunityPostCache.updatePost(req.body, id);
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
