@@ -268,7 +268,7 @@ communityPostSchema.statics.selectPollOrQuizOption = async (
         {
           new: true,
         },
-      );
+      ).lean();
     }
 
     /*
@@ -277,7 +277,7 @@ communityPostSchema.statics.selectPollOrQuizOption = async (
      * because if that is already selected then in our previous query we removed it so it will work as toggle
      *
      */
-    if (alreadySelectedIndex !== selectedOptionIndex) {
+    if (alreadySelectedIndex !== selectedOptionIndex)
       updateData = await CommunityPostModel.findByIdAndUpdate(
         communityPostId,
         {
@@ -289,10 +289,10 @@ communityPostSchema.statics.selectPollOrQuizOption = async (
         {
           new: true,
         },
-      );
-    }
+      ).lean();
+    else selectedOptionIndex = -1;
 
-    return updateData;
+    return { ...updateData, selectedOption: selectedOptionIndex };
   } catch (error) {
     return errorHandler(error);
   }

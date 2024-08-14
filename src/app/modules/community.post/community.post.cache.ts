@@ -78,9 +78,70 @@ const deletePost = async (id: string) => {
   return result;
 };
 
+const findMySelectionPostOption = async (
+  postId: string,
+  userOrChannelId: string,
+  userType: "channelId" | "userId",
+) => {
+  const cummunityPostSelectionKey = RedisKeys.cummunityPostSelectionKey(
+    postId,
+    userOrChannelId,
+    userType,
+  );
+
+  const selectedIndex = await redis.get(cummunityPostSelectionKey);
+
+  if (selectedIndex) return JSON.parse(selectedIndex);
+
+  const result = await CommunityPostServices.findMySelectionPostOption(
+    postId,
+    userOrChannelId,
+    userType,
+  );
+
+  await redis.set(cummunityPostSelectionKey, JSON.stringify(result));
+
+  return result;
+};
+
+const selectPollOrQuizOption = async (
+  postId: string,
+  optionIndex: number,
+  userOrChannelId: string,
+  userType: "channelId" | "userId",
+) => {
+  const cummunityPostSelectionKey = RedisKeys.cummunityPostSelectionKey(
+    postId,
+    userOrChannelId,
+    userType,
+  );
+
+  const result = await CommunityPostServices.selectPollOrQuizOption(
+    postId,
+    optionIndex,
+    userOrChannelId,
+    userType,
+  );
+
+  if (!result) return result;
+
+  const { selectedOption } = result as { selectedOption: number };
+
+  await redis.set(
+    cummunityPostSelectionKey,
+    JSON.stringify({
+      selectedOption: selectedOption ?? -1,
+    }),
+  );
+
+  return result;
+};
+
 export const CommunityPostCache = {
   findCommuityPostById,
   createPost,
   updatePost,
   deletePost,
+  findMySelectionPostOption,
+  selectPollOrQuizOption,
 };

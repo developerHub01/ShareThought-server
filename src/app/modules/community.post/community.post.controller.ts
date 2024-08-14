@@ -41,7 +41,7 @@ const findMySelectionPostOption = catchAsync(async (req, res) => {
   const { id } = req.params;
   const { userId, channelId } = req as IRequestWithActiveDetails;
 
-  const result = await CommunityPostServices.findMySelectionPostOption(
+  const result = await CommunityPostCache.findMySelectionPostOption(
     id,
     channelId || userId,
     channelId ? "channelId" : "userId",
@@ -120,7 +120,7 @@ const selectPollOrQuizOption = catchAsync(async (req, res) => {
   if (isNaN(optionIndex) || optionIndex < 0)
     throw new AppError(httpStatus.BAD_REQUEST, "option index is not valid");
 
-  const result = await CommunityPostServices.selectPollOrQuizOption(
+  const result = await CommunityPostCache.selectPollOrQuizOption(
     id,
     optionIndex,
     channelId || userId,
