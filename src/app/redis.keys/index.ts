@@ -2,17 +2,20 @@ const userKey = (key: string) => `user:${key}`;
 
 const postKey = (key: string) => `post:${key}`;
 
-const communityPostkey = (key: string) => `community:post:${key}`;
+const communityPostkey = (key: string) => `community_post:${key}`;
 
-const cummunityPostSelectionKey = (
-  postId: string,
-  userId: string,
+const communityPostSelectionKey = (key: string) =>
+  `community_post_selection:${key}`;
+
+const cummunityPostSelectionField = (
+  userOrChannelId: string,
   userType: "channelId" | "userId",
-) => `community:post:${postId}:user:${userId}:userType:${userType}`;
+) => `${userType}:${userOrChannelId}`;
 
 export const RedisKeys = {
   userKey,
   postKey,
   communityPostkey,
-  cummunityPostSelectionKey,
+  communityPostSelectionKey,
+  cummunityPostSelectionField,
 };

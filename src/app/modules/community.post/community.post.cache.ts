@@ -72,8 +72,10 @@ const deletePost = async (id: string) => {
   if (!result) return result;
 
   const postKey = RedisKeys.communityPostkey(id);
+  const postSelectionKey = RedisKeys.communityPostSelectionKey(id);
 
   await redis.del(postKey);
+  await redis.del(postSelectionKey);
 
   return result;
 };
@@ -83,15 +85,16 @@ const findMySelectionPostOption = async (
   userOrChannelId: string,
   userType: "channelId" | "userId",
 ) => {
-  const cummunityPostSelectionKey = RedisKeys.cummunityPostSelectionKey(
-    postId,
+  const postSelectionKey = RedisKeys.communityPostSelectionKey(postId);
+
+  const communityPostField = RedisKeys.cummunityPostSelectionField(
     userOrChannelId,
     userType,
   );
 
-  const selectedIndex = await redis.get(cummunityPostSelectionKey);
+  const selectedIndex = await redis.hget(postSelectionKey, communityPostField);
 
-  if (selectedIndex) return JSON.parse(selectedIndex);
+  if (selectedIndex) return { selectedOption: JSON.parse(selectedIndex) };
 
   const result = await CommunityPostServices.findMySelectionPostOption(
     postId,
@@ -99,7 +102,9 @@ const findMySelectionPostOption = async (
     userType,
   );
 
-  await redis.set(cummunityPostSelectionKey, JSON.stringify(result));
+  const { selectedOption } = result as { selectedOption: number };
+
+  await redis.hset(postSelectionKey, communityPostField, selectedOption ?? -1);
 
   return result;
 };
@@ -110,8 +115,9 @@ const selectPollOrQuizOption = async (
   userOrChannelId: string,
   userType: "channelId" | "userId",
 ) => {
-  const cummunityPostSelectionKey = RedisKeys.cummunityPostSelectionKey(
-    postId,
+  const postSelectionKey = RedisKeys.communityPostSelectionKey(postId);
+
+  const communityPostField = RedisKeys.cummunityPostSelectionField(
     userOrChannelId,
     userType,
   );
@@ -127,14 +133,9 @@ const selectPollOrQuizOption = async (
 
   const { selectedOption } = result as { selectedOption: number };
 
-  await redis.set(
-    cummunityPostSelectionKey,
-    JSON.stringify({
-      selectedOption: selectedOption ?? -1,
-    }),
-  );
+  await redis.hset(postSelectionKey, communityPostField, selectedOption ?? -1);
 
-  return result;
+  return { selectedOption };
 };
 
 export const CommunityPostCache = {
