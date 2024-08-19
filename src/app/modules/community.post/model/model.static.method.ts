@@ -16,6 +16,27 @@ import { TAuthorType } from "../../../interface/interface";
 const ObjectId = mongoose.Types.ObjectId;
 
 /* static methods start ============================================= */
+communityPostSchema.statics.isPostOfMyAnyChannel = async (
+  userId: string,
+  postId: string,
+): Promise<boolean> => {
+  const postData = await CommunityPostModel.findById(
+    postId,
+    "channelId",
+  ).populate({
+    path: "channelId",
+    select: "authorId -_id",
+  });
+
+  if (!postData || !postData?.channelId) return false;
+
+  const {
+    channelId: { authorId },
+  } = postData as unknown as { channelId: { authorId: string } };
+
+  return userId === authorId?.toString();
+};
+
 communityPostSchema.statics.isMyPost = async (
   communityPostId: string,
   channelId: string,
