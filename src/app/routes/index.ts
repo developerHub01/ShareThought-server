@@ -13,6 +13,7 @@ import { HistoryRoutes } from "../modules/history/history.route";
 import { SearchHistoryRoutes } from "../modules/search.history/search.history.route";
 import { CommunityPostRoutes } from "../modules/community.post/community.post.route";
 import { ModeratorRoutes } from "../modules/modarator/moderator.route";
+import { ReportRoutes } from "../modules/report/report.route";
 
 interface IRouteSchema {
   path: string;
@@ -69,6 +70,10 @@ const moduleRoutes: Array<IRouteSchema> = [
   {
     path: "/search_history",
     route: SearchHistoryRoutes,
+  },
+  {
+    path: "/report",
+    route: ReportRoutes,
   },
   {
     path: "/moderator",
