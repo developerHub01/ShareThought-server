@@ -29,6 +29,8 @@ export interface ICommentModel extends Model<IComment> {
     authorType: TAuthorType,
   ): Promise<boolean | unknown>;
 
+  isCommentOfMyAnyChannel(userId: string, commentId: string): Promise<unknown>;
+
   isMyPost(commentId: string, userId: string): Promise<boolean | unknown>;
 
   haveAccessToDelete(

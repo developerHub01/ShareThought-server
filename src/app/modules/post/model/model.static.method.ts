@@ -9,6 +9,24 @@ import { CategoryModel } from "../../category/model/model";
 import { PostReactionModel } from "../../post.reaction/model/model";
 import { ReadLaterModel } from "../../read.later/model/model";
 
+postSchema.statics.isPostOfMyAnyChannel = async (
+  userId: string,
+  postId: string,
+): Promise<boolean> => {
+  const postData = await PostModel.findById(postId, "channelId").populate({
+    path: "channelId",
+    select: "authorId -_id",
+  });
+
+  if (!postData || !postData?.channelId) return false;
+
+  const {
+    channelId: { authorId },
+  } = postData as unknown as { channelId: { authorId: string } };
+
+  return userId === authorId?.toString();
+};
+
 postSchema.statics.isMyPost = async (
   postId: string,
   channelId: string,

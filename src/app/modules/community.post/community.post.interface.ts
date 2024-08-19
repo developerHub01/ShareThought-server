@@ -83,6 +83,8 @@ export interface ICreateCommunityPost {
 }
 
 export interface ICommunityPostModel extends Model<ICommunityPost> {
+  isPostOfMyAnyChannel(userId: string, postId: string): Promise<boolean>;
+
   isMyPost(communityPostId: string, channelId: string): Promise<boolean>;
 
   findPostById(

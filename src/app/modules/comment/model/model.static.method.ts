@@ -22,6 +22,36 @@ commentSchema.statics.findComment = async (id: string): Promise<unknown> => {
   }
 };
 
+commentSchema.statics.isCommentOfMyAnyChannel = async (
+  userId: string,
+  commentId: string,
+): Promise<unknown> => {
+  // const commentData = await CommentModel.findById(commentId);
+
+  const commentData = await CommentModel.findById(
+    commentId,
+    "commentAuthorId commentAuthorChannelId",
+  ).populate({
+    path: "commentAuthorChannelId",
+    select: "authorId",
+  });
+
+  if (!commentData)
+    throw new AppError(httpStatus.NOT_FOUND, "comment not found");
+
+  const { commentAuthorId, commentAuthorChannelId } = commentData;
+
+  if (commentAuthorId) return commentAuthorId?.toString() === userId;
+
+  const { authorId } = commentAuthorChannelId as unknown as {
+    authorId: Types.ObjectId;
+  };
+
+  if (authorId) return authorId?.toString() === userId;
+
+  return false;
+};
+
 commentSchema.statics.isMyPost = async (
   commentId: string,
   userId: string,
