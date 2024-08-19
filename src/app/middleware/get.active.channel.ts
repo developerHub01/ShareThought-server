@@ -13,7 +13,7 @@ const getActiveChannel = catchAsync(
     const token = req.cookies[Constatnt.TOKENS.CHANNEL_TOKEN];
 
     if (!token)
-      throw new AppError(httpStatus.UNAUTHORIZED, "this is not your channel");
+      throw new AppError(httpStatus.UNAUTHORIZED, "no channel activated");
 
     const { channelId } = AuthUtils.verifyToken(
       token,
