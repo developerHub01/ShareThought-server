@@ -33,6 +33,7 @@ const channelSchema = new Schema<IChannel, IChannelModel>(
   },
   {
     timestamps: true,
+    versionKey: false,
   },
 );
 

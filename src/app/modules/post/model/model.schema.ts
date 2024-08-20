@@ -46,6 +46,7 @@ const postSchema = new Schema<IPost, IPostModel>(
   },
   {
     timestamps: true,
+    versionKey: false,
   },
 );
 

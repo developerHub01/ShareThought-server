@@ -1,5 +1,8 @@
 import { Schema } from "mongoose";
-import { ISearchHistory, ISearchHistoryModel } from "../search.history.interface";
+import {
+  ISearchHistory,
+  ISearchHistoryModel,
+} from "../search.history.interface";
 import { UserConstant } from "../../user/user.constant";
 
 const searchHistorySchema = new Schema<ISearchHistory, ISearchHistoryModel>(
@@ -25,6 +28,7 @@ const searchHistorySchema = new Schema<ISearchHistory, ISearchHistoryModel>(
   },
   {
     timestamps: true,
+    versionKey: false,
     toJSON: {
       virtuals: true,
     },

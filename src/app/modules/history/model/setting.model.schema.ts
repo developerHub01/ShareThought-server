@@ -25,6 +25,7 @@ const historySettingSchema = new Schema<IHistorySetting, IHistorySettingModel>(
   },
   {
     timestamps: true,
+    versionKey: false,
   },
 );
 

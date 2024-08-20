@@ -18,6 +18,7 @@ const readLaterSchema = new Schema<IReadLater, IReadLaterModel>(
   },
   {
     timestamps: true,
+    versionKey: false,
   },
 );
 

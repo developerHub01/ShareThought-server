@@ -46,6 +46,7 @@ const categorySchema = new Schema<ICategory, ICategoryModel>(
   },
   {
     timestamps: true,
+    versionKey: false,
   },
 );
 

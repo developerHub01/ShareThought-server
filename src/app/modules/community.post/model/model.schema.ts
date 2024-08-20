@@ -25,6 +25,7 @@ const communityPostImageSchema = new Schema<ICommunityPostImageType>(
   },
   {
     _id: false,
+    versionKey: false,
   },
 );
 
@@ -38,6 +39,7 @@ const communitySharedPostSchema = new Schema<ICommunitySharedPostType>(
   },
   {
     _id: false,
+    versionKey: false,
   },
 );
 
@@ -63,6 +65,7 @@ const communityPostPullOptionShcema = new Schema<ICommunityPostPollOption>(
   },
   {
     _id: false,
+    versionKey: false,
   },
 );
 
@@ -93,6 +96,7 @@ const communityPostPullWithImageOptionShcema =
     },
     {
       _id: false,
+      versionKey: false,
     },
   );
 
@@ -114,6 +118,7 @@ const communityPostPullSchema = new Schema<ICommunityPostPollType>(
   },
   {
     _id: false,
+    versionKey: false,
   },
 );
 
@@ -136,6 +141,7 @@ const communityPostPullWithImageSchema =
     },
     {
       _id: false,
+      versionKey: false,
     },
   );
 
@@ -173,6 +179,7 @@ const communityPostQuizOptionShcema = new Schema<ICommunityPostQuizOption>(
   },
   {
     _id: false,
+    versionKey: false,
   },
 );
 
@@ -194,6 +201,7 @@ const communityPostQuizSchema = new Schema<ICommunityPostQuizType>(
   },
   {
     _id: false,
+    versionKey: false,
   },
 );
 
@@ -238,6 +246,7 @@ const communityPostSchema = new Schema<ICommunityPost, ICommunityPostModel>(
   },
   {
     timestamps: true,
+    versionKey: false,
   },
 );
 

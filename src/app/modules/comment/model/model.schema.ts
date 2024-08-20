@@ -52,6 +52,7 @@ const commentSchema = new Schema<IComment, ICommentModel>(
   },
   {
     timestamps: true,
+    versionKey: false,
     toJSON: {
       virtuals: true,
     },

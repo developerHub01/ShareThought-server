@@ -10,6 +10,7 @@ import { PostMiddleware } from "./post.middleware";
 import getActiveChannel from "../../middleware/get.active.channel";
 import checkChannelStatus from "../../middleware/check.channel.status";
 import readReqBodyFiles from "../../middleware/read.req.body.files";
+import rateLimit from "../../middleware/rate.limit";
 
 const router = express.Router();
 
@@ -18,6 +19,11 @@ router.get("/all", PostController.findPost);
 // get post by Id
 router.get(
   "/:postId",
+  rateLimit({
+    limit: 10,
+    timer: 60,
+    prefix: `post`,
+  }),
   checkAuthStatus,
   checkChannelStatus,
   PostController.findPostByPostId,

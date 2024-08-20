@@ -16,6 +16,7 @@ const followerSchema = new Schema<IFollower, IFollowerModel>(
   },
   {
     timestamps: true,
+    versionKey: false,
   },
 );
 

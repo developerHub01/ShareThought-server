@@ -15,7 +15,8 @@ const savedCategorySchema = new Schema<ISavedCategory, ISavedCategoryModel>(
     },
   },
   {
-    timestamps: true,
+    timestamps: true, 
+    versionKey: false,
   },
 );
 

@@ -27,6 +27,7 @@ const historyItemSchema = new Schema<IHistoryItem, IHistoryItemModel>(
   },
   {
     timestamps: true,
+    versionKey: false,
   },
 );
 
