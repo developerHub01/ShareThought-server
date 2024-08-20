@@ -12,10 +12,14 @@ const cummunityPostSelectionField = (
   userType: "channelId" | "userId",
 ) => `${userType}:${userOrChannelId}`;
 
+const requestCountKey = (userIP: string, prefix: string) =>
+  `request_count:${userIP}:${prefix}`;
+
 export const RedisKeys = {
   userKey,
   postKey,
   communityPostkey,
   communityPostSelectionKey,
   cummunityPostSelectionField,
+  requestCountKey,
 };
