@@ -37,7 +37,7 @@ const createPostValidationSchema = zod.object({
     .pipe(zod.boolean()),
   banner: zod.string().optional(),
   scheduledTime: zod.string().optional(),
-  tags: zod.string().array().optional(),
+  tags: zod.string().array().max(4).optional(),
 });
 
 const updatePostValidationSchema = zod.object({
@@ -77,7 +77,7 @@ const updatePostValidationSchema = zod.object({
     .pipe(zod.boolean()),
   banner: zod.string().optional(),
   scheduledTime: zod.string().optional(),
-  tags: zod.string().array().optional(),
+  tags: zod.string().array().max(4).optional(),
 });
 
 export const PostValidation = {

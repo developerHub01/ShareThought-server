@@ -2,6 +2,7 @@ import { Schema } from "mongoose";
 import { IPost, IPostModel } from "../post.interface";
 import { ChannelConstant } from "../../channel/channel.constant";
 import { PostConstant } from "../post.constant";
+import { TagsConstant } from "../../tags/tags.constant";
 
 const postSchema = new Schema<IPost, IPostModel>(
   {
@@ -23,6 +24,14 @@ const postSchema = new Schema<IPost, IPostModel>(
       maxLength: PostConstant.POST_CONTENT_MAX_LENGTH,
       trim: true,
       required: true,
+    },
+    tags: {
+      type: [
+        {
+          type: Schema.Types.ObjectId,
+          ref: TagsConstant.TAGS_COLLECTION_NAME,
+        },
+      ],
     },
     banner: {
       type: String,

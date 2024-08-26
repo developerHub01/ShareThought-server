@@ -9,7 +9,7 @@ export interface IPost {
   isPublished?: boolean;
   publishedAt?: Date;
   scheduledTime?: Date;
-  // tags: Array<Types.ObjectId>;
+  tags: Array<Types.ObjectId>;
 }
 
 export interface ICreatePost {

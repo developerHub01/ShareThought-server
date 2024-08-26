@@ -47,6 +47,7 @@ router.post(
   getLoggedInUser,
   getActiveChannel,
   verifyMyChannel,
+  PostMiddleware.isValidTags,
   PostController.createPost,
 );
 
@@ -61,6 +62,7 @@ router.patch(
   getActiveChannel,
   verifyMyChannel,
   verifyMyPost /* checking is that my post or not */,
+  PostMiddleware.isValidTags,
   PostController.updatePost,
 );
 
