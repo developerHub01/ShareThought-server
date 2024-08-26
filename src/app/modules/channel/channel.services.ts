@@ -1,12 +1,8 @@
-import mongoose from "mongoose";
 import QueryBuilder from "../../builder/QueryBuilder";
 import errorHandler from "../../errors/errorHandler";
 import { ChannelConstant } from "./channel.constant";
 import { IChannel, ICreateChannel } from "./channel.interface";
 import { ChannelModel } from "./model/model";
-import { PostModel } from "../post/model/model";
-import AppError from "../../errors/AppError";
-import httpStatus from "http-status";
 
 const singleChannel = async (id: string, author: boolean) => {
   try {
@@ -48,6 +44,7 @@ const findChannel = async (query: Record<string, unknown>) => {
     errorHandler(error);
   }
 };
+
 const getChannelOfMine = async (
   query: Record<string, unknown>,
   authorId: string,
@@ -79,9 +76,7 @@ const getChannelOfMine = async (
 
 const createChannel = async (payload: ICreateChannel) => {
   try {
-    return await ChannelModel.create({
-      ...payload,
-    });
+    return ChannelModel.createChannel(payload);
   } catch (error) {
     errorHandler(error);
   }
@@ -89,42 +84,16 @@ const createChannel = async (payload: ICreateChannel) => {
 
 const updateChannel = async (id: string, payload: Partial<IChannel>) => {
   try {
-    return await ChannelModel.findByIdAndUpdate(
-      id,
-      {
-        ...payload,
-      },
-      { new: true },
-    );
+    return ChannelModel.updateChannel(id, payload);
   } catch (error) {
     errorHandler(error);
   }
 };
 
 const deleteChannel = async (id: string) => {
-  const session = await mongoose.startSession();
   try {
-    session.startTransaction();
-
-    await PostModel.deleteMany({ channelId: id }, { session });
-
-    const result = await ChannelModel.findByIdAndDelete(id, {
-      session,
-    });
-
-    await session.commitTransaction();
-    await session.endSession();
-
-    if (!result)
-      throw new AppError(
-        httpStatus.INTERNAL_SERVER_ERROR,
-        "Something went wrong",
-      );
-
-    return result;
+    return ChannelModel.deleteChannel(id);
   } catch (error) {
-    await session.abortTransaction();
-    await session.endSession();
     errorHandler(error);
   }
 };
