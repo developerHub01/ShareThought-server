@@ -34,9 +34,10 @@ export const globalErrorHandler: ErrorRequestHandler = (
     errorSources,
   };
 
-  
   if (error instanceof ZodError)
-    errorDetails = CommonErrorConverter.zod(error, errorDetails);
+    errorDetails = CommonErrorConverter.zodError(error, errorDetails);
+  else if (error.name === "ValidationError")
+    errorDetails = CommonErrorConverter.mongooseError(error, errorDetails);
 
   return res.status(statusCode).json({
     success: false,
