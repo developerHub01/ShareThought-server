@@ -67,7 +67,6 @@ const singleChannel = catchAsync(async (req, res) => {
     activeChannelId === channelId,
   );
 
-
   return sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -134,7 +133,7 @@ const updateChannel = catchAsync(async (req, res) => {
     if (url) req.body.channelCover = url;
   }
 
-  const result = await ChannelServices.updateChannel(channelId, req.body);
+  const result = await ChannelCache.updateChannel(channelId, req.body);
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,

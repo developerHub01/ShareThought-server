@@ -1,6 +1,7 @@
 import { redis } from "../../../app";
 import { TDocumentType } from "../../interface/interface";
 import { RedisKeys } from "../../redis.keys";
+import { ChannelConstant } from "./channel.constant";
 import { IChannel, ICreateChannel } from "./channel.interface";
 import { ChannelServices } from "./channel.services";
 
@@ -16,7 +17,7 @@ const singleChannel = async (channelId: string, isAuthor: boolean) => {
     isAuthor,
   );
 
-  await redis.set(channelKey, JSON.stringify(result));
+  await redis.setex(channelKey, ChannelConstant.POST_REDIS_TTL, JSON.stringify(result));
 
   return result;
 }
@@ -30,7 +31,7 @@ const createChannel = async (payload: ICreateChannel) => {
 
   const channelKey = RedisKeys.channelKey(_id?.toString());
 
-  await redis.set(channelKey, JSON.stringify(result));
+  await redis.setex(channelKey, ChannelConstant.POST_REDIS_TTL, JSON.stringify(result));
 
   return result;
 }
@@ -42,7 +43,7 @@ const updateChannel = async (channelId: string, payload: Partial<IChannel>) => {
 
   if (!result) return result;
 
-  await redis.set(channelKey, JSON.stringify(result));
+  await redis.setex(channelKey, ChannelConstant.POST_REDIS_TTL, JSON.stringify(result));
 
   return result;
 }

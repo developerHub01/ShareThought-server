@@ -45,45 +45,61 @@ channelSchema.statics.createChannel = async (payload: ICreateChannel) => {
   }
 };
 
-// update channel
+/**
+ * Updates a channel by its ID with the provided payload.
+ * 
+ * @param {string} id - The ID of the channel to update.
+ * @param {Partial<IChannel>} payload - The partial payload containing fields to be updated in the channel.
+ * @returns {Promise<TDocumentType<IChannel> | null | void>} - Returns the updated channel document or void if an error occurs.
+ */
 channelSchema.statics.updateChannel = async (
   id: string,
-  payload: Partial<IChannel>,
-) => {
+  payload: Partial<IChannel>
+): Promise<TDocumentType<IChannel> | null | void> => {
   try {
+    // Destructure the channel name from the payload
     const { channelName } = payload;
 
+    // Fetch the channel data by ID
     const channelData = (await ChannelModel.findById(
-      id,
+      id
     )) as TDocumentType<IChannel>;
 
+    // If the channel is not found, throw a 'Not Found' error
     if (!channelData)
       throw new AppError(httpStatus.NOT_FOUND, "Channel not found");
 
+    // Extract the authorId from the channel data
     const { authorId } = channelData;
 
+    // Check if there are any other channels with the same name by the same author, excluding the current channel
+    const matchedNamedChannels = await ChannelModel.find({
+      channelName,
+      authorId,
+      _id: {
+        $ne: id, // Exclude the current channel ID
+      },
+    });
+
+    // If a channel with the same name already exists, throw a 'Bad Request' error
     if (
-      await ChannelModel.find({
-        channelName,
-        authorId,
-        _id: {
-          $ne: id,
-        },
-      })
+      Array.isArray(matchedNamedChannels) && matchedNamedChannels.length
     )
       throw new AppError(
         httpStatus.BAD_REQUEST,
-        "You already have a channel with that name",
+        "You already have a channel with that name"
       );
 
+    // If no duplicate channels are found, update the channel with the provided payload and return the updated document
     return await ChannelModel.findByIdAndUpdate(
       id,
       {
         ...payload,
       },
-      { new: true },
+      { new: true } // Return the updated document
     );
   } catch (error) {
+    // Handle any errors using the custom error handler
     errorHandler(error);
   }
 };
