@@ -21,12 +21,12 @@ export interface IChannelModel extends Model<IChannel> {
 
   createChannel(
     payload: ICreateChannel,
-  ): Promise<TDocumentType<ICreateChannel>>;
+  ): Promise<TDocumentType<IChannel>>;
 
   updateChannel(
     id: string,
     payload: Partial<IChannel>,
-  ): Promise<TDocumentType<ICreateChannel>>;
+  ): Promise<TDocumentType<IChannel>>;
 
   deleteChannel(id: string): Promise<unknown>;
 }
