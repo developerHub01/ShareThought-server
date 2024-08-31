@@ -1,4 +1,3 @@
-import errorHandler from "../../errors/errorHandler";
 import { CloudinaryUtils } from "../../utils/cloudinary.utils";
 import { CommunityPostConstant } from "./community.post.constant";
 import {
@@ -14,33 +13,21 @@ const createOrUpdatePostImage = async (
   isUpdating: boolean,
   previousImage?: string,
 ) => {
-  try {
-    if (isUpdating && previousImage)
-      await CloudinaryUtils.deleteFile([previousImage]);
+  if (isUpdating && previousImage)
+    await CloudinaryUtils.deleteFile([previousImage]);
 
-    if (
-      !(
-        postType === CommunityPostConstant.COMMUNITY_POST_TYPES.IMAGE ||
-        postType === CommunityPostConstant.COMMUNITY_POST_TYPES.POLL_WITH_IMAGE
-      )
+  if (
+    !(
+      postType === CommunityPostConstant.COMMUNITY_POST_TYPES.IMAGE ||
+      postType === CommunityPostConstant.COMMUNITY_POST_TYPES.POLL_WITH_IMAGE
     )
-      return [];
+  )
+    return [];
 
-    if (postType === CommunityPostConstant.COMMUNITY_POST_TYPES.IMAGE) {
-      const dimension = {
-        width: CommunityPostConstant.COMMUNITY_POST_IMAGE_DIMENSION.WIDTH,
-        height: CommunityPostConstant.COMMUNITY_POST_IMAGE_DIMENSION.HEIGHT,
-      };
-
-      return await CloudinaryUtils.uploadFile(
-        imagePath,
-        cloudinaryMediaPath,
-        dimension,
-      );
-    }
+  if (postType === CommunityPostConstant.COMMUNITY_POST_TYPES.IMAGE) {
     const dimension = {
-      width: CommunityPostConstant.COMMUNITY_POST_POLL_IMAGE_DIMENSION.WIDTH,
-      height: CommunityPostConstant.COMMUNITY_POST_POLL_IMAGE_DIMENSION.HEIGHT,
+      width: CommunityPostConstant.COMMUNITY_POST_IMAGE_DIMENSION.WIDTH,
+      height: CommunityPostConstant.COMMUNITY_POST_IMAGE_DIMENSION.HEIGHT,
     };
 
     return await CloudinaryUtils.uploadFile(
@@ -48,9 +35,17 @@ const createOrUpdatePostImage = async (
       cloudinaryMediaPath,
       dimension,
     );
-  } catch (error) {
-    return errorHandler(error);
   }
+  const dimension = {
+    width: CommunityPostConstant.COMMUNITY_POST_POLL_IMAGE_DIMENSION.WIDTH,
+    height: CommunityPostConstant.COMMUNITY_POST_POLL_IMAGE_DIMENSION.HEIGHT,
+  };
+
+  return await CloudinaryUtils.uploadFile(
+    imagePath,
+    cloudinaryMediaPath,
+    dimension,
+  );
 };
 
 const isQuizOption = (
@@ -63,7 +58,6 @@ const isPollOption = (
 
 const calculateSuccessRate = (selectCount: number, total: number): number =>
   Math.floor((selectCount * 100) / (total || 1));
-
 
 export const CommunityPostUtils = {
   createOrUpdatePostImage,

@@ -3,7 +3,6 @@ import { CommunityPostModel } from "./model";
 import mongoose from "mongoose";
 import communityPostSchema from "./model.schema";
 import AppError from "../../../errors/AppError";
-import errorHandler from "../../../errors/errorHandler";
 import {
   ICommunityPost,
   ICommunityPostPollOption,
@@ -56,61 +55,45 @@ communityPostSchema.statics.findPostById = async (
   communityPostId: string,
   channelId: string | undefined,
 ): Promise<unknown> => {
-  try {
-    const postData = await CommunityPostModel.findById(communityPostId);
+  const postData = await CommunityPostModel.findById(communityPostId);
 
-    if (!postData) throw new AppError(httpStatus.NOT_FOUND, "post not found");
+  if (!postData) throw new AppError(httpStatus.NOT_FOUND, "post not found");
 
-    const { isPublished } = postData;
+  const { isPublished } = postData;
 
-    if (
-      channelId &&
-      !isPublished &&
-      !(await CommunityPostModel.isMyPost(communityPostId, channelId))
-    )
-      throw new AppError(httpStatus.NOT_FOUND, "post not found");
+  if (
+    channelId &&
+    !isPublished &&
+    !(await CommunityPostModel.isMyPost(communityPostId, channelId))
+  )
+    throw new AppError(httpStatus.NOT_FOUND, "post not found");
 
-    return postData;
-  } catch (error) {
-    return errorHandler(error);
-  }
+  return postData;
 };
 
 communityPostSchema.statics.isPublicPostById = async (
   communityPostId: string,
 ): Promise<boolean | unknown> => {
-  try {
-    const { isPublished } =
-      (await CommunityPostModel.findById(communityPostId)) || {};
-    return Boolean(isPublished);
-  } catch (error) {
-    return errorHandler(error);
-  }
+  const { isPublished } =
+    (await CommunityPostModel.findById(communityPostId)) || {};
+  return Boolean(isPublished);
 };
 
 communityPostSchema.statics.createPost = async (
   payload: ICreateCommunityPost,
 ): Promise<unknown> => {
-  try {
-    return await CommunityPostModel.create({ ...payload });
-  } catch (error) {
-    return errorHandler(error);
-  }
+  return await CommunityPostModel.create({ ...payload });
 };
 
 communityPostSchema.statics.updatePost = async (
   payload: Partial<ICreateCommunityPost>,
   postId: string,
 ): Promise<unknown> => {
-  try {
-    return await CommunityPostModel.findByIdAndUpdate(
-      postId,
-      { ...payload },
-      { new: true },
-    );
-  } catch (error) {
-    return errorHandler(error);
-  }
+  return await CommunityPostModel.findByIdAndUpdate(
+    postId,
+    { ...payload },
+    { new: true },
+  );
 };
 
 communityPostSchema.statics.deletePost = async (
@@ -153,7 +136,7 @@ communityPostSchema.statics.deletePost = async (
   } catch (error) {
     await session.abortTransaction();
     await session.endSession();
-    return errorHandler(error);
+    throw error;
   }
 };
 
@@ -196,35 +179,31 @@ communityPostSchema.statics.findMySelectedOption = async (
   authorId: string,
   authorType: TAuthorType,
 ): Promise<unknown> => {
-  try {
-    if (authorType === "channelId")
-      throw new AppError(
-        httpStatus.BAD_REQUEST,
-        "channel owner can't select option",
-      );
+  if (authorType === "channelId")
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "channel owner can't select option",
+    );
 
-    const postData = await CommunityPostModel.findById(communityPostId);
+  const postData = await CommunityPostModel.findById(communityPostId);
 
-    if (!postData) throw new AppError(httpStatus.NOT_FOUND, "post not found");
+  if (!postData) throw new AppError(httpStatus.NOT_FOUND, "post not found");
 
-    const { postPollDetails, postPollWithImageDetails, postQuizDetails } =
-      postData;
+  const { postPollDetails, postPollWithImageDetails, postQuizDetails } =
+    postData;
 
-    const { options } =
-      postPollDetails || postPollWithImageDetails || postQuizDetails || {};
+  const { options } =
+    postPollDetails || postPollWithImageDetails || postQuizDetails || {};
 
-    if (!options)
-      throw new AppError(
-        httpStatus.NOT_ACCEPTABLE,
-        "selection is only possible in poll or quiz post",
-      );
+  if (!options)
+    throw new AppError(
+      httpStatus.NOT_ACCEPTABLE,
+      "selection is only possible in poll or quiz post",
+    );
 
-    const selectedOption = postDetailsSelectedIndex(postData, authorId);
+  const selectedOption = postDetailsSelectedIndex(postData, authorId);
 
-    return { selectedOption };
-  } catch (error) {
-    return errorHandler(error);
-  }
+  return { selectedOption };
 };
 
 communityPostSchema.statics.selectPollOrQuizOption = async (
@@ -233,88 +212,84 @@ communityPostSchema.statics.selectPollOrQuizOption = async (
   authorId: string,
   authorType: TAuthorType,
 ): Promise<unknown> => {
-  try {
-    if (authorType === "channelId")
-      throw new AppError(
-        httpStatus.BAD_REQUEST,
-        "channel owner can't select option",
-      );
+  if (authorType === "channelId")
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "channel owner can't select option",
+    );
 
-    const postData = await CommunityPostModel.findById(communityPostId);
+  const postData = await CommunityPostModel.findById(communityPostId);
 
-    if (!postData) throw new AppError(httpStatus.NOT_FOUND, "post not found");
+  if (!postData) throw new AppError(httpStatus.NOT_FOUND, "post not found");
 
-    const { postPollDetails, postPollWithImageDetails, postQuizDetails } =
-      postData;
+  const { postPollDetails, postPollWithImageDetails, postQuizDetails } =
+    postData;
 
-    const { options } =
-      postPollDetails || postPollWithImageDetails || postQuizDetails || {};
+  const { options } =
+    postPollDetails || postPollWithImageDetails || postQuizDetails || {};
 
-    if (!options)
-      throw new AppError(
-        httpStatus.NOT_ACCEPTABLE,
-        "selection is only possible in poll or quiz post",
-      );
+  if (!options)
+    throw new AppError(
+      httpStatus.NOT_ACCEPTABLE,
+      "selection is only possible in poll or quiz post",
+    );
 
-    if (selectedOptionIndex >= options?.length)
-      throw new AppError(
-        httpStatus.NOT_ACCEPTABLE,
-        "selectioned option is not available",
-      );
+  if (selectedOptionIndex >= options?.length)
+    throw new AppError(
+      httpStatus.NOT_ACCEPTABLE,
+      "selectioned option is not available",
+    );
 
-    const postDetailsFieldName = postQuizDetails
-      ? "postQuizDetails"
-      : postPollDetails
-        ? "postPollDetails"
-        : "postPollWithImageDetails";
+  const postDetailsFieldName = postQuizDetails
+    ? "postQuizDetails"
+    : postPollDetails
+      ? "postPollDetails"
+      : "postPollWithImageDetails";
 
-    const alreadySelectedIndex = postDetailsSelectedIndex(postData, authorId);
+  const alreadySelectedIndex = postDetailsSelectedIndex(postData, authorId);
 
-    let updateData;
+  let updateData;
 
-    /*
-     *
-     * converting already selected option to unselect
-     *
-     */
-    if (alreadySelectedIndex >= 0) {
-      updateData = await CommunityPostModel.findByIdAndUpdate(
-        communityPostId,
-        {
-          $pull: {
-            [`${postDetailsFieldName}.options.${alreadySelectedIndex}.participateList`]:
-              authorId,
-          },
+  /*
+   *
+   * converting already selected option to unselect
+   *
+   */
+  if (alreadySelectedIndex >= 0) {
+    updateData = await CommunityPostModel.findByIdAndUpdate(
+      communityPostId,
+      {
+        $pull: {
+          [`${postDetailsFieldName}.options.${alreadySelectedIndex}.participateList`]:
+            authorId,
         },
-        {
-          new: true,
-        },
-      ).lean();
-    }
-
-    /*
-     *
-     * if selected item is not already selected
-     * because if that is already selected then in our previous query we removed it so it will work as toggle
-     *
-     */
-    if (alreadySelectedIndex !== selectedOptionIndex)
-      updateData = await CommunityPostModel.findByIdAndUpdate(
-        communityPostId,
-        {
-          $addToSet: {
-            [`${postDetailsFieldName}.options.${selectedOptionIndex}.participateList`]:
-              authorId,
-          },
-        },
-        {
-          new: true,
-        },
-      ).lean();
-    else selectedOptionIndex = -1;
-
-    return { ...updateData, selectedOption: selectedOptionIndex };
-  } catch (error) {
-    return errorHandler(error);
+      },
+      {
+        new: true,
+      },
+    ).lean();
   }
+
+  /*
+   *
+   * if selected item is not already selected
+   * because if that is already selected then in our previous query we removed it so it will work as toggle
+   *
+   */
+  if (alreadySelectedIndex !== selectedOptionIndex)
+    updateData = await CommunityPostModel.findByIdAndUpdate(
+      communityPostId,
+      {
+        $addToSet: {
+          [`${postDetailsFieldName}.options.${selectedOptionIndex}.participateList`]:
+            authorId,
+        },
+      },
+      {
+        new: true,
+      },
+    ).lean();
+  else selectedOptionIndex = -1;
+
+  return { ...updateData, selectedOption: selectedOptionIndex };
 };

@@ -1,5 +1,4 @@
 import { v2 as cloudinary } from "cloudinary";
-import errorHandler from "../errors/errorHandler";
 import { CloudinaryConstant } from "../constants/cloudinary.constant";
 import { IMediaFileDimension } from "../interface/interface";
 import httpStatus from "http-status";
@@ -25,60 +24,51 @@ const uploadFile = async (
   cloudinaryMediaPath: string,
   dimension?: IMediaFileDimension,
 ) => {
-  try {
-    // Upload an image
-    const imageData =
-      (await cloudinary.uploader.upload(filePath, {
-        folder: `/${CloudinaryConstant.SHARE_THOUGHT_ROOT_FOLDER_NAME}/${cloudinaryMediaPath}`,
-        resource_type: "image",
-      })) || {};
+  // Upload an image
+  const imageData =
+    (await cloudinary.uploader.upload(filePath, {
+      folder: `/${CloudinaryConstant.SHARE_THOUGHT_ROOT_FOLDER_NAME}/${cloudinaryMediaPath}`,
+      resource_type: "image",
+    })) || {};
 
-    const { public_id } = imageData;
-    let { secure_url: url } = imageData;
+  const { public_id } = imageData;
+  let { secure_url: url } = imageData;
 
+  if (!public_id)
+    throw new AppError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      "something went wrong please try again",
+    );
 
-    if (!public_id)
-      throw new AppError(
-        httpStatus.INTERNAL_SERVER_ERROR,
-        "something went wrong please try again",
-      );
+  url = cloudinary.url(public_id, {
+    fetch_format: "auto", // when need it will convert into webp formate else what is sweetable for it
+    quality: "auto",
+    crop: "auto",
+    gravity: "auto",
+    width: dimension?.width || 500,
+    height: dimension?.height || 500,
+  });
 
-    url = cloudinary.url(public_id, {
-      fetch_format: "auto", // when need it will convert into webp formate else what is sweetable for it
-      quality: "auto",
-      crop: "auto",
-      gravity: "auto",
-      width: dimension?.width || 500,
-      height: dimension?.height || 500,
-    });
+  if (!url)
+    throw new AppError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      "something went wrong please try again",
+    );
 
-    if (!url)
-      throw new AppError(
-        httpStatus.INTERNAL_SERVER_ERROR,
-        "something went wrong please try again",
-      );
-
-    return url;
-  } catch (error) {
-    errorHandler(error);
-  }
+  return url;
 };
 
 const deleteFile = async (filePaths: Array<string>) => {
-  try {
-    filePaths = getFileIdList(filePaths);
+  filePaths = getFileIdList(filePaths);
 
-    const result = await cloudinary.api.delete_resources(filePaths, {
-      type: "upload",
-      resource_type: "image",
-    });
+  const result = await cloudinary.api.delete_resources(filePaths, {
+    type: "upload",
+    resource_type: "image",
+  });
 
-    const partial = result?.partial;
+  const partial = result?.partial;
 
-    return !partial;
-  } catch (error) {
-    errorHandler(error);
-  }
+  return !partial;
 };
 
 export const CloudinaryUtils = { getFileIdList, uploadFile, deleteFile };

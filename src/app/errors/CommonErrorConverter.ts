@@ -1,5 +1,6 @@
 import { ZodError } from "zod";
 import { IErrorSource, IGeneralErrorDetails } from "../interface/error";
+import httpStatus from "http-status";
 
 const zod = (
   error: ZodError,
@@ -7,6 +8,7 @@ const zod = (
 ): IGeneralErrorDetails => {
   const { issues } = error;
 
+  errorDetails.statusCode = httpStatus.BAD_REQUEST;
   errorDetails.message = "validation failed";
 
   const otherErrorSources: Array<IErrorSource> = issues?.map((issue) => ({

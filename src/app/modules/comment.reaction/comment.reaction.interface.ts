@@ -15,21 +15,25 @@ export interface ICommentReaction {
   reactionType: TCommentReactionType;
 }
 export interface ICommentReactionModel extends Model<ICommentReaction> {
-  totalCommentReactionByCommentId(commentId: string): Promise<unknown>;
+  totalCommentReactionByCommentId(commentId: string): Promise<number>;
+
   myReactionOnComment(
     commentId: string,
     authorId: string,
     authorIdType: TAuthorType,
-  ): Promise<string | unknown>;
+  ): Promise<string | null>;
+
   deleteCommentReactionByCommentId(
     commentId: string,
     session?: ClientSession,
   ): Promise<unknown>;
+
   toggleCommentReaction(
     commentId: string,
     authorId: string,
     authorIdType: TAuthorType,
   ): Promise<boolean | unknown>;
+
   reactOnComment(
     commentId: string,
     authorId: string,

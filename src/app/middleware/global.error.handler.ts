@@ -34,6 +34,7 @@ export const globalErrorHandler: ErrorRequestHandler = (
     errorSources,
   };
 
+  
   if (error instanceof ZodError)
     errorDetails = CommonErrorConverter.zod(error, errorDetails);
 

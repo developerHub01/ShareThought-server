@@ -1,70 +1,61 @@
 import QueryBuilder from "../../builder/QueryBuilder";
-import errorHandler from "../../errors/errorHandler";
 import { TAuthorType } from "../../interface/interface";
 import { CommunityPostConstant } from "./community.post.constant";
 import { ICreateCommunityPost } from "./community.post.interface";
 import { CommunityPostModel } from "./model/model";
 
 const findCommuityPosts = async (query: Record<string, unknown>) => {
-  try {
-    const postQuery = new QueryBuilder(
-      CommunityPostModel.find({
-        isPublished: true,
-      }).populate({
-        path: "channelId",
-        select: "channelName channelAvatar",
-      }),
-      query,
-    )
-      .search(CommunityPostConstant.COMMUNITY_POST_SEARCHABLE_FIELD)
-      .filter()
-      .sort()
-      .paginate()
-      .fields();
+  const postQuery = new QueryBuilder(
+    CommunityPostModel.find({
+      isPublished: true,
+    }).populate({
+      path: "channelId",
+      select: "channelName channelAvatar",
+    }),
+    query,
+  )
+    .search(CommunityPostConstant.COMMUNITY_POST_SEARCHABLE_FIELD)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
 
-    const meta = await postQuery.countTotal();
-    const result = await postQuery.modelQuery;
+  const meta = await postQuery.countTotal();
+  const result = await postQuery.modelQuery;
 
-    return {
-      meta,
-      result,
-    };
-  } catch (error) {
-    errorHandler(error);
-  }
+  return {
+    meta,
+    result,
+  };
 };
 
 const findCommuityPostsByChannelId = async (
   query: Record<string, unknown>,
   channelId: string,
 ) => {
-  try {
-    const postQuery = new QueryBuilder(
-      CommunityPostModel.find({
-        isPublished: true,
-        channelId,
-      }).populate({
-        path: "channelId",
-        select: "channelName channelAvatar",
-      }),
-      query,
-    )
-      .search(CommunityPostConstant.COMMUNITY_POST_SEARCHABLE_FIELD)
-      .filter()
-      .sort()
-      .paginate()
-      .fields();
+  const postQuery = new QueryBuilder(
+    CommunityPostModel.find({
+      isPublished: true,
+      channelId,
+    }).populate({
+      path: "channelId",
+      select: "channelName channelAvatar",
+    }),
+    query,
+  )
+    .search(CommunityPostConstant.COMMUNITY_POST_SEARCHABLE_FIELD)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
 
-    const meta = await postQuery.countTotal();
-    const result = await postQuery.modelQuery;
+  const meta = await postQuery.countTotal();
+  const result = await postQuery.modelQuery;
 
-    return {
-      meta,
-      result,
-    };
-  } catch (error) {
-    errorHandler(error);
-  }
+  return {
+    meta,
+    result,
+  };
 };
 
 const findMySelectionPostOption = async (
@@ -72,53 +63,33 @@ const findMySelectionPostOption = async (
   authorId: string,
   authorType: TAuthorType,
 ) => {
-  try {
-    return CommunityPostModel.findMySelectedOption(
-      communityPostId,
-      authorId,
-      authorType,
-    );
-  } catch (error) {
-    errorHandler(error);
-  }
+  return CommunityPostModel.findMySelectedOption(
+    communityPostId,
+    authorId,
+    authorType,
+  );
 };
 
 const findCommuityPostById = async (
   id: string,
   channelId: string | undefined,
 ) => {
-  try {
-    return await CommunityPostModel.findPostById(id, channelId);
-  } catch (error) {
-    errorHandler(error);
-  }
+  return await CommunityPostModel.findPostById(id, channelId);
 };
 
 const createPost = async (payload: ICreateCommunityPost) => {
-  try {
-    return CommunityPostModel.createPost(payload);
-  } catch (error) {
-    errorHandler(error);
-  }
+  return CommunityPostModel.createPost(payload);
 };
 
 const updatePost = async (
   payload: Partial<ICreateCommunityPost>,
   id: string,
 ) => {
-  try {
-    return CommunityPostModel.updatePost(payload, id);
-  } catch (error) {
-    errorHandler(error);
-  }
+  return CommunityPostModel.updatePost(payload, id);
 };
 
 const deletePost = async (id: string) => {
-  try {
-    return CommunityPostModel.deletePost(id);
-  } catch (error) {
-    errorHandler(error);
-  }
+  return CommunityPostModel.deletePost(id);
 };
 
 const selectPollOrQuizOption = async (
@@ -127,16 +98,12 @@ const selectPollOrQuizOption = async (
   authorId: string,
   authorType: TAuthorType,
 ) => {
-  try {
-    return CommunityPostModel.selectPollOrQuizOption(
-      communityPostId,
-      selectedOptionIndex,
-      authorId,
-      authorType,
-    );
-  } catch (error) {
-    errorHandler(error);
-  }
+  return CommunityPostModel.selectPollOrQuizOption(
+    communityPostId,
+    selectedOptionIndex,
+    authorId,
+    authorType,
+  );
 };
 
 export const CommunityPostServices = {

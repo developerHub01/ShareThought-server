@@ -3,7 +3,6 @@ import httpStatus from "http-status";
 import { PostModel } from "./model";
 import postSchema from "./model.schema";
 import AppError from "../../../errors/AppError";
-import errorHandler from "../../../errors/errorHandler";
 import { CommentModel } from "../../comment/model/model";
 import { CategoryModel } from "../../category/model/model";
 import { PostReactionModel } from "../../post.reaction/model/model";
@@ -49,99 +48,85 @@ postSchema.statics.findPostById = async (
   id: string,
   channelId: string,
 ): Promise<unknown> => {
-  try {
-    const postDetails = await PostModel.findById(id);
+  const postDetails = await PostModel.findById(id);
 
-    if (!postDetails)
-      throw new AppError(httpStatus.NOT_FOUND, "post not found");
+  if (!postDetails) throw new AppError(httpStatus.NOT_FOUND, "post not found");
 
-    const { isPublished } = postDetails;
+  const { isPublished } = postDetails;
 
-    if (channelId && !isPublished && !(await PostModel.isMyPost(id, channelId)))
-      throw new AppError(httpStatus.NOT_FOUND, "post not found");
+  if (channelId && !isPublished && !(await PostModel.isMyPost(id, channelId)))
+    throw new AppError(httpStatus.NOT_FOUND, "post not found");
 
-    return postDetails;
-  } catch (error) {
-    return errorHandler(error);
-  }
+  return postDetails;
 };
 
 /* is public post check by id */
 postSchema.statics.isPublicPostById = async (
   id: string,
 ): Promise<boolean | unknown> => {
-  try {
-    const { isPublished } = (await PostModel.findById(id)) || {};
-    return Boolean(isPublished);
-  } catch (error) {
-    return errorHandler(error);
-  }
+  const { isPublished } = (await PostModel.findById(id)) || {};
+  return Boolean(isPublished);
 };
 
 /* create post */
 postSchema.statics.createPost = async (payload: ICreatePost) => {
+  // eslint-disable-next-line prefer-const
+  let { tags } = payload;
+
   try {
-    // eslint-disable-next-line prefer-const
-    let { tags } = payload;
+    if (tags) {
+      (tags as unknown as Array<ITag>) = tags.map((tag: string) => ({
+        _id: tag,
+      }));
 
-    try {
-      if (tags) {
-        (tags as unknown as Array<ITag>) = tags.map((tag: string) => ({
-          _id: tag,
-        }));
-
-        await TagModel.insertMany(tags, {
-          ordered: false,
-        });
-        /* 
+      await TagModel.insertMany(tags, {
+        ordered: false,
+      });
+      /* 
           {ordered:false} because if any of the tag exist in tag collection then ingnore it instead of stoping the process 
         */
-      }
-    } catch (error) {
-      /*  */
     }
-
-    tags = payload.tags;
-
-    return await PostModel.create({
-      ...payload,
-    });
   } catch (error) {
-    errorHandler(error);
+    /*  */
   }
+
+  tags = payload.tags;
+
+  return await PostModel.create({
+    ...payload,
+  });
 };
 
 /* update post */
-postSchema.statics.updatePost = async (payload: Partial<ICreatePost>, postId: string) => {
-  try {
-    // eslint-disable-next-line prefer-const
-    let { tags } = payload;
-    
-    try {
-      if (tags) {
-        (tags as unknown as Array<ITag>) = tags.map((tag: string) => ({
-          _id: tag,
-        }));
+postSchema.statics.updatePost = async (
+  payload: Partial<ICreatePost>,
+  postId: string,
+) => {
+  // eslint-disable-next-line prefer-const
+  let { tags } = payload;
 
-        await TagModel.insertMany(tags, {
-          ordered: false,
-        });
-        /* 
+  try {
+    if (tags) {
+      (tags as unknown as Array<ITag>) = tags.map((tag: string) => ({
+        _id: tag,
+      }));
+
+      await TagModel.insertMany(tags, {
+        ordered: false,
+      });
+      /* 
           {ordered:false} because if any of the tag exist in tag collection then ingnore it instead of stoping the process 
         */
-      }
-    } catch (error) {
-      /*  */
     }
-
-    return await PostModel.findByIdAndUpdate(
-      postId,
-      { ...payload },
-      { new: true },
-    );
   } catch (error) {
-    errorHandler(error);
+    /*  */
   }
+
+  return await PostModel.findByIdAndUpdate(
+    postId,
+    { ...payload },
+    { new: true },
+  );
 };
 
 /* delete a post with dependencies */
@@ -194,7 +179,6 @@ postSchema.statics.deletePost = async (postId: string): Promise<unknown> => {
   } catch (error) {
     await session.abortTransaction();
     await session.endSession();
-    return errorHandler(error);
+    throw error;
   }
 };
-

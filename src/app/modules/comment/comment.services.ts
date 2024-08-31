@@ -1,5 +1,4 @@
 import QueryBuilder from "../../builder/QueryBuilder";
-import errorHandler from "../../errors/errorHandler";
 import { TAuthorType, TPostType } from "../../interface/interface";
 import { ICreateComment } from "./comment.interface";
 import { CommentModel } from "./model/model";
@@ -9,40 +8,32 @@ const findCommentByPostId = async (
   postId: string,
   postType: TPostType,
 ) => {
-  try {
-    const commentQuery = new QueryBuilder(
-      CommentModel.find({
-        ...(postType === "blogPost" ? { postId } : { communityPostId: postId }),
-        parentCommentId: { $exists: false },
-      }).populate({
-        path: "commentAuthorId",
-        select: "fullName avatar",
-      }),
-      query,
-    )
-      .filter()
-      .sort()
-      .paginate()
-      .fields();
+  const commentQuery = new QueryBuilder(
+    CommentModel.find({
+      ...(postType === "blogPost" ? { postId } : { communityPostId: postId }),
+      parentCommentId: { $exists: false },
+    }).populate({
+      path: "commentAuthorId",
+      select: "fullName avatar",
+    }),
+    query,
+  )
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
 
-    const meta = await commentQuery.countTotal();
-    const result = await commentQuery.modelQuery;
+  const meta = await commentQuery.countTotal();
+  const result = await commentQuery.modelQuery;
 
-    return {
-      meta,
-      result,
-    };
-  } catch (error) {
-    errorHandler(error);
-  }
+  return {
+    meta,
+    result,
+  };
 };
 
 const findCommentById = async (commentId: string) => {
-  try {
-    return await CommentModel.findComment(commentId);
-  } catch (error) {
-    errorHandler(error);
-  }
+  return await CommentModel.findComment(commentId);
 };
 
 const createComment = async (
@@ -52,19 +43,15 @@ const createComment = async (
   authorId: string,
   authorType: TAuthorType,
 ) => {
-  try {
-    payload = {
-      ...payload,
-      ...(postType === "blogPost" ? { postId } : { communityPostId: postId }),
-      ...(authorType === "channelId"
-        ? { commentAuthorChannelId: authorId }
-        : { commentAuthorId: authorId }),
-    };
+  payload = {
+    ...payload,
+    ...(postType === "blogPost" ? { postId } : { communityPostId: postId }),
+    ...(authorType === "channelId"
+      ? { commentAuthorChannelId: authorId }
+      : { commentAuthorId: authorId }),
+  };
 
-    return await CommentModel.createComment(payload);
-  } catch (error) {
-    errorHandler(error);
-  }
+  return await CommentModel.createComment(payload);
 };
 
 const replyComment = async (
@@ -73,57 +60,37 @@ const replyComment = async (
   authorId: string,
   authorType: TAuthorType,
 ) => {
-  try {
-    payload = {
-      ...payload,
-      parentCommentId,
-      ...(authorType === "channelId"
-        ? { commentAuthorChannelId: authorId }
-        : { commentAuthorId: authorId }),
-    };
+  payload = {
+    ...payload,
+    parentCommentId,
+    ...(authorType === "channelId"
+      ? { commentAuthorChannelId: authorId }
+      : { commentAuthorId: authorId }),
+  };
 
-    return await CommentModel.createComment(payload);
-  } catch (error) {
-    errorHandler(error);
-  }
+  return await CommentModel.createComment(payload);
 };
 
 const updateComment = async (payload: ICreateComment, commentId: string) => {
-  try {
-    return await CommentModel.updateComment(payload, commentId);
-  } catch (error) {
-    errorHandler(error);
-  }
+  return await CommentModel.updateComment(payload, commentId);
 };
 
 const deleteComment = async (commentId: string) => {
-  try {
-    return await CommentModel.deleteComment(commentId);
-  } catch (error) {
-    errorHandler(error);
-  }
+  return await CommentModel.deleteComment(commentId);
 };
 
 const deleteAllComment = async (postId: string, postType: TPostType) => {
-  try {
-    return await CommentModel.deleteAllCommentByPostId(postId, postType);
-  } catch (error) {
-    errorHandler(error);
-  }
+  return await CommentModel.deleteAllCommentByPostId(postId, postType);
 };
 
 const removeCommentImageField = async (commentId: string) => {
-  try {
-    return await CommentModel.findByIdAndUpdate(
-      commentId,
-      {
-        $unset: { commentImage: 1 },
-      },
-      { new: true },
-    );
-  } catch (error) {
-    errorHandler(error);
-  }
+  return await CommentModel.findByIdAndUpdate(
+    commentId,
+    {
+      $unset: { commentImage: 1 },
+    },
+    { new: true },
+  );
 };
 
 export const CommentServices = {

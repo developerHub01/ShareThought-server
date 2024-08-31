@@ -1,101 +1,76 @@
 import QueryBuilder from "../../builder/QueryBuilder";
-import errorHandler from "../../errors/errorHandler";
 import { ChannelConstant } from "./channel.constant";
 import { IChannel, ICreateChannel } from "./channel.interface";
 import { ChannelModel } from "./model/model";
 
 const singleChannel = async (id: string, author: boolean) => {
-  try {
-    if (author)
-      return await ChannelModel.findById(id).populate({
-        path: "authorId",
-        select: "fullName avatar",
-      });
-    return await ChannelModel.findById(id);
-  } catch (error) {
-    errorHandler(error);
-  }
+  if (author)
+    return await ChannelModel.findById(id).populate({
+      path: "authorId",
+      select: "fullName avatar",
+    });
+  return await ChannelModel.findById(id);
 };
 
 // get all channel or filter and search channel
 const findChannel = async (query: Record<string, unknown>) => {
-  try {
-    const chennelQuery = new QueryBuilder(
-      ChannelModel.find({}).populate({
-        path: "authorId",
-        select: "fullName avatar",
-      }),
-      query,
-    )
-      .search(ChannelConstant.CHANNEL_SEARCHABLE_FIELD)
-      .filter()
-      .sort()
-      .paginate()
-      .fields();
+  const chennelQuery = new QueryBuilder(
+    ChannelModel.find({}).populate({
+      path: "authorId",
+      select: "fullName avatar",
+    }),
+    query,
+  )
+    .search(ChannelConstant.CHANNEL_SEARCHABLE_FIELD)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
 
-    const meta = await chennelQuery.countTotal();
-    const result = await chennelQuery.modelQuery;
+  const meta = await chennelQuery.countTotal();
+  const result = await chennelQuery.modelQuery;
 
-    return {
-      meta,
-      result,
-    };
-  } catch (error) {
-    errorHandler(error);
-  }
+  return {
+    meta,
+    result,
+  };
 };
 
 const getChannelOfMine = async (
   query: Record<string, unknown>,
   authorId: string,
 ) => {
-  try {
-    const chennelQuery = new QueryBuilder(
-      ChannelModel.find({
-        authorId,
-      }),
-      query,
-    )
-      .search(ChannelConstant.CHANNEL_SEARCHABLE_FIELD)
-      .filter()
-      .sort()
-      .paginate()
-      .fields();
+  const chennelQuery = new QueryBuilder(
+    ChannelModel.find({
+      authorId,
+    }),
+    query,
+  )
+    .search(ChannelConstant.CHANNEL_SEARCHABLE_FIELD)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
 
-    const meta = await chennelQuery.countTotal();
-    const result = await chennelQuery.modelQuery;
+  const meta = await chennelQuery.countTotal();
+  const result = await chennelQuery.modelQuery;
 
-    return {
-      meta,
-      result,
-    };
-  } catch (error) {
-    errorHandler(error);
-  }
+  return {
+    meta,
+    result,
+  };
 };
 
 const createChannel = async (payload: ICreateChannel) => {
-  try {
-    return ChannelModel.createChannel(payload);
-  } catch (error) {
-    errorHandler(error);
-  }
+  return ChannelModel.createChannel(payload);
 };
 
 const updateChannel = async (id: string, payload: Partial<IChannel>) => {
-  try {
-    return ChannelModel.updateChannel(id, payload);
-  } catch (error) {
-    errorHandler(error);
-  }
+  return ChannelModel.updateChannel(id, payload);
 };
 
 const deleteChannel = async (id: string) => {
-  try {
-    return ChannelModel.deleteChannel(id);
-  } catch (error) {
-    errorHandler(error);
-  }
+  return ChannelModel.deleteChannel(id);
 };
 
 export const ChannelServices = {

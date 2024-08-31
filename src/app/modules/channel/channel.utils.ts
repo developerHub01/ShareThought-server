@@ -1,4 +1,3 @@
-import errorHandler from "../../errors/errorHandler";
 import { CloudinaryUtils } from "../../utils/cloudinary.utils";
 import { IMediaFileDimension } from "../../interface/interface";
 
@@ -8,17 +7,13 @@ const updateChannelImage = async (
   cloudinaryMediaPath: string,
   dimension: IMediaFileDimension,
 ) => {
-  try {
-    await CloudinaryUtils.deleteFile([previousImage]);
+  await CloudinaryUtils.deleteFile([previousImage]);
 
-    return await CloudinaryUtils.uploadFile(
-      imagePath,
-      cloudinaryMediaPath,
-      dimension,
-    );
-  } catch (error) {
-    return errorHandler(error);
-  }
+  return await CloudinaryUtils.uploadFile(
+    imagePath,
+    cloudinaryMediaPath,
+    dimension,
+  );
 };
 
 export const ChannelUtils = { updateChannelImage };

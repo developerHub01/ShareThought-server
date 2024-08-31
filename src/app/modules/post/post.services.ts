@@ -1,5 +1,4 @@
 import { ICreatePost } from "./post.interface";
-import errorHandler from "../../errors/errorHandler";
 import QueryBuilder from "../../builder/QueryBuilder";
 import { PostConstant } from "./post.constant";
 import { PostModel } from "./model/model";
@@ -10,32 +9,28 @@ interface IFindPostByIdQuery {
 }
 
 const findPost = async (query: Record<string, unknown>) => {
-  try {
-    const postQuery = new QueryBuilder(
-      PostModel.find({
-        isPublished: true,
-      }).populate({
-        path: "channelId",
-        select: "channelName channelAvatar",
-      }),
-      query,
-    )
-      .search(PostConstant.POST_SEARCHABLE_FIELD)
-      .filter()
-      .sort()
-      .paginate()
-      .fields();
+  const postQuery = new QueryBuilder(
+    PostModel.find({
+      isPublished: true,
+    }).populate({
+      path: "channelId",
+      select: "channelName channelAvatar",
+    }),
+    query,
+  )
+    .search(PostConstant.POST_SEARCHABLE_FIELD)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
 
-    const meta = await postQuery.countTotal();
-    const result = await postQuery.modelQuery;
+  const meta = await postQuery.countTotal();
+  const result = await postQuery.modelQuery;
 
-    return {
-      meta,
-      result,
-    };
-  } catch (error) {
-    errorHandler(error);
-  }
+  return {
+    meta,
+    result,
+  };
 };
 
 /****
@@ -49,33 +44,29 @@ const findPostByChannelId = async (
   id: string,
   channelId: string,
 ) => {
-  try {
-    const postQuery = new QueryBuilder(
-      PostModel.find({
-        channelId: id,
-        ...(id === channelId ? {} : { isPublished: true }),
-      }).populate({
-        path: "channelId",
-        select: "channelName channelAvatar",
-      }),
-      query,
-    )
-      .search(PostConstant.POST_SEARCHABLE_FIELD)
-      .filter()
-      .sort()
-      .paginate()
-      .fields();
+  const postQuery = new QueryBuilder(
+    PostModel.find({
+      channelId: id,
+      ...(id === channelId ? {} : { isPublished: true }),
+    }).populate({
+      path: "channelId",
+      select: "channelName channelAvatar",
+    }),
+    query,
+  )
+    .search(PostConstant.POST_SEARCHABLE_FIELD)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
 
-    const meta = await postQuery.countTotal();
-    const result = await postQuery.modelQuery;
+  const meta = await postQuery.countTotal();
+  const result = await postQuery.modelQuery;
 
-    return {
-      meta,
-      result,
-    };
-  } catch (error) {
-    errorHandler(error);
-  }
+  return {
+    meta,
+    result,
+  };
 };
 
 /****
@@ -85,46 +76,30 @@ const findPostByChannelId = async (
  *
  */
 const findPostByPostId = async (postId: string, channelId?: string) => {
-  try {
-    const query: IFindPostByIdQuery = { _id: postId };
+  const query: IFindPostByIdQuery = { _id: postId };
 
-    if (channelId) {
-      const isMyPost = await PostModel.isMyPost(postId, channelId);
+  if (channelId) {
+    const isMyPost = await PostModel.isMyPost(postId, channelId);
 
-      if (!isMyPost) query["isPublished"] = true;
-    }
-
-    return await PostModel.findOne(query).populate({
-      path: "channelId",
-      select: "channelName channelAvatar",
-    });
-  } catch (error) {
-    errorHandler(error);
+    if (!isMyPost) query["isPublished"] = true;
   }
+
+  return await PostModel.findOne(query).populate({
+    path: "channelId",
+    select: "channelName channelAvatar",
+  });
 };
 
 const createPost = async (payload: ICreatePost) => {
-  try {
-    return await PostModel.createPost(payload);
-  } catch (error) {
-    errorHandler(error);
-  }
+  return await PostModel.createPost(payload);
 };
 
 const updatePost = async (payload: Partial<ICreatePost>, postId: string) => {
-  try {
-    return await PostModel.updatePost(payload, postId,);
-  } catch (error) {
-    errorHandler(error);
-  }
+  return await PostModel.updatePost(payload, postId);
 };
 
 const deletePost = async (postId: string) => {
-  try {
-    return await PostModel.deletePost(postId);
-  } catch (error) {
-    errorHandler(error);
-  }
+  return await PostModel.deletePost(postId);
 };
 
 export const PostServices = {

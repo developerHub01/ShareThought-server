@@ -1,8 +1,7 @@
 import QueryBuilder from "../../builder/QueryBuilder";
-import errorHandler from "../../errors/errorHandler";
 import { TAuthorType, TPostType } from "../../interface/interface";
 import { PostReactionModel } from "./model/model";
-import { TPostReactionType} from "./post.reaction.interface";
+import { TPostReactionType } from "./post.reaction.interface";
 
 const myReactionOnPost = async (
   authorId: string,
@@ -10,16 +9,12 @@ const myReactionOnPost = async (
   postId: string,
   postType: TPostType,
 ) => {
-  try {
-    return await PostReactionModel.myReactionOnPost(
-      postId,
-      postType,
-      authorId,
-      authorType,
-    );
-  } catch (error) {
-    errorHandler(error);
-  }
+  return await PostReactionModel.myReactionOnPost(
+    postId,
+    postType,
+    authorId,
+    authorType,
+  );
 };
 
 const allReactionOnPost = async (
@@ -29,41 +24,37 @@ const allReactionOnPost = async (
   postId: string,
   postType: TPostType,
 ) => {
-  try {
-    const postReactionQuery = new QueryBuilder(
-      PostReactionModel.find({
-        ...(authorType === "channelId"
-          ? { channelId: authorId }
-          : { userId: authorId }),
-        ...(postType === "blogPost"
-          ? { postId: postId }
-          : { communityPostId: postId }),
+  const postReactionQuery = new QueryBuilder(
+    PostReactionModel.find({
+      ...(authorType === "channelId"
+        ? { channelId: authorId }
+        : { userId: authorId }),
+      ...(postType === "blogPost"
+        ? { postId: postId }
+        : { communityPostId: postId }),
+    })
+      .populate({
+        path: "userId",
+        select: "fullName avatar",
       })
-        .populate({
-          path: "userId",
-          select: "fullName avatar",
-        })
-        .populate({
-          path: "channelId",
-          select: "channelName channelAvatar",
-        }),
-      query,
-    )
-      .filter()
-      .sort()
-      .paginate()
-      .fields();
+      .populate({
+        path: "channelId",
+        select: "channelName channelAvatar",
+      }),
+    query,
+  )
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
 
-    const meta = await postReactionQuery.countTotal();
-    const result = await postReactionQuery.modelQuery;
+  const meta = await postReactionQuery.countTotal();
+  const result = await postReactionQuery.modelQuery;
 
-    return {
-      meta,
-      result,
-    };
-  } catch (error) {
-    errorHandler(error);
-  }
+  return {
+    meta,
+    result,
+  };
 };
 
 const reactOnPost = async (
@@ -73,25 +64,21 @@ const reactOnPost = async (
   postType: TPostType,
   reactionType?: TPostReactionType | undefined,
 ) => {
-  try {
-    if (reactionType)
-      return await PostReactionModel.reactOnPost(
-        postId,
-        postType,
-        authorId,
-        authorType,
-        reactionType,
-      );
-
-    return await PostReactionModel.togglePostReaction(
+  if (reactionType)
+    return await PostReactionModel.reactOnPost(
       postId,
       postType,
       authorId,
       authorType,
+      reactionType,
     );
-  } catch (error) {
-    errorHandler(error);
-  }
+
+  return await PostReactionModel.togglePostReaction(
+    postId,
+    postType,
+    authorId,
+    authorType,
+  );
 };
 
 export const PostReactionServices = {

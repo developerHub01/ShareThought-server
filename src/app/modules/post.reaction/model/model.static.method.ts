@@ -2,7 +2,6 @@ import { ClientSession } from "mongoose";
 import { PostReactionModel } from "./model";
 import postReactionSchema from "./model.schema";
 import { TAuthorType, TPostType } from "../../../interface/interface";
-import errorHandler from "../../../errors/errorHandler";
 import { PostReactionConstant } from "../post.reaction.constant";
 import { TPostReactionType } from "../post.reaction.interface";
 
@@ -10,15 +9,11 @@ postReactionSchema.statics.totalPostReactionByPostId = async (
   postId: string,
   postType: TPostType,
 ): Promise<unknown> => {
-  try {
-    return (
-      (await PostReactionModel.countDocuments({
-        ...(postType === "blogPost" ? { postId } : { communityPostId: postId }),
-      })) || 0
-    );
-  } catch (error) {
-    errorHandler(error);
-  }
+  return (
+    (await PostReactionModel.countDocuments({
+      ...(postType === "blogPost" ? { postId } : { communityPostId: postId }),
+    })) || 0
+  );
 };
 
 postReactionSchema.statics.myReactionOnPost = async (
@@ -27,18 +22,14 @@ postReactionSchema.statics.myReactionOnPost = async (
   authorId: string,
   authorIdType: TAuthorType,
 ): Promise<string | unknown> => {
-  try {
-    const result = await PostReactionModel.findOne({
-      ...(postType === "blogPost" ? { postId } : { communityPostId: postId }),
-      ...(authorIdType === "channelId"
-        ? { channelId: authorId }
-        : { userId: authorId }),
-    });
+  const result = await PostReactionModel.findOne({
+    ...(postType === "blogPost" ? { postId } : { communityPostId: postId }),
+    ...(authorIdType === "channelId"
+      ? { channelId: authorId }
+      : { userId: authorId }),
+  });
 
-    return result?.reactionType || null;
-  } catch (error) {
-    errorHandler(error);
-  }
+  return result?.reactionType || null;
 };
 
 postReactionSchema.statics.togglePostReaction = async (
@@ -47,26 +38,22 @@ postReactionSchema.statics.togglePostReaction = async (
   authorId: string,
   authorIdType: TAuthorType,
 ): Promise<boolean | unknown> => {
-  try {
-    const query = {
-      ...(postType === "blogPost" ? { postId } : { communityPostId: postId }),
-      ...(authorIdType === "channelId"
-        ? { channelId: authorId }
-        : { userId: authorId }),
-    };
-    const isDeleted = await PostReactionModel.findOneAndDelete(query);
+  const query = {
+    ...(postType === "blogPost" ? { postId } : { communityPostId: postId }),
+    ...(authorIdType === "channelId"
+      ? { channelId: authorId }
+      : { userId: authorId }),
+  };
+  const isDeleted = await PostReactionModel.findOneAndDelete(query);
 
-    if (isDeleted) return Boolean(isDeleted);
+  if (isDeleted) return Boolean(isDeleted);
 
-    return Boolean(
-      await PostReactionModel.create({
-        ...query,
-        reactionType: PostReactionConstant.POST_REACTION_TYPES.LIKE,
-      }),
-    );
-  } catch (error) {
-    errorHandler(error);
-  }
+  return Boolean(
+    await PostReactionModel.create({
+      ...query,
+      reactionType: PostReactionConstant.POST_REACTION_TYPES.LIKE,
+    }),
+  );
 };
 
 postReactionSchema.statics.reactOnPost = async (
@@ -76,29 +63,25 @@ postReactionSchema.statics.reactOnPost = async (
   authorIdType: TAuthorType,
   reactionType: TPostReactionType,
 ): Promise<unknown> => {
-  try {
-    const doc = await PostReactionModel.findOneAndUpdate(
-      {
-        ...(postType === "blogPost" ? { postId } : { communityPostId: postId }),
-        ...(authorIdType === "channelId"
-          ? { channelId: authorId }
-          : { userId: authorId }),
-      },
-      { upsert: true, new: true },
-    );
+  const doc = await PostReactionModel.findOneAndUpdate(
+    {
+      ...(postType === "blogPost" ? { postId } : { communityPostId: postId }),
+      ...(authorIdType === "channelId"
+        ? { channelId: authorId }
+        : { userId: authorId }),
+    },
+    { upsert: true, new: true },
+  );
 
-    return await PostReactionModel.findByIdAndUpdate(
-      doc?._id,
-      {
-        reactionType,
-      },
-      {
-        new: true,
-      },
-    );
-  } catch (error) {
-    errorHandler(error);
-  }
+  return await PostReactionModel.findByIdAndUpdate(
+    doc?._id,
+    {
+      reactionType,
+    },
+    {
+      new: true,
+    },
+  );
 };
 
 postReactionSchema.statics.deleteAllReactionByPostId = async (
@@ -107,14 +90,11 @@ postReactionSchema.statics.deleteAllReactionByPostId = async (
   session?: ClientSession,
 ) => {
   const options = session ? { session } : {};
-  try {
-    return await PostReactionModel.deleteMany(
-      {
-        ...(postType === "blogPost" ? { postId } : { communityPostId: postId }),
-      },
-      options,
-    );
-  } catch (error) {
-    return errorHandler(error);
-  }
+  
+  return await PostReactionModel.deleteMany(
+    {
+      ...(postType === "blogPost" ? { postId } : { communityPostId: postId }),
+    },
+    options,
+  );
 };

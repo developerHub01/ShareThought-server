@@ -1,4 +1,3 @@
-import errorHandler from "../../errors/errorHandler";
 import { TGender } from "../../interface/interface";
 import { CloudinaryUtils } from "../../utils/cloudinary.utils";
 import { UserConstant } from "./user.constant";
@@ -17,17 +16,13 @@ const updateUserAvatar = async (
   isUpdating: boolean = false,
   previousImage?: string,
 ) => {
-  try {
-    if (isUpdating && previousImage)
-      await CloudinaryUtils.deleteFile([previousImage]);
+  if (isUpdating && previousImage)
+    await CloudinaryUtils.deleteFile([previousImage]);
 
-    return await CloudinaryUtils.uploadFile(imagePath, cloudinaryMediaPath, {
-      width: UserConstant.USER_AVATAR_SIZE.WIDTH,
-      height: UserConstant.USER_AVATAR_SIZE.HEIGHT,
-    });
-  } catch (error) {
-    return errorHandler(error);
-  }
+  return await CloudinaryUtils.uploadFile(imagePath, cloudinaryMediaPath, {
+    width: UserConstant.USER_AVATAR_SIZE.WIDTH,
+    height: UserConstant.USER_AVATAR_SIZE.HEIGHT,
+  });
 };
 
 export const UserUtils = {

@@ -1,4 +1,3 @@
-import errorHandler from "../../errors/errorHandler";
 import { CloudinaryUtils } from "../../utils/cloudinary.utils";
 
 const uploadCommentImage = async (
@@ -7,14 +6,10 @@ const uploadCommentImage = async (
   isUpdating: boolean = false,
   previousImage?: string,
 ) => {
-  try {
-    if (isUpdating && previousImage)
-      await CloudinaryUtils.deleteFile([previousImage]);
+  if (isUpdating && previousImage)
+    await CloudinaryUtils.deleteFile([previousImage]);
 
-    return await CloudinaryUtils.uploadFile(imagePath, cloudinaryMediaPath);
-  } catch (error) {
-    return errorHandler(error);
-  }
+  return await CloudinaryUtils.uploadFile(imagePath, cloudinaryMediaPath);
 };
 
 export const CommentUtils = { uploadCommentImage };

@@ -2,7 +2,6 @@ import httpStatus from "http-status";
 import { CommentModel } from "./model";
 import commentSchema from "./model.schema";
 import mongoose, { ClientSession, Types } from "mongoose";
-import errorHandler from "../../../errors/errorHandler";
 import AppError from "../../../errors/AppError";
 import { TAuthorType, TPostType } from "../../../interface/interface";
 import { ICreateComment } from "../comment.interface";
@@ -12,14 +11,10 @@ import { CommunityPostModel } from "../../community.post/model/model";
 import { PostModel } from "../../post/model/model";
 
 commentSchema.statics.findComment = async (id: string): Promise<unknown> => {
-  try {
-    return await CommentModel.findById(id).populate({
-      path: "commentAuthorId",
-      select: "fullName avatar",
-    });
-  } catch (error) {
-    errorHandler(error);
-  }
+  return await CommentModel.findById(id).populate({
+    path: "commentAuthorId",
+    select: "fullName avatar",
+  });
 };
 
 commentSchema.statics.isCommentOfMyAnyChannel = async (
@@ -56,21 +51,17 @@ commentSchema.statics.isMyPost = async (
   commentId: string,
   userId: string,
 ): Promise<boolean | unknown> => {
-  try {
-    let { postId, communityPostId } =
-      (await CommentModel.findById(commentId)) || {};
+  let { postId, communityPostId } =
+    (await CommentModel.findById(commentId)) || {};
 
-    (postId as string | undefined) = postId?.toString();
-    (communityPostId as string | undefined) = communityPostId?.toString();
+  (postId as string | undefined) = postId?.toString();
+  (communityPostId as string | undefined) = communityPostId?.toString();
 
-    const id = postId || communityPostId;
-    if (!id)
-      throw new AppError(httpStatus.NOT_FOUND, "post and comment not found");
+  const id = postId || communityPostId;
+  if (!id)
+    throw new AppError(httpStatus.NOT_FOUND, "post and comment not found");
 
-    return await PostModel.isMyPost(id as unknown as string, userId);
-  } catch (error) {
-    errorHandler(error);
-  }
+  return await PostModel.isMyPost(id as unknown as string, userId);
 };
 
 commentSchema.statics.isMyComment = async (
@@ -78,19 +69,15 @@ commentSchema.statics.isMyComment = async (
   authorId: string,
   authorType: TAuthorType,
 ): Promise<boolean | unknown> => {
-  try {
-    const commentData = await CommentModel.findById(commentId);
-    if (!commentData)
-      throw new AppError(httpStatus.NOT_FOUND, "comment not found");
+  const commentData = await CommentModel.findById(commentId);
+  if (!commentData)
+    throw new AppError(httpStatus.NOT_FOUND, "comment not found");
 
-    return (
-      (authorType === "userId"
-        ? commentData?.commentAuthorId?.toString()
-        : commentData?.commentAuthorChannelId?.toString()) === authorId
-    );
-  } catch (error) {
-    errorHandler(error);
-  }
+  return (
+    (authorType === "userId"
+      ? commentData?.commentAuthorId?.toString()
+      : commentData?.commentAuthorChannelId?.toString()) === authorId
+  );
 };
 
 commentSchema.statics.haveAccessToDelete = async (
@@ -98,22 +85,18 @@ commentSchema.statics.haveAccessToDelete = async (
   authorId: string,
   authorType: TAuthorType,
 ): Promise<unknown> => {
-  try {
-    const commentData = await CommentModel.findById(commentId);
+  const commentData = await CommentModel.findById(commentId);
 
-    if (!commentData)
-      throw new AppError(httpStatus.NOT_FOUND, "comment not found");
+  if (!commentData)
+    throw new AppError(httpStatus.NOT_FOUND, "comment not found");
 
-    const { commentAuthorId, commentAuthorChannelId } = commentData;
+  const { commentAuthorId, commentAuthorChannelId } = commentData;
 
-    return (
-      (authorType === "channelId"
-        ? commentAuthorChannelId?.toString()
-        : commentAuthorId?.toString()) === authorId
-    );
-  } catch (error) {
-    return errorHandler(error);
-  }
+  return (
+    (authorType === "channelId"
+      ? commentAuthorChannelId?.toString()
+      : commentAuthorId?.toString()) === authorId
+  );
 };
 
 commentSchema.statics.createComment = async (
@@ -220,7 +203,7 @@ commentSchema.statics.createComment = async (
   } catch (error) {
     await session.abortTransaction();
     await session.endSession();
-    return errorHandler(error);
+    throw error;
   }
 };
 
@@ -228,17 +211,13 @@ commentSchema.statics.updateComment = async (
   payload: Partial<ICreateComment>,
   commentId: string,
 ): Promise<unknown> => {
-  try {
-    return await CommentModel.findByIdAndUpdate(
-      commentId,
-      {
-        ...payload,
-      },
-      { new: true },
-    );
-  } catch (error) {
-    errorHandler(error);
-  }
+  return await CommentModel.findByIdAndUpdate(
+    commentId,
+    {
+      ...payload,
+    },
+    { new: true },
+  );
 };
 
 commentSchema.statics.deleteCommentsWithReplies = async (
@@ -301,7 +280,7 @@ commentSchema.statics.deleteComment = async (
   } catch (error) {
     await session.abortTransaction();
     await session.endSession();
-    errorHandler(error);
+    throw error;
   }
 };
 
@@ -327,6 +306,6 @@ commentSchema.statics.deleteAllCommentByPostId = async (
   } catch (error) {
     await session.abortTransaction();
     await session.endSession();
-    return errorHandler(error);
+    throw error;
   }
 };
