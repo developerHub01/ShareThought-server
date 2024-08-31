@@ -1,19 +1,47 @@
-import { NextFunction, Request, Response } from "express";
+import { ErrorRequestHandler } from "express";
+import { ZodError } from "zod";
+import { CommonErrorConverter } from "../errors/CommonErrorConverter";
+import { IErrorSource, IGeneralErrorDetails } from "../interface/error";
+import config from "../config";
 
-export const globalErrorHandler = (
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  error: any,
-  req: Request,
-  res: Response,
+export const globalErrorHandler: ErrorRequestHandler = (
+  error,
+  req,
+  res,
   // eslint-disable-next-line @typescript-eslint/no-unused-vars
-  next: NextFunction
+  next,
 ) => {
   const statusCode = error.statusCode || 500;
-  const message = error.message || "Server error";
+  const message = "Something went wrong !";
+
+  const stackInfo =
+    config.PROJECT_ENVIRONMENT === "development"
+      ? {
+          stack: error?.stack,
+        }
+      : {};
+
+  const errorSources: Array<IErrorSource> = [
+    {
+      path: "",
+      message: "Server error",
+    },
+  ];
+
+  let errorDetails: IGeneralErrorDetails = {
+    statusCode,
+    message,
+    errorSources,
+  };
+
+  if (error instanceof ZodError)
+    errorDetails = CommonErrorConverter.zod(error, errorDetails);
 
   return res.status(statusCode).json({
     success: false,
+    statusCode,
     message,
-    error,
+    ...errorDetails,
+    ...stackInfo,
   });
 };

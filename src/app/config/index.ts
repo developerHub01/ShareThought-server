@@ -8,6 +8,9 @@ dotenv.config({
 const DB_PASSWORD = process.env.DB_PASSWORD;
 export default {
   PORT: process.env.PORT as string,
+  PROJECT_ENVIRONMENT: (
+    process.env.PROJECT_ENVIRONMENT as string
+  ).toLowerCase(),
   DB_CONNECTION_STRING: process.env.DB_CONNECTION_STRING?.replace(
     "<password>",
     DB_PASSWORD as string,
