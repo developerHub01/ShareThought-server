@@ -52,6 +52,7 @@ const findPostByChannelId = async (
   try {
     const postQuery = new QueryBuilder(
       PostModel.find({
+        channelId: id,
         ...(id === channelId ? {} : { isPublished: true }),
       }).populate({
         path: "channelId",
