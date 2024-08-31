@@ -8,6 +8,7 @@ import verifyMyChannel from "../../middleware/verify.my.channel";
 import { ChannelMiddleware } from "./channel.middleware";
 import getActiveChannel from "../../middleware/get.active.channel";
 import readReqBodyFiles from "../../middleware/read.req.body.files";
+import checkChannelStatus from "../../middleware/check.channel.status";
 
 const router = express.Router();
 
@@ -16,9 +17,9 @@ router.get("/all", getLoggedInUser, ChannelController.findChannel);
 router.get("/my", getLoggedInUser, ChannelController.getMyChannel);
 
 router.get(
-  "/",
+  "/:id",
   getLoggedInUser,
-  getActiveChannel,
+  checkChannelStatus,
   ChannelController.singleChannel,
 );
 

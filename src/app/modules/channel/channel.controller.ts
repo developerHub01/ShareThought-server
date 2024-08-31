@@ -36,15 +36,37 @@ const getMyChannel = catchAsync(async (req, res) => {
 });
 
 const singleChannel = catchAsync(async (req, res) => {
-  const { userId, channelId } = req as IRequestWithActiveDetails;
+  const { channelId: activeChannelId } = req as IRequestWithActiveDetails;
 
-  if (!channelId)
-    throw new AppError(httpStatus.UNAUTHORIZED, "channel is not activated");
+  const { id: channelId } = req.params;
 
-  const result = await ChannelCache.singleChannel(
+  let result;
+
+  /* 
+  *
+  * if any channelId not exist in params means it can be my own channel 
+  * 
+  */
+  if (!channelId) {
+    /*
+    *
+    * if any channelId and activeChannelId not exist then 
+    * 
+    */
+    if (!activeChannelId)
+      throw new AppError(httpStatus.UNAUTHORIZED, "no channel activated");
+
+    /*
+    *
+    * find my activated channel data
+    * 
+    */
+    result = await ChannelCache.singleChannel(activeChannelId, activeChannelId === channelId);
+  } else result = await ChannelCache.singleChannel(
     channelId,
-    Boolean(userId),
+    activeChannelId === channelId,
   );
+
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
