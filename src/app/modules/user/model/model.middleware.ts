@@ -1,3 +1,5 @@
+import httpStatus from "http-status";
+import AppError from "../../../errors/AppError";
 import { TGender } from "../../../interface/interface";
 import { IUser } from "../user.interface";
 import { UserUtils } from "../user.utils";
@@ -6,6 +8,9 @@ import userSchema from "./model.schema";
 
 // this is for generating avatar if not given.
 userSchema.pre<IUser>("save", async function (next) {
+  if (this.userName?.trim()?.split(" ")?.length)
+    throw new AppError(httpStatus.BAD_REQUEST, "userName can't contain spaces");
+
   if (this?.avatar) return next();
 
   this.avatar = UserUtils.generateAvatarURL(
