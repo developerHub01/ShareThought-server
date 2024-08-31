@@ -9,3 +9,7 @@ export interface IGeneralErrorDetails {
   message?: string;
   errorSources: Array<IErrorSource>;
 }
+
+export type TMongooseDuplcateError = Record<string, unknown> & {
+  keyValue: Record<string, unknown>;
+};

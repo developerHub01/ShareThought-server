@@ -38,8 +38,17 @@ export const globalErrorHandler: ErrorRequestHandler = (
     errorDetails = CommonErrorConverter.zodError(error, errorDetails);
   else if (error.name === "ValidationError")
     errorDetails = CommonErrorConverter.mongooseError(error, errorDetails);
+  else if (error.name === "CastError")
+    errorDetails = CommonErrorConverter.mongooseCastError(error, errorDetails);
+  else if (error.code === 11000)
+    errorDetails = CommonErrorConverter.mongooseDuplcateError(
+      error,
+      errorDetails,
+    );
 
-  return res.status(statusCode).json({
+  error.statusCode = errorDetails.statusCode;
+
+  return res.status(error.statusCode).json({
     success: false,
     statusCode,
     message,
