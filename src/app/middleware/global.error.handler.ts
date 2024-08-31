@@ -3,6 +3,7 @@ import { ZodError } from "zod";
 import { CommonErrorConverter } from "../errors/CommonErrorConverter";
 import { IErrorSource, IGeneralErrorDetails } from "../interface/error";
 import config from "../config";
+import AppError from "../errors/AppError";
 
 export const globalErrorHandler: ErrorRequestHandler = (
   error,
@@ -45,6 +46,24 @@ export const globalErrorHandler: ErrorRequestHandler = (
       error,
       errorDetails,
     );
+  else if (error instanceof AppError) {
+    errorDetails.statusCode = error.statusCode;
+    errorDetails.message = error?.message;
+    errorDetails.errorSources = [
+      {
+        path: "",
+        message: error?.message,
+      },
+    ];
+  } else if (error instanceof Error) {
+    errorDetails.message = error?.message;
+    errorDetails.errorSources = [
+      {
+        path: "",
+        message: error?.message,
+      },
+    ];
+  }
 
   error.statusCode = errorDetails.statusCode;
 
