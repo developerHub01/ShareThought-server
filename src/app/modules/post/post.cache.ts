@@ -38,7 +38,7 @@ const findPostByPostId = async (postId: string, channelId: string) => {
 const createPost = async (payload: ICreatePost) => {
   const result = (await PostServices.createPost(
     payload,
-  )) as TDocumentType<ICreatePost>;
+  )) as unknown as TDocumentType<ICreatePost>;
 
   if (!result) return result;
 
@@ -55,7 +55,7 @@ const updatePost = async (payload: Partial<ICreatePost>, postId: string) => {
   const result = (await PostServices.updatePost(
     payload,
     postId,
-  )) as TDocumentType<ICreatePost>;
+  )) as unknown as TDocumentType<ICreatePost>;
 
   if (!result) return result;
 

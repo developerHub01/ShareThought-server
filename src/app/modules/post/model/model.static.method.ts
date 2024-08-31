@@ -8,6 +8,9 @@ import { CommentModel } from "../../comment/model/model";
 import { CategoryModel } from "../../category/model/model";
 import { PostReactionModel } from "../../post.reaction/model/model";
 import { ReadLaterModel } from "../../read.later/model/model";
+import { ICreatePost } from "../post.interface";
+import { TagModel } from "../../tags/model/model";
+import { ITag } from "../../tags/tags.interface";
 
 postSchema.statics.isPostOfMyAnyChannel = async (
   userId: string,
@@ -27,6 +30,7 @@ postSchema.statics.isPostOfMyAnyChannel = async (
   return userId === authorId?.toString();
 };
 
+/* check is a post is mine or not */
 postSchema.statics.isMyPost = async (
   postId: string,
   channelId: string,
@@ -40,6 +44,7 @@ postSchema.statics.isMyPost = async (
   return channelId === postChannelId?.toString();
 };
 
+/* find single post by id */
 postSchema.statics.findPostById = async (
   id: string,
   channelId: string,
@@ -61,6 +66,7 @@ postSchema.statics.findPostById = async (
   }
 };
 
+/* is public post check by id */
 postSchema.statics.isPublicPostById = async (
   id: string,
 ): Promise<boolean | unknown> => {
@@ -72,6 +78,73 @@ postSchema.statics.isPublicPostById = async (
   }
 };
 
+/* create post */
+postSchema.statics.createPost = async (payload: ICreatePost) => {
+  try {
+    // eslint-disable-next-line prefer-const
+    let { tags } = payload;
+
+    try {
+      if (tags) {
+        (tags as unknown as Array<ITag>) = tags.map((tag: string) => ({
+          _id: tag,
+        }));
+
+        await TagModel.insertMany(tags, {
+          ordered: false,
+        });
+        /* 
+          {ordered:false} because if any of the tag exist in tag collection then ingnore it instead of stoping the process 
+        */
+      }
+    } catch (error) {
+      /*  */
+    }
+
+    tags = payload.tags;
+
+    return await PostModel.create({
+      ...payload,
+    });
+  } catch (error) {
+    errorHandler(error);
+  }
+};
+
+/* update post */
+postSchema.statics.updatePost = async (payload: Partial<ICreatePost>, postId: string) => {
+  try {
+    // eslint-disable-next-line prefer-const
+    let { tags } = payload;
+    
+    try {
+      if (tags) {
+        (tags as unknown as Array<ITag>) = tags.map((tag: string) => ({
+          _id: tag,
+        }));
+
+        await TagModel.insertMany(tags, {
+          ordered: false,
+        });
+        /* 
+          {ordered:false} because if any of the tag exist in tag collection then ingnore it instead of stoping the process 
+        */
+      }
+    } catch (error) {
+      /*  */
+    }
+
+    return await PostModel.findByIdAndUpdate(
+      postId,
+      { ...payload },
+      { new: true },
+    );
+  } catch (error) {
+    errorHandler(error);
+  }
+};
+
+/* delete a post with dependencies */
 postSchema.statics.deletePost = async (postId: string): Promise<unknown> => {
   const session = await mongoose.startSession();
   try {
@@ -124,3 +197,4 @@ postSchema.statics.deletePost = async (postId: string): Promise<unknown> => {
     return errorHandler(error);
   }
 };
+

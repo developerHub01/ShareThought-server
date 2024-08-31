@@ -1,8 +1,18 @@
+import httpStatus from "http-status";
 import { PostSchedule } from "../../post.schedule/post.schedule";
 import { IPost } from "../post.interface";
 import postSchema from "./model.schema";
+import AppError from "../../../errors/AppError";
 
 postSchema.pre<IPost>("save", async function (next) {
+  if (Array.isArray(this.tags)) {
+    this.tags = [...new Set(this.tags)];
+
+    this.tags.forEach((tag) => {
+      if (tag.toString().split(" ").length > 1) throw new AppError(httpStatus.BAD_REQUEST, "tag can't contain empty spaces")
+    })
+  }
+
   if (this.isPublished) {
     this.publishedAt = new Date();
     return next();

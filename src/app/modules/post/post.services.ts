@@ -104,9 +104,7 @@ const findPostByPostId = async (postId: string, channelId?: string) => {
 
 const createPost = async (payload: ICreatePost) => {
   try {
-    return await PostModel.create({
-      ...payload,
-    });
+    return await PostModel.createPost(payload);
   } catch (error) {
     errorHandler(error);
   }
@@ -114,11 +112,7 @@ const createPost = async (payload: ICreatePost) => {
 
 const updatePost = async (payload: Partial<ICreatePost>, postId: string) => {
   try {
-    return await PostModel.findByIdAndUpdate(
-      postId,
-      { ...payload },
-      { new: true },
-    );
+    return await PostModel.updatePost(payload, postId,);
   } catch (error) {
     errorHandler(error);
   }

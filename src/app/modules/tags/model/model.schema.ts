@@ -1,13 +1,18 @@
 import { Schema } from "mongoose";
 import { ITag, ITagModel } from "../tags.interface";
+import { PostConstant } from "../../post/post.constant";
 
 const tagSchema = new Schema<ITag, ITagModel>(
   {
-    _id: {
+    tag: {
       type: String,
-      unique: true,
       required: true,
     },
+    postId: {
+      type: Schema.Types.ObjectId,
+      ref: PostConstant.POST_COLLECTION_NAME,
+      required: true,
+    }
   },
   {
     versionKey: false,

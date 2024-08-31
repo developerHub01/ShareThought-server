@@ -18,6 +18,12 @@ const matchReqBodyFilesWithValidationSchema = catchAsync(
 
     if (bannerPath) req.body.banner = bannerPath;
 
+    if (req.body.tags) {
+      const tags = JSON.parse(req?.body?.tags);
+
+      if (Array.isArray(tags)) req.body.tags = Array.from(new Set([...tags]));
+    }
+
     next();
   },
 );
@@ -27,7 +33,7 @@ const isValidTags = catchAsync(async (req, res, next) => {
 
   tags.forEach((tag: string, index: number) => {
     tag = tag.trim();
-    if (tags.split(" ").length)
+    if (tag.split(" ").length > 1)
       throw new AppError(httpStatus.BAD_REQUEST, `${tag} is not a valid`);
 
     tags[index] = tag;

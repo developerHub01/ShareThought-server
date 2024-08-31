@@ -2,7 +2,6 @@ import { Schema } from "mongoose";
 import { IPost, IPostModel } from "../post.interface";
 import { ChannelConstant } from "../../channel/channel.constant";
 import { PostConstant } from "../post.constant";
-import { TagsConstant } from "../../tags/tags.constant";
 
 const postSchema = new Schema<IPost, IPostModel>(
   {
@@ -28,10 +27,10 @@ const postSchema = new Schema<IPost, IPostModel>(
     tags: {
       type: [
         {
-          type: Schema.Types.ObjectId,
-          ref: TagsConstant.TAGS_COLLECTION_NAME,
+          type: String,
         },
       ],
+      default: [],
     },
     banner: {
       type: String,

@@ -1,4 +1,5 @@
 import { Model, Types } from "mongoose";
+import { TDocumentType } from "../../interface/interface";
 
 export interface IPost {
   channelId?: Types.ObjectId;
@@ -18,7 +19,7 @@ export interface ICreatePost {
   banner?: string;
   isPublished?: boolean;
   scheduledTime?: Date;
-  // tags: Array<string>;
+  tags: Array<string>;
 }
 
 export interface IPostModel extends Model<IPost> {
@@ -29,6 +30,10 @@ export interface IPostModel extends Model<IPost> {
   findPostById(id: string, channelId: string): Promise<unknown>;
 
   isPublicPostById(id: string): Promise<boolean | unknown>;
-  
+
+  createPost(payload: ICreatePost): Promise<TDocumentType<IPost>>;
+
+  updatePost(payload: Partial<ICreatePost>, postId: string): Promise<TDocumentType<IPost>>;
+
   deletePost(postId: string): Promise<unknown>;
 }
