@@ -2,6 +2,8 @@ const userKey = (key: string) => `user:${key}`;
 
 const postKey = (key: string) => `post:${key}`;
 
+const channelKey = (key: string) => `channel:${key}`;
+
 const communityPostkey = (key: string) => `community_post:${key}`;
 
 const communityPostSelectionKey = (key: string) =>
@@ -17,6 +19,7 @@ const requestCountKey = (userIP: string, prefix: string) =>
 
 export const RedisKeys = {
   userKey,
+  channelKey,
   postKey,
   communityPostkey,
   communityPostSelectionKey,

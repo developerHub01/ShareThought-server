@@ -10,9 +10,11 @@ import AppError from "../../errors/AppError";
 import { ChannelUtils } from "./channel.utils";
 import { AuthUtils } from "../auth/auth.utils";
 import config from "../../config";
+import { ChannelCache } from "./channel.cache";
 
 const findChannel = catchAsync(async (req, res) => {
   const result = await ChannelServices.findChannel(req.query);
+
   return sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -39,7 +41,7 @@ const singleChannel = catchAsync(async (req, res) => {
   if (!channelId)
     throw new AppError(httpStatus.UNAUTHORIZED, "channel is not activated");
 
-  const result = await ChannelServices.singleChannel(
+  const result = await ChannelCache.singleChannel(
     channelId,
     Boolean(userId),
   );
@@ -56,7 +58,7 @@ const createChannel = catchAsync(async (req, res) => {
   const { userId } = req as IRequestWithActiveDetails;
   req.body.authorId = userId;
 
-  const result = await ChannelServices.createChannel(req.body);
+  const result = await ChannelCache.createChannel(req.body);
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -126,10 +128,10 @@ const deleteChannel = catchAsync(async (req, res) => {
   if (!channelId)
     throw new AppError(httpStatus.BAD_REQUEST, "your channel is not activated");
 
-  const result = ChannelServices.deleteChannel(channelId);
+  const result = ChannelCache.deleteChannel(channelId);
 
   return sendResponse(res, {
-    statusCode: httpStatus.OK,
+    statusCode: httpStatus.NO_CONTENT,
     success: true,
     message: "channel deleted succesfully",
     data: result,
