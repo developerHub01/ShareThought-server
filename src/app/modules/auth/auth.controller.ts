@@ -7,13 +7,26 @@ import { IRequestWithActiveDetails } from "../../interface/interface";
 import { AuthUtils } from "./auth.utils";
 import { Constatnt } from "../../constants/constants";
 import config from "../../config";
-import { millisecondsConvert } from "../../utils/utils";
+import { isEmail, millisecondsConvert } from "../../utils/utils";
 
 const loginUser = catchAsync(async (req, res) => {
   const { guestId } = req as IRequestWithActiveDetails;
 
+  const { emailOrUserName } = req.body;
+
+  const body = {
+    ...(isEmail(emailOrUserName)
+      ? {
+          email: emailOrUserName,
+        }
+      : {
+          userName: emailOrUserName,
+        }),
+    password: req.body?.password,
+  };
+
   const { accessToken, refreshToken } = await AuthServices.loginUser(
-    req.body,
+    body,
     guestId,
   );
 

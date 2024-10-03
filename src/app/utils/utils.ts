@@ -35,3 +35,8 @@ export const millisecondsConvert = (time: string | number): number | null => {
       return null; // Return null for invalid units
   }
 };
+
+export const isEmail = (input: string): boolean => {
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+  return emailRegex.test(input);
+};

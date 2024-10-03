@@ -7,10 +7,10 @@ import { UserModel } from "../user/model/model";
 import { GuestUserModel } from "../guest/model/model";
 
 const loginUser = async (payload: ILoginUser, guestId: string | undefined) => {
-  const { password, email } = payload;
+  const { password, email, userName } = payload;
 
   const user = await UserModel.findOne({
-    email,
+    ...(email ? { email } : { userName }),
   }).select({ password: 1 });
 
   if (!user)
