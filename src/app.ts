@@ -20,6 +20,11 @@ export const redis = new Redis({
 
 const app: Application = express();
 
+/*
+ *
+ * middlewares
+ *
+ */
 app.use(
   cors({
     credentials: true,
@@ -36,6 +41,11 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
 
+/*
+ *
+ * custom middlewares
+ *
+ */
 app.use(createGuestUserIfNeed);
 // application routes
 app.use("/api/v1", IndexRoute);

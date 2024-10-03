@@ -1,6 +1,6 @@
-import { Validation } from "./../../validaton/validation";
 import { z as zod } from "zod";
 import { PostConstant } from "./post.constant";
+import { Validation } from "../../validation/validation";
 
 const createPostValidationSchema = zod.object({
   title: zod

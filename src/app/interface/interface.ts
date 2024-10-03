@@ -7,6 +7,14 @@ export interface IRequestWithActiveDetails extends Request {
   guestId?: string;
 }
 
+export interface IResponse<T> {
+  statusCode: number;
+  success: boolean;
+  message?: string;
+  data: T;
+}
+
+
 export interface IFileObject {
   fieldname?: string;
   originalname?: string;

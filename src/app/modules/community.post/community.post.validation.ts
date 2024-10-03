@@ -1,6 +1,6 @@
 import { z as zod } from "zod";
-import { Validation } from "../../validaton/validation";
 import { CommunityPostConstant } from "./community.post.constant";
+import { Validation } from "../../validation/validation";
 
 const postTypeList = Object.keys(
   CommunityPostConstant.COMMUNITY_POST_TYPES,

@@ -35,6 +35,6 @@ process.on("unhandledRejection", () => {
 
 process.on("uncaughtException", () => {
   // eslint-disable-next-line no-console
-  console.log("uncaughtException is detected.....");
+  console.log("uncaughtException is detected.....");  
   process.exit(1);
 });
