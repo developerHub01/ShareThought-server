@@ -17,7 +17,7 @@ const getActiveChannel = catchAsync(
 
     const { channelId } = AuthUtils.verifyToken(
       token,
-      config.JWT_SECRET as string,
+      config.JWT_ACCESS_SECRET as string,
     );
 
     const isChannelExist = await ChannelModel.isChannelExist(channelId);

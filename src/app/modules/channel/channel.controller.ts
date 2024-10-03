@@ -42,30 +42,34 @@ const singleChannel = catchAsync(async (req, res) => {
 
   let result;
 
-  /* 
-  *
-  * if any channelId not exist in params means it can be my own channel 
-  * 
-  */
+  /*
+   *
+   * if any channelId not exist in params means it can be my own channel
+   *
+   */
   if (!channelId) {
     /*
-    *
-    * if any channelId and activeChannelId not exist then 
-    * 
-    */
+     *
+     * if any channelId and activeChannelId not exist then
+     *
+     */
     if (!activeChannelId)
       throw new AppError(httpStatus.UNAUTHORIZED, "no channel activated");
 
     /*
-    *
-    * find my activated channel data
-    * 
-    */
-    result = await ChannelCache.singleChannel(activeChannelId, activeChannelId === channelId);
-  } else result = await ChannelCache.singleChannel(
-    channelId,
-    activeChannelId === channelId,
-  );
+     *
+     * find my activated channel data
+     *
+     */
+    result = await ChannelCache.singleChannel(
+      activeChannelId,
+      activeChannelId === channelId,
+    );
+  } else
+    result = await ChannelCache.singleChannel(
+      channelId,
+      activeChannelId === channelId,
+    );
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -168,7 +172,7 @@ const switchChannel = catchAsync(async (req, res) => {
 
   const channelToken = AuthUtils.createToken(
     { channelId },
-    config?.JWT_SECRET as string,
+    config?.JWT_ACCESS_SECRET as string,
     config?.JWT_ACCESS_EXPIRES_IN as string,
   );
 

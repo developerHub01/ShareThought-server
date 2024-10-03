@@ -23,11 +23,21 @@ const loginUser = async (payload: ILoginUser, guestId: string | undefined) => {
 
   if (guestId) await GuestUserModel.deleteGuestUser(guestId, userId);
 
-  return AuthUtils.createToken(
+  const accessToken = AuthUtils.createToken(
     { userId },
-    config?.JWT_SECRET as string,
+    config?.JWT_ACCESS_SECRET as string,
     config?.JWT_ACCESS_EXPIRES_IN as string,
   );
+  const refreshToken = AuthUtils.createToken(
+    { userId },
+    config?.JWT_REFRESH_SECRET as string,
+    config?.JWT_REFRESH_EXPIRES_IN as string,
+  );
+
+  return {
+    accessToken,
+    refreshToken,
+  };
 };
 
 export const AuthServices = {

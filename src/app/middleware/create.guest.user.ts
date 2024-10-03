@@ -5,6 +5,7 @@ import { Constatnt } from "../constants/constants";
 import { IRequestWithActiveDetails } from "../interface/interface";
 import { AuthUtils } from "../modules/auth/auth.utils";
 import { GuestUserModel } from "../modules/guest/model/model";
+import handleRefreshToken from "../utils/handleRefreshToken";
 
 /*
  *
@@ -17,17 +18,27 @@ import { GuestUserModel } from "../modules/guest/model/model";
 const createGuestUserIfNeed = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const accessToken = req?.cookies[Constatnt.TOKENS.ACCESS_TOKEN];
+    const refreshToken = req?.cookies[Constatnt.TOKENS.REFRESH_TOKEN];
+    let guestToken = req?.cookies[Constatnt.TOKENS.GUEST_TOKEN];
 
-    if (accessToken) {
-      const { userId } = AuthUtils.verifyToken(
-        accessToken,
-        config.JWT_SECRET as string,
-      );
+    console.log({ accessToken, refreshToken, guestToken });
 
-      if (userId) return next();
+    if (accessToken || refreshToken) {
+      try {
+        const { userId } = AuthUtils.verifyToken(
+          accessToken,
+          config.JWT_ACCESS_SECRET as string,
+        );
+
+        if (userId) return next();
+      } catch (error) {
+        handleRefreshToken(req, res);
+
+        return next();
+      }
     }
 
-    let guestToken = req?.cookies[Constatnt.TOKENS.GUEST_TOKEN];
+    console.log({ guestToken });
 
     if (!guestToken) {
       const guestUser = await GuestUserModel.createGuestUser();
@@ -37,17 +48,18 @@ const createGuestUserIfNeed = catchAsync(
 
         guestToken = AuthUtils.createToken(
           { guestId: _id.toString() },
-          config?.JWT_SECRET as string,
+          config?.JWT_GUEST_SECRET as string,
         );
       }
     }
 
     let guestId;
-    if (guestToken)
+    if (guestToken) {
       guestId = AuthUtils.verifyToken(
         guestToken,
-        config.JWT_SECRET as string,
+        config.JWT_GUEST_SECRET as string,
       )?.guestId;
+    }
 
     if (!guestId) return next();
 
@@ -62,7 +74,6 @@ const createGuestUserIfNeed = catchAsync(
     });
 
     (req as IRequestWithActiveDetails).guestId = guestId;
-
     next();
   },
 );

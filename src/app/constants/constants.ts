@@ -9,6 +9,7 @@ const REACTION_TYPES = {
 
 const TOKENS = {
   ACCESS_TOKEN: "access_token",
+  REFRESH_TOKEN: "refresh_token",
   CHANNEL_TOKEN: "channel_token",
   GUEST_TOKEN: "guest_token",
 };

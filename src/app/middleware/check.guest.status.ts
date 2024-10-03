@@ -16,15 +16,13 @@ import { Constatnt } from "../constants/constants";
 
 const checkGuestStatus = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
-    const token = req?.cookies[Constatnt.TOKENS.GUEST_TOKEN];
+    const guestToken = req?.cookies[Constatnt.TOKENS.GUEST_TOKEN];
 
-    
-    if (!token) return next();
-    console.log({ token });
-    
+    if (!guestToken) return next();
+
     const { guestId } = AuthUtils.verifyToken(
-      token,
-      config.JWT_SECRET as string,
+      guestToken,
+      config.JWT_GUEST_SECRET as string,
     );
 
     if (!guestId) return next();

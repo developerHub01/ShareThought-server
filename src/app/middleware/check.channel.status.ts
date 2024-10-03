@@ -22,7 +22,7 @@ const checkChannelStatus = catchAsync(
 
     const { channelId } = AuthUtils.verifyToken(
       token,
-      config.JWT_SECRET as string,
+      config.JWT_ACCESS_SECRET as string,
     );
 
     if (!channelId) return next();

@@ -8,7 +8,7 @@ import userSchema from "./model.schema";
 
 // this is for generating avatar if not given.
 userSchema.pre<IUser>("save", async function (next) {
-  if (this.userName?.trim()?.split(" ")?.length)
+  if (this.userName?.trim()?.split(" ")?.length > 1)
     throw new AppError(httpStatus.BAD_REQUEST, "userName can't contain spaces");
 
   if (this?.avatar) return next();
