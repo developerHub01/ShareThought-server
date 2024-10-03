@@ -4,6 +4,7 @@ import { CommonErrorConverter } from "../errors/CommonErrorConverter";
 import { IErrorSource, IGeneralErrorDetails } from "../interface/error";
 import config from "../config";
 import AppError from "../errors/AppError";
+import httpStatus from "http-status";
 
 export const globalErrorHandler: ErrorRequestHandler = (
   error,
@@ -46,7 +47,16 @@ export const globalErrorHandler: ErrorRequestHandler = (
       error,
       errorDetails,
     );
-  else if (error instanceof AppError) {
+  else if (error.name === "TokenExpiredError") {
+    errorDetails.statusCode = httpStatus.UNAUTHORIZED;
+    errorDetails.message = "Your session has expired. Please login again.";
+    errorDetails.errorSources = [
+      {
+        path: "",
+        message: error?.message,
+      },
+    ];
+  } else if (error instanceof AppError) {
     errorDetails.statusCode = error.statusCode;
     errorDetails.message = error?.message;
     errorDetails.errorSources = [
