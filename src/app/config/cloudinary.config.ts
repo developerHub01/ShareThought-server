@@ -1,5 +1,5 @@
-import cloudinary from "cloudinary";
-import config from ".";
+import { v2 as cloudinary } from "cloudinary";
+import config from "../config";
 
 interface ICloudinaryConfigOptions {
   cloud_name: string;
