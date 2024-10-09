@@ -10,6 +10,7 @@ import { UserCache } from "./user.cache";
 import { emailQueue } from "../../queues/email/queue";
 import { AuthUtils } from "../auth/auth.utils";
 import AppError from "../../errors/AppError";
+import { QueueJobList } from "../../queues";
 
 const getMyDetails = catchAsync(async (req, res) => {
   const { userId } = req as IRequestWithActiveDetails;
@@ -59,7 +60,13 @@ const createUser = catchAsync(async (req, res) => {
 
   const result = await UserCache.createUser(userData);
 
-  await emailQueue.add("sendVerificationEmail", result, {
+  const emailData = {
+    _id: userData._id?.toString(),
+    email: userData.email,
+    fullName: userData.fullName,
+  };
+
+  await emailQueue.add(QueueJobList.SEND_VERIFICATION_EMAIL, emailData, {
     removeOnComplete: true,
     removeOnFail: true,
   });

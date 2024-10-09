@@ -12,6 +12,7 @@ import {
 import { IUser } from "../user/user.interface";
 import { emailQueue } from "../../queues/email/queue";
 import { isEmail } from "../../utils/utils";
+import { QueueJobList } from "../../queues";
 
 const loginUser = async (payload: ILoginUser, guestId: string | undefined) => {
   const { password, email, userName } = payload;
@@ -56,7 +57,13 @@ const emailVerifyRequest = async (userId: string) => {
   if (!userData)
     throw new AppError(httpStatus.UNAUTHORIZED, "you are not authenticated");
 
-  await emailQueue.add("sendVerificationEmail", userData, {
+  const emailData = {
+    _id: userData._id?.toString(),
+    email: userData.email,
+    fullName: userData.fullName,
+  };
+
+  await emailQueue.add(QueueJobList.SEND_VERIFICATION_EMAIL, emailData, {
     removeOnComplete: true,
     removeOnFail: true,
   });
@@ -110,7 +117,6 @@ const forgetPassword = async (emailOrUserName: string) => {
           userName: emailOrUserName,
         }),
   }).lean();
-  
 
   if (!userData)
     throw new AppError(
@@ -126,13 +132,13 @@ const forgetPassword = async (emailOrUserName: string) => {
     { new: true },
   );
 
-  /* 
-  ###  TODO
+  const emailData = {
+    _id: userData._id?.toString(),
+    email: userData.email,
+    fullName: userData.fullName,
+  };
 
-  Here need to filter some data before sending into email queue
-  */
-
-  await emailQueue.add("sendResetPasswordEmail", userData, {
+  await emailQueue.add(QueueJobList.SEND_RESET_PASSWORD_EMAIL, emailData, {
     removeOnComplete: true,
     removeOnFail: true,
   });
