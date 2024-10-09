@@ -32,7 +32,7 @@ const getUserById = catchAsync(async (req, res) => {
   return sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "user created succesfully",
+    message: "user found succesfully",
     data: result,
   });
 });
@@ -59,7 +59,10 @@ const createUser = catchAsync(async (req, res) => {
 
   const result = await UserCache.createUser(userData);
 
-  await emailQueue.add("sendVerificationEmail", result);
+  await emailQueue.add("sendVerificationEmail", result, {
+    removeOnComplete: true,
+    removeOnFail: true,
+  });
 
   AuthUtils.clearAllCookies(req, res);
 

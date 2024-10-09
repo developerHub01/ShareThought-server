@@ -12,6 +12,9 @@ import { isEmail, millisecondsConvert } from "../../utils/utils";
 const loginUser = catchAsync(async (req, res) => {
   const { guestId } = req as IRequestWithActiveDetails;
 
+  console.log({guestId});
+  
+
   const { emailOrUserName } = req.body;
 
   const body = {

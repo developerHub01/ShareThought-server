@@ -5,7 +5,10 @@ import { ILoginUser } from "./auth.interface";
 import { AuthUtils } from "./auth.utils";
 import config from "../../config";
 import { GuestUserModel } from "../guest/model/model";
-import { IVerifyEmailTokenData, TDocumentType } from "../../interface/interface";
+import {
+  IVerifyEmailTokenData,
+  TDocumentType,
+} from "../../interface/interface";
 import { IUser } from "../user/user.interface";
 import { emailQueue } from "../../queues/email/queue";
 import { isEmail } from "../../utils/utils";
@@ -53,7 +56,10 @@ const emailVerifyRequest = async (userId: string) => {
   if (!userData)
     throw new AppError(httpStatus.UNAUTHORIZED, "you are not authenticated");
 
-  await emailQueue.add("sendVerificationEmail", userData);
+  await emailQueue.add("sendVerificationEmail", userData, {
+    removeOnComplete: true,
+    removeOnFail: true,
+  });
 
   return userData;
 };
@@ -103,9 +109,8 @@ const forgetPassword = async (emailOrUserName: string) => {
       : {
           userName: emailOrUserName,
         }),
-  }).select({
-    needToChangePassword: 1,
-  });
+  }).lean();
+  
 
   if (!userData)
     throw new AppError(
@@ -121,7 +126,16 @@ const forgetPassword = async (emailOrUserName: string) => {
     { new: true },
   );
 
-  await emailQueue.add("sendResetPasswordEmail", userData);
+  /* 
+  ###  TODO
+
+  Here need to filter some data before sending into email queue
+  */
+
+  await emailQueue.add("sendResetPasswordEmail", userData, {
+    removeOnComplete: true,
+    removeOnFail: true,
+  });
 };
 
 const resetPassword = async (userId: string, password: string) => {
@@ -131,7 +145,7 @@ const resetPassword = async (userId: string, password: string) => {
 
   if (!userData)
     throw new AppError(httpStatus.NOT_FOUND, "this user doesn't exist");
-  
+
   if (!userData.needToChangePassword)
     throw new AppError(httpStatus.BAD_REQUEST, "this is token is outdated");
 

@@ -5,6 +5,8 @@ import { AuthUtils } from "../../modules/auth/auth.utils";
 export const emailWorker = new Worker(
   "emailQueue",
   async ({ name, data }) => {
+    console.log({name, data});
+    
     if (name === "sendVerificationEmail")
       return await AuthUtils.sendVerificationEmail(data);
     if (name === "sendResetPasswordEmail")

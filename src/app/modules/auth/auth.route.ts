@@ -2,7 +2,6 @@ import express from "express";
 import { validateRequest } from "../../middleware/validate.request";
 import { AuthValidation } from "./auth.validation";
 import { AuthController } from "./auth.controller";
-import checkGuestStatus from "../../middleware/check.guest.status";
 import getLoggedInUser from "../../middleware/get.loggedin.user";
 import readForgetPasswordToken from "../../middleware/read.forgetPassword.token";
 import readVerifyEmailToken from "../../middleware/read.verifyEmail.token";
