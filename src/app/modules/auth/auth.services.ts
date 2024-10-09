@@ -5,9 +5,6 @@ import { ILoginUser } from "./auth.interface";
 import { AuthUtils } from "./auth.utils";
 import config from "../../config";
 import { GuestUserModel } from "../guest/model/model";
-import path from "path";
-import ejs from "ejs";
-import sendEmail from "../../utils/sendEmail";
 import { TDocumentType } from "../../interface/interface";
 import { IUser } from "../user/user.interface";
 
@@ -47,39 +44,21 @@ const loginUser = async (payload: ILoginUser, guestId: string | undefined) => {
 
 const emailVerifyRequest = async (userId: string) => {
   const userData = await UserModel.findById(userId);
+
+  if (userData?.isVerified)
+    throw new AppError(httpStatus.BAD_REQUEST, "you are already verified");
+
   if (!userData)
     throw new AppError(httpStatus.UNAUTHORIZED, "you are not authenticated");
 
-  const { email, fullName } = userData;
-
-  const verificationToken = AuthUtils.emailVerificationTokenGenerator({
-    email,
-    userId,
-  });
-
-  const verificationLink = `${config.CLIENT_BASE_URL}/auth/email_verify?token=${verificationToken}`;
-
-  const templatePath = path.join(
-    __dirname,
-    "../../../views/EmailVarification.ejs",
-  );
-
-  const htmlEmailTemplate = await ejs.renderFile(templatePath, {
-    VERIFICATION_LINK: verificationLink,
-    FULL_NAME: fullName,
-  });
-
-  await sendEmail({
-    from: config.ADMIN_USER_EMAIL,
-    to: email,
-    subject: "Share Thought Email Varification",
-    text: "Verify your email address to full access Share Thought functionalities",
-    html: htmlEmailTemplate, // html body
-  });
+  return await AuthUtils.sendVerificationEmail(userData);
 };
 
 const verifyEmail = async (userId: string, token: string) => {
   const userData = (await UserModel.findById(userId)) as TDocumentType<IUser>;
+
+  if (userData?.isVerified)
+    throw new AppError(httpStatus.BAD_REQUEST, "you are already verified");
 
   // const tokenData = await
   const tokenData = AuthUtils.verifyToken(

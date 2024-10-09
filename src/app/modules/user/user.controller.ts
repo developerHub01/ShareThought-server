@@ -7,6 +7,7 @@ import { UserUtils } from "./user.utils";
 import { CloudinaryConstant } from "../../constants/cloudinary.constant";
 import { UserModel } from "./model/model";
 import { UserCache } from "./user.cache";
+import { AuthUtils } from "../auth/auth.utils";
 
 const getMyDetails = catchAsync(async (req, res) => {
   const { userId } = req as IRequestWithActiveDetails;
@@ -49,6 +50,8 @@ const createUser = catchAsync(async (req, res) => {
   const userData = req.body;
   delete userData["isVerified"];
   const result = await UserCache.createUser(userData);
+
+  await AuthUtils.sendVerificationEmail(userData);
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,

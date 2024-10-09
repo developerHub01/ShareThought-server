@@ -7,6 +7,11 @@ import {
 import { Request, Response } from "express";
 import config from "../../config";
 import AppError from "../../errors/AppError";
+import { TDocumentType } from "../../interface/interface";
+import { IUser } from "../user/user.interface";
+import path from "path";
+import ejs from "ejs";
+import sendEmail from "../../utils/sendEmail";
 
 const createToken = (
   jwtPayload: IJWTPayload,
@@ -49,9 +54,41 @@ const emailVerificationTokenGenerator: TEmailVarificationLinkGenerator = (
   );
 };
 
+const sendVerificationEmail = async (userData: TDocumentType<IUser>) => {
+  const { email, fullName, _id } = userData;
+
+  const userId = _id?.toString();
+
+  const verificationToken = AuthUtils.emailVerificationTokenGenerator({
+    email,
+    userId,
+  });
+
+  const verificationLink = `${config.CLIENT_BASE_URL}/auth/email_verify?token=${verificationToken}`;
+
+  const templatePath = path.join(
+    __dirname,
+    "../../../views/EmailVarification.ejs",
+  );
+
+  const htmlEmailTemplate = await ejs.renderFile(templatePath, {
+    VERIFICATION_LINK: verificationLink,
+    FULL_NAME: fullName,
+  });
+
+  await sendEmail({
+    from: config.ADMIN_USER_EMAIL,
+    to: email,
+    subject: "Share Thought Email Verification",
+    text: "Verify your email address to full access Share Thought functionalities",
+    html: htmlEmailTemplate, // html body
+  });
+};
+
 export const AuthUtils = {
   createToken,
   verifyToken,
   clearAllCookies,
   emailVerificationTokenGenerator,
+  sendVerificationEmail,
 };
