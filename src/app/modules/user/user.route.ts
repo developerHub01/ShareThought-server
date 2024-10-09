@@ -5,6 +5,7 @@ import { UserController } from "./user.controller";
 import getLoggedInUser from "../../middleware/get.loggedin.user";
 import { UserMiddleware } from "./user.middleware";
 import readReqBodyFiles from "../../middleware/read.req.body.files";
+import checkAuthStatus from "../../middleware/check.auth.status";
 
 const router = express.Router();
 
@@ -20,6 +21,7 @@ router.get(
 
 router.post(
   "/",
+  checkAuthStatus,
   UserMiddleware.createOrUpdateUserAvatar,
   readReqBodyFiles,
   UserMiddleware.matchReqBodyFilesWithValidationSchema,

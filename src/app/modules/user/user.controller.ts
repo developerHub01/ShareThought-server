@@ -7,7 +7,9 @@ import { UserUtils } from "./user.utils";
 import { CloudinaryConstant } from "../../constants/cloudinary.constant";
 import { UserModel } from "./model/model";
 import { UserCache } from "./user.cache";
+import { emailQueue } from "../../queues/email/queue";
 import { AuthUtils } from "../auth/auth.utils";
+import AppError from "../../errors/AppError";
 
 const getMyDetails = catchAsync(async (req, res) => {
   const { userId } = req as IRequestWithActiveDetails;
@@ -47,11 +49,19 @@ const findUser = catchAsync(async (req, res) => {
 });
 
 const createUser = catchAsync(async (req, res) => {
+  const { userId } = req as IRequestWithActiveDetails;
+
+  if (userId)
+    throw new AppError(httpStatus.BAD_REQUEST, "you are already loggedin");
+
   const userData = req.body;
   delete userData["isVerified"];
+
   const result = await UserCache.createUser(userData);
 
-  await AuthUtils.sendVerificationEmail(userData);
+  await emailQueue.add("sendVerificationEmail", result);
+
+  AuthUtils.clearAllCookies(req, res);
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,

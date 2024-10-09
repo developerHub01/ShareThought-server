@@ -10,13 +10,17 @@ import createGuestUserIfNeed from "./app/middleware/create.guest.user";
 import Redis from "ioredis";
 import config from "./app/config";
 
-export const redis = new Redis({
+export const redisOptions = {
   port: Number(config.REDIS_PORT),
   host: config.REDIS_HOST,
   // username: config.REDIS_USER_NAME,
   password: config.REDIS_PASSWORD,
   db: Number(config.REDIS_DB),
-});
+};
+
+export const redis = new Redis(redisOptions);
+
+import "./app/queues/email/worker";
 
 const app: Application = express();
 
@@ -33,8 +37,8 @@ app.use(
   }),
 );
 
-app.set("view enginee", "ejs")
-app.set('views', path.join(__dirname, 'views'));
+app.set("view enginee", "ejs");
+app.set("views", path.join(__dirname, "views"));
 
 app.use(
   "/cover_placeholder",

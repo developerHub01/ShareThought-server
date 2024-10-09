@@ -22,7 +22,7 @@ router.get(
   AuthController.emailVerifyRequest,
 );
 
-router.get("/verifyEmail/:token", getLoggedInUser, AuthController.verifyEmail);
+router.get("/verifyEmail/:token", AuthController.verifyEmail);
 
 router.post(
   "/forgotPassword",

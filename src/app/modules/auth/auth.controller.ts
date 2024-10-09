@@ -93,16 +93,14 @@ const emailVerifyRequest = catchAsync(async (req, res) => {
 });
 
 const verifyEmail = catchAsync(async (req, res) => {
-  const { userId } = req as IRequestWithActiveDetails;
-
   const { token } = req.params;
 
-  const result = await AuthServices.verifyEmail(userId, token);
+  const result = await AuthServices.verifyEmail(token);
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "send verification mail succesfully",
+    message: "email verified succesfully",
     data: result,
   });
 });

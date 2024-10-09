@@ -54,13 +54,10 @@ const emailVerifyRequest = async (userId: string) => {
   return await AuthUtils.sendVerificationEmail(userData);
 };
 
-const verifyEmail = async (userId: string, token: string) => {
-  const userData = (await UserModel.findById(userId)) as TDocumentType<IUser>;
-
-  if (userData?.isVerified)
-    throw new AppError(httpStatus.BAD_REQUEST, "you are already verified");
-
-  // const tokenData = await
+const verifyEmail = async (token: string) => {
+  /**
+   * Reading token details
+   * ***/
   const tokenData = AuthUtils.verifyToken(
     token,
     config.JWT_EMAIL_VERIFICATION_SECRET,
@@ -73,9 +70,22 @@ const verifyEmail = async (userId: string, token: string) => {
   if (!tokenData)
     throw new AppError(httpStatus.BAD_REQUEST, "Token data is not valid");
 
-  const { email } = userData;
+  const { email, userId } = tokenData;
 
-  if (userId !== tokenData.userId || email !== tokenData.email)
+  /**
+   * Reading user details
+   * ***/
+  const userData = (await UserModel.findById(userId)) as TDocumentType<IUser>;
+
+  if (!userData) throw new AppError(httpStatus.NOT_FOUND, "user not found");
+
+  if (userData?.isVerified)
+    throw new AppError(httpStatus.BAD_REQUEST, "you are already verified");
+
+  /**
+   * verifying userDetails with tokenDetails
+   * ***/
+  if (userId !== userData._id?.toString() || email !== userData.email)
     throw new AppError(httpStatus.BAD_REQUEST, "Token data is not valid");
 
   const updatedUser = (await UserModel.findByIdAndUpdate(
