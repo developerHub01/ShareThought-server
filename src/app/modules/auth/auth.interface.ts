@@ -10,7 +10,7 @@ export interface IJWTPayload {
   guestId?: string;
 }
 
-interface IEmailVarificationLinkGeneratorParameter {
+export interface IEmailVarificationLinkGeneratorParameter {
   userId: string;
   email: string;
 }
@@ -19,6 +19,16 @@ export type TEmailVarificationLinkGenerator = ({
   userId,
   email,
 }: IEmailVarificationLinkGeneratorParameter) => string;
+
+export interface IForgetPasswordLinkGeneratorParameter {
+  userId: string;
+  email: string;
+}
+
+export type TForgetPasswordLinkGenerator = ({
+  userId,
+  email,
+}: IForgetPasswordLinkGeneratorParameter) => string;
 
 export interface IErrorDetails {
   statusCode: number;

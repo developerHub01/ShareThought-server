@@ -1,10 +1,21 @@
 import { Request } from "express";
 import { Document, Types } from "mongoose";
 
+export interface IForgetPasswordTokenData {
+  email: string;
+  userId: string;
+}
+export interface IVerifyEmailTokenData {
+  email: string;
+  userId: string;
+}
+
 export interface IRequestWithActiveDetails extends Request {
   userId: string;
   channelId?: string;
   guestId?: string;
+  forgetPasswordTokenData?: IForgetPasswordTokenData
+  verifyEmailTokenData?: IVerifyEmailTokenData
 }
 
 export interface IResponse<T> {

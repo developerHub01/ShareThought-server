@@ -3,6 +3,7 @@ import {
   IErrorDetails,
   IJWTPayload,
   TEmailVarificationLinkGenerator,
+  TForgetPasswordLinkGenerator,
 } from "./auth.interface";
 import { Request, Response } from "express";
 import config from "../../config";
@@ -54,6 +55,16 @@ const emailVerificationTokenGenerator: TEmailVarificationLinkGenerator = (
   );
 };
 
+const forgetPasswordTokenGenerator: TForgetPasswordLinkGenerator = (
+  userData,
+) => {
+  return createToken(
+    userData,
+    config.JWT_FORGET_PASSWORD_SECRET,
+    config.JWT_FORGET_PASSWORD_EXPIRES_IN,
+  );
+};
+
 const sendVerificationEmail = async (userData: TDocumentType<IUser>) => {
   const { email, fullName, _id } = userData;
 
@@ -85,10 +96,43 @@ const sendVerificationEmail = async (userData: TDocumentType<IUser>) => {
   });
 };
 
+const sendForgetPasswordEmail = async (userData: TDocumentType<IUser>) => {
+  const { email, fullName, _id } = userData;
+
+  const userId = _id?.toString();
+
+  const forgetPasswordToken = AuthUtils.forgetPasswordTokenGenerator({
+    email,
+    userId,
+  });
+
+  const resetPasswordLink = `${config.CLIENT_BASE_URL}/auth/reset_password?token=${forgetPasswordToken}`;
+
+  const templatePath = path.join(
+    __dirname,
+    "../../../views/ForgetPassword.ejs",
+  );
+
+  const htmlEmailTemplate = await ejs.renderFile(templatePath, {
+    RESET_PASSWORD_LINK: resetPasswordLink,
+    FULL_NAME: fullName,
+  });
+
+  await sendEmail({
+    from: config.ADMIN_USER_EMAIL,
+    to: email,
+    subject: "Share Thought Reset Password",
+    text: "You requested a password reset for your Share Thought account. Click the link in the email to set a new password.",
+    html: htmlEmailTemplate, // html body
+  });
+};
+
 export const AuthUtils = {
   createToken,
   verifyToken,
   clearAllCookies,
   emailVerificationTokenGenerator,
+  forgetPasswordTokenGenerator,
   sendVerificationEmail,
+  sendForgetPasswordEmail,
 };

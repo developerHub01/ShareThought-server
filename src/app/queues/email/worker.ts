@@ -7,6 +7,8 @@ export const emailWorker = new Worker(
   async ({ name, data }) => {
     if (name === "sendVerificationEmail")
       return await AuthUtils.sendVerificationEmail(data);
+    if (name === "sendResetPasswordEmail")
+      return await AuthUtils.sendForgetPasswordEmail(data);
   },
   {
     connection: redisOptions,

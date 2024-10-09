@@ -5,9 +5,10 @@ import { ILoginUser } from "./auth.interface";
 import { AuthUtils } from "./auth.utils";
 import config from "../../config";
 import { GuestUserModel } from "../guest/model/model";
-import { TDocumentType } from "../../interface/interface";
+import { IVerifyEmailTokenData, TDocumentType } from "../../interface/interface";
 import { IUser } from "../user/user.interface";
 import { emailQueue } from "../../queues/email/queue";
+import { isEmail } from "../../utils/utils";
 
 const loginUser = async (payload: ILoginUser, guestId: string | undefined) => {
   const { password, email, userName } = payload;
@@ -57,23 +58,8 @@ const emailVerifyRequest = async (userId: string) => {
   return userData;
 };
 
-const verifyEmail = async (token: string) => {
-  /**
-   * Reading token details
-   * ***/
-  const tokenData = AuthUtils.verifyToken(
-    token,
-    config.JWT_EMAIL_VERIFICATION_SECRET,
-    {
-      statusCode: httpStatus.UNAUTHORIZED,
-      message: "Try to login again or retry to verify",
-    },
-  );
-
-  if (!tokenData)
-    throw new AppError(httpStatus.BAD_REQUEST, "Token data is not valid");
-
-  const { email, userId } = tokenData;
+const verifyEmail = async (verifyEmailTokenData: IVerifyEmailTokenData) => {
+  const { email, userId } = verifyEmailTokenData;
 
   /**
    * Reading user details
@@ -108,9 +94,61 @@ const verifyEmail = async (token: string) => {
   return updatedUser;
 };
 
+const forgetPassword = async (emailOrUserName: string) => {
+  const userData = await UserModel.findOne({
+    ...(isEmail(emailOrUserName)
+      ? {
+          email: emailOrUserName,
+        }
+      : {
+          userName: emailOrUserName,
+        }),
+  }).select({
+    needToChangePassword: 1,
+  });
+
+  if (!userData)
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      "no account exist with that email address",
+    );
+
+  await UserModel.findByIdAndUpdate(
+    userData?._id?.toString(),
+    {
+      needToChangePassword: true,
+    },
+    { new: true },
+  );
+
+  await emailQueue.add("sendResetPasswordEmail", userData);
+};
+
+const resetPassword = async (userId: string, password: string) => {
+  const userData = await UserModel.findById(userId).select({
+    needToChangePassword: 1,
+  });
+
+  if (!userData)
+    throw new AppError(httpStatus.NOT_FOUND, "this user doesn't exist");
+  
+  if (!userData.needToChangePassword)
+    throw new AppError(httpStatus.BAD_REQUEST, "this is token is outdated");
+
+  return await UserModel.findByIdAndUpdate(
+    userId,
+    {
+      password,
+      needToChangePassword: false,
+    },
+    { new: true },
+  );
+};
 
 export const AuthServices = {
   loginUser,
   emailVerifyRequest,
   verifyEmail,
+  forgetPassword,
+  resetPassword,
 };

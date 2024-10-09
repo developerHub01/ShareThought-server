@@ -13,6 +13,7 @@ export interface IUser {
   gender: TGenderType;
   password: string;
   isVerified?: boolean;
+  needToChangePassword?: boolean;
 }
 export interface IUserChangePassword {
   oldPassword: string;

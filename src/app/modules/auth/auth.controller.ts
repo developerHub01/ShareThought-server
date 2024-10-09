@@ -3,7 +3,7 @@ import catchAsync from "../../utils/catch.async";
 import { AuthServices } from "./auth.services";
 import AppError from "../../errors/AppError";
 import { sendResponse } from "../../utils/send.response";
-import { IRequestWithActiveDetails } from "../../interface/interface";
+import { IRequestWithActiveDetails, IVerifyEmailTokenData } from "../../interface/interface";
 import { AuthUtils } from "./auth.utils";
 import { Constatnt } from "../../constants/constants";
 import config from "../../config";
@@ -93,9 +93,9 @@ const emailVerifyRequest = catchAsync(async (req, res) => {
 });
 
 const verifyEmail = catchAsync(async (req, res) => {
-  const { token } = req.params;
+  const { verifyEmailTokenData } = req as IRequestWithActiveDetails;
 
-  const result = await AuthServices.verifyEmail(token);
+  const result = await AuthServices.verifyEmail(verifyEmailTokenData as IVerifyEmailTokenData);
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -106,11 +106,35 @@ const verifyEmail = catchAsync(async (req, res) => {
 });
 
 const forgotPassword = catchAsync(async (req, res) => {
+  const { emailOrUserName } = req.body;
+
+  const result = await AuthServices.forgetPassword(emailOrUserName);
+
   return sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "password forget process started successfully",
-    data: null,
+    message: "email sent successfully",
+    data: result,
+  });
+});
+
+const resetPassword = catchAsync(async (req, res) => {
+  const { password } = req.body;
+
+  const { forgetPasswordTokenData } = req as IRequestWithActiveDetails;
+
+  if (!forgetPasswordTokenData)
+    throw new AppError(httpStatus.BAD_REQUEST, "Token data is not valid");
+
+  const { userId } = forgetPasswordTokenData;
+
+  const result = await AuthServices.resetPassword(userId, password);
+
+  return sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "email send successfully",
+    data: result,
   });
 });
 
@@ -120,4 +144,5 @@ export const AuthController = {
   emailVerifyRequest,
   verifyEmail,
   forgotPassword,
+  resetPassword,
 };

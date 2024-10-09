@@ -14,15 +14,23 @@ const loginValidationSchema = zod.object({
 });
 
 const forgotPasswordValidationSchema = zod.object({
-  email: zod
+  emailOrUserName: zod
     .string({
       required_error: "Email is required",
     })
     .trim()
-    .email(),
+});
+
+const resetPasswordValidationSchema = zod.object({
+  password: zod
+    .string({
+      required_error: "password is required",
+    })
+    .trim()
 });
 
 export const AuthValidation = {
   loginValidationSchema,
   forgotPasswordValidationSchema,
+  resetPasswordValidationSchema,
 };

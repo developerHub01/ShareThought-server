@@ -4,9 +4,14 @@ import { AuthValidation } from "./auth.validation";
 import { AuthController } from "./auth.controller";
 import checkGuestStatus from "../../middleware/check.guest.status";
 import getLoggedInUser from "../../middleware/get.loggedin.user";
+import readForgetPasswordToken from "../../middleware/read.forgetPassword.token";
+import readVerifyEmailToken from "../../middleware/read.verifyEmail.token";
 
 const router = express.Router();
 
+/**
+ * Main auth
+ * ***/
 router.post(
   "/login",
   checkGuestStatus,
@@ -16,14 +21,20 @@ router.post(
 
 router.get("/logout", getLoggedInUser, AuthController.logoutUser);
 
+/**
+ * Email verification
+ * ***/
 router.get(
   "/emailVerifyRequest",
   getLoggedInUser,
   AuthController.emailVerifyRequest,
 );
 
-router.get("/verifyEmail/:token", AuthController.verifyEmail);
+router.get("/verifyEmail", readVerifyEmailToken, AuthController.verifyEmail);
 
+/**
+ * forget password
+ * ***/
 router.post(
   "/forgotPassword",
   validateRequest(AuthValidation.forgotPasswordValidationSchema),
@@ -32,8 +43,9 @@ router.post(
 
 router.post(
   "/resetPassword",
-  validateRequest(AuthValidation.forgotPasswordValidationSchema),
-  AuthController.forgotPassword,
+  readForgetPasswordToken,
+  validateRequest(AuthValidation.resetPasswordValidationSchema),
+  AuthController.resetPassword,
 );
 
 export const AuthRoutes = router;
