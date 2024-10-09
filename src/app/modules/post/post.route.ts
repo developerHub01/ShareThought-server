@@ -5,7 +5,6 @@ import { PostValidation } from "./post.validation";
 import verifyMyChannel from "../../middleware/verify.my.channel";
 import { PostController } from "./post.controller";
 import verifyMyPost from "../../middleware/verify.my.post";
-import checkAuthStatus from "../../middleware/check.auth.status";
 import { PostMiddleware } from "./post.middleware";
 import getActiveChannel from "../../middleware/get.active.channel";
 import checkChannelStatus from "../../middleware/check.channel.status";
@@ -24,7 +23,6 @@ router.get(
     timer: 60,
     prefix: `post`,
   }),
-  checkAuthStatus,
   checkChannelStatus,
   PostController.findPostByPostId,
 );
@@ -32,7 +30,6 @@ router.get(
 // get post by channelId
 router.get(
   "/channel/:id" /* :id ====> channelId */,
-  checkAuthStatus,
   checkChannelStatus,
   PostController.findPostByChannelId,
 );

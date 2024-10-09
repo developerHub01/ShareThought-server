@@ -6,7 +6,6 @@ import { CategoryValidation } from "./category.validation";
 import haveAccessCategory from "../../middleware/have.access.category";
 import verifyMyPost from "../../middleware/verify.my.post";
 import getActiveChannel from "../../middleware/get.active.channel";
-import checkAuthStatus from "../../middleware/check.auth.status";
 import checkChannelStatus from "../../middleware/check.channel.status";
 import verifyMyChannel from "../../middleware/verify.my.channel";
 import verifyCategoryPostMine from "../../middleware/verify.category.post.mine";
@@ -16,7 +15,6 @@ const router = express.Router();
 
 router.get(
   "/:id" /* id ==> categoryId */,
-  checkAuthStatus,
   checkChannelStatus,
   haveAccessCategory,
   CategoryController.findCategoryById,
@@ -24,7 +22,6 @@ router.get(
 
 router.get(
   "/channel/:id" /* id ==> channelId */,
-  checkAuthStatus,
   checkChannelStatus,
   CategoryController.findCategoryByChannelId,
 );

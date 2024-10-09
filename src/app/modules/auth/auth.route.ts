@@ -13,7 +13,7 @@ const router = express.Router();
  * ***/
 router.post(
   "/login",
-  checkGuestStatus,
+  /* guestId will automatically find through createGuestUserIfNeed middleware */
   validateRequest(AuthValidation.loginValidationSchema),
   AuthController.loginUser,
 );

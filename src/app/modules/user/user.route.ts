@@ -5,12 +5,15 @@ import { UserController } from "./user.controller";
 import getLoggedInUser from "../../middleware/get.loggedin.user";
 import { UserMiddleware } from "./user.middleware";
 import readReqBodyFiles from "../../middleware/read.req.body.files";
-import checkAuthStatus from "../../middleware/check.auth.status";
 
 const router = express.Router();
 
 // create password
-router.get("/me", getLoggedInUser, UserController.getMyDetails);
+router.get(
+  "/me",
+  getLoggedInUser,
+  UserController.getMyDetails,
+);
 
 router.get(
   "/:id" /*:id ====> userId*/,
@@ -18,10 +21,8 @@ router.get(
   UserController.getUserById,
 );
 
-
 router.post(
   "/",
-  checkAuthStatus,
   UserMiddleware.createOrUpdateUserAvatar,
   readReqBodyFiles,
   UserMiddleware.matchReqBodyFilesWithValidationSchema,
@@ -48,6 +49,9 @@ router.patch(
   UserController.updateUserPassword,
 );
 
-router.get("/", UserController.findUser);
+router.get(
+  "/",
+  UserController.findUser,
+);
 
 export const UserRoutes = router;

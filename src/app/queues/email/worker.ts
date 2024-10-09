@@ -5,12 +5,12 @@ import { AuthUtils } from "../../modules/auth/auth.utils";
 export const emailWorker = new Worker(
   "emailQueue",
   async ({ name, data }) => {
-    console.log({name, data});
-    
-    if (name === "sendVerificationEmail")
-      return await AuthUtils.sendVerificationEmail(data);
-    if (name === "sendResetPasswordEmail")
-      return await AuthUtils.sendForgetPasswordEmail(data);
+    switch (name) {
+      case "sendVerificationEmail":
+        return await AuthUtils.sendVerificationEmail(data);
+      case "sendResetPasswordEmail":
+        return await AuthUtils.sendForgetPasswordEmail(data);
+    }
   },
   {
     connection: redisOptions,

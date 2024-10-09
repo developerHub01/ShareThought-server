@@ -8,7 +8,6 @@ import { CommunityPostValidation } from "./community.post.validation";
 import { validateRequest } from "../../middleware/validate.request";
 import readReqBodyFiles from "../../middleware/read.req.body.files";
 import checkChannelStatus from "../../middleware/check.channel.status";
-import checkAuthStatus from "../../middleware/check.auth.status";
 
 const router = express.Router();
 
@@ -36,7 +35,6 @@ router.get(
 
 router.get(
   "/:id",
-  checkAuthStatus,
   checkChannelStatus,
   CommunityPostController.findCommuityPostById,
 );
