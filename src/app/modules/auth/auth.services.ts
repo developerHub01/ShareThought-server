@@ -7,6 +7,7 @@ import config from "../../config";
 import { GuestUserModel } from "../guest/model/model";
 import { TDocumentType } from "../../interface/interface";
 import { IUser } from "../user/user.interface";
+import { emailQueue } from "../../queues/email/queue";
 
 const loginUser = async (payload: ILoginUser, guestId: string | undefined) => {
   const { password, email, userName } = payload;
@@ -51,7 +52,9 @@ const emailVerifyRequest = async (userId: string) => {
   if (!userData)
     throw new AppError(httpStatus.UNAUTHORIZED, "you are not authenticated");
 
-  return await AuthUtils.sendVerificationEmail(userData);
+  await emailQueue.add("sendVerificationEmail", userData);
+
+  return userData;
 };
 
 const verifyEmail = async (token: string) => {
@@ -104,6 +107,7 @@ const verifyEmail = async (token: string) => {
 
   return updatedUser;
 };
+
 
 export const AuthServices = {
   loginUser,
