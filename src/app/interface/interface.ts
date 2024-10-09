@@ -14,7 +14,6 @@ export interface IResponse<T> {
   data: T;
 }
 
-
 export interface IFileObject {
   fieldname?: string;
   originalname?: string;
@@ -43,6 +42,14 @@ export type TGender = "male" | "female";
 export interface IMediaFileDimension {
   width: number;
   height: number;
+}
+
+export interface IEmail {
+  from: string;
+  to: string;
+  subject: string;
+  text: string;
+  html: string;
 }
 
 export type TDocumentType<T> = Document<unknown, object, T> &

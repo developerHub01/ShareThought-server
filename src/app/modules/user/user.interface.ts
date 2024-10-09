@@ -12,6 +12,7 @@ export interface IUser {
   email: string;
   gender: TGenderType;
   password: string;
+  isVerified?: boolean;
 }
 export interface IUserChangePassword {
   oldPassword: string;

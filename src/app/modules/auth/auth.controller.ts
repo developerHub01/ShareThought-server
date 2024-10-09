@@ -79,6 +79,34 @@ const logoutUser = catchAsync(async (req, res) => {
   });
 });
 
+const emailVerifyRequest = catchAsync(async (req, res) => {
+  const { userId } = req as IRequestWithActiveDetails;
+
+  const result = await AuthServices.emailVerifyRequest(userId);
+
+  return sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "send verification mail succesfully",
+    data: result,
+  });
+});
+
+const verifyEmail = catchAsync(async (req, res) => {
+  const { userId } = req as IRequestWithActiveDetails;
+
+  const { token } = req.params;
+
+  const result = await AuthServices.verifyEmail(userId, token);
+
+  return sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "send verification mail succesfully",
+    data: result,
+  });
+});
+
 const forgotPassword = catchAsync(async (req, res) => {
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -91,5 +119,7 @@ const forgotPassword = catchAsync(async (req, res) => {
 export const AuthController = {
   loginUser,
   logoutUser,
+  emailVerifyRequest,
+  verifyEmail,
   forgotPassword,
 };

@@ -33,6 +33,9 @@ app.use(
   }),
 );
 
+app.set("view enginee", "ejs")
+app.set('views', path.join(__dirname, 'views'));
+
 app.use(
   "/cover_placeholder",
   express.static(path.join(__dirname, "public/cover_placeholder")),

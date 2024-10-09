@@ -16,4 +16,24 @@ router.post(
 
 router.get("/logout", getLoggedInUser, AuthController.logoutUser);
 
+router.get(
+  "/emailVerifyRequest",
+  getLoggedInUser,
+  AuthController.emailVerifyRequest,
+);
+
+router.get("/verifyEmail/:token", getLoggedInUser, AuthController.verifyEmail);
+
+router.post(
+  "/forgotPassword",
+  validateRequest(AuthValidation.forgotPasswordValidationSchema),
+  AuthController.forgotPassword,
+);
+
+router.post(
+  "/resetPassword",
+  validateRequest(AuthValidation.forgotPasswordValidationSchema),
+  AuthController.forgotPassword,
+);
+
 export const AuthRoutes = router;

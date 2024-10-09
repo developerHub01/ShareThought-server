@@ -35,6 +35,10 @@ const userSchema = new Schema<IUser, IUserModel>(
       select: false,
       required: true,
     },
+    isVerified: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

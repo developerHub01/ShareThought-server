@@ -19,9 +19,22 @@ export default {
   JWT_ACCESS_SECRET: process.env.JWT_ACCESS_SECRET as string,
   JWT_REFRESH_SECRET: process.env.JWT_REFRESH_SECRET as string,
   JWT_GUEST_SECRET: process.env.JWT_GUEST_SECRET as string,
+  JWT_EMAIL_VERIFICATION_SECRET: process.env
+    .JWT_EMAIL_VERIFICATION_SECRET as string,
+
   JWT_ACCESS_EXPIRES_IN: process.env.JWT_ACCESS_EXPIRES_IN as string,
   JWT_REFRESH_EXPIRES_IN: process.env.JWT_REFRESH_EXPIRES_IN as string,
+  JWT_EMAIL_VERIFICATION_EXPIRES_IN: process.env
+    .JWT_EMAIL_VERIFICATION_EXPIRES_IN as string,
+
   BASE_URL: process.env.BASE_URL as string,
+  CLIENT_BASE_URL: process.env.CLIENT_BASE_URL as string,
+
+  ADMIN_EMAIL_HOST: process.env.ADMIN_EMAIL_HOST as string,
+  ADMIN_EMAIL_PORT: process.env.ADMIN_EMAIL_PORT as string,
+  ADMIN_USER_EMAIL: process.env.ADMIN_USER_EMAIL as string,
+  ADMIN_USER_PASSWORD: process.env.ADMIN_USER_PASSWORD as string,
+
   CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME as string,
   CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY as string,
   CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET as string,

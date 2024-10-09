@@ -46,7 +46,9 @@ const findUser = catchAsync(async (req, res) => {
 });
 
 const createUser = catchAsync(async (req, res) => {
-  const result = await UserCache.createUser(req.body);
+  const userData = req.body;
+  delete userData["isVerified"];
+  const result = await UserCache.createUser(userData);
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,

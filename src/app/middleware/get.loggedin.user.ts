@@ -14,7 +14,6 @@ const getLoggedInUser = catchAsync(
     const accessToken = req.cookies[Constatnt.TOKENS.ACCESS_TOKEN];
     const refreshToken = req.cookies[Constatnt.TOKENS.REFRESH_TOKEN];
 
-
     /*
      *
      *
@@ -23,9 +22,8 @@ const getLoggedInUser = catchAsync(
      *
      * */
 
-    if (!refreshToken) {
+    if (!refreshToken)
       throw new AppError(httpStatus.UNAUTHORIZED, "You are not logged in");
-    }
 
     /*
      *
@@ -63,9 +61,8 @@ const getLoggedInUser = catchAsync(
     }
 
     // Final check for valid userId
-    if (!userId) {
+    if (!userId)
       throw new AppError(httpStatus.UNAUTHORIZED, "You are not logged in");
-    }
 
     // Attach the userId to the request object
     (req as IRequestWithActiveDetails).userId = userId;

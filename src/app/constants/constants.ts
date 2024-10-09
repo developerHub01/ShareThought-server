@@ -12,6 +12,7 @@ const TOKENS = {
   REFRESH_TOKEN: "refresh_token",
   CHANNEL_TOKEN: "channel_token",
   GUEST_TOKEN: "guest_token",
+  EMAIL_VERIFICATION_TOKEN: "email_verification_token",
 };
 
 export const Constatnt = {
