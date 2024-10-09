@@ -17,6 +17,7 @@ router.get(
   UserController.getUserById,
 );
 
+
 router.post(
   "/",
   UserMiddleware.createOrUpdateUserAvatar,

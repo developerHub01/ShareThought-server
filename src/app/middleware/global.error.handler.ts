@@ -49,7 +49,7 @@ export const globalErrorHandler: ErrorRequestHandler = (
     );
   else if (error.name === "TokenExpiredError") {
     errorDetails.statusCode = httpStatus.UNAUTHORIZED;
-    errorDetails.message = "Your session has expired. Please login again.";
+    errorDetails.message = "Your session has expired";
     errorDetails.errorSources = [
       {
         path: "",

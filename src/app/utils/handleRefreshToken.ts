@@ -7,21 +7,31 @@ import { UserModel } from "../modules/user/model/model";
 import { Constatnt } from "../constants/constants";
 import { Request, Response } from "express";
 
-const handleRefreshToken = async (req: Request, res: Response) => {
+const handleRefreshToken = async (
+  req: Request,
+  res: Response,
+  block: boolean = true,
+) => {
   const refreshToken = req.cookies[Constatnt.TOKENS.REFRESH_TOKEN];
   const { userId } = AuthUtils.verifyToken(
     refreshToken,
     config.JWT_REFRESH_SECRET,
   );
 
-  if (!userId)
+  if (!userId && block) {
+    res.clearCookie(Constatnt.TOKENS.ACCESS_TOKEN);
+    res.clearCookie(Constatnt.TOKENS.REFRESH_TOKEN);
     throw new AppError(httpStatus.UNAUTHORIZED, "You are not logged in");
+  }
 
   const isUserExist = await UserModel.isUserExist(userId);
 
   /* if token credentials doesn't match */
-  if (!isUserExist)
+  if (!isUserExist && block) {
+    res.clearCookie(Constatnt.TOKENS.ACCESS_TOKEN);
+    res.clearCookie(Constatnt.TOKENS.REFRESH_TOKEN);
     throw new AppError(httpStatus.UNAUTHORIZED, "You are not logged in");
+  }
 
   const newAccessToken = AuthUtils.createToken(
     {

@@ -21,8 +21,6 @@ const createGuestUserIfNeed = catchAsync(
     const refreshToken = req?.cookies[Constatnt.TOKENS.REFRESH_TOKEN];
     let guestToken = req?.cookies[Constatnt.TOKENS.GUEST_TOKEN];
 
-    console.log({ accessToken, refreshToken, guestToken });
-
     if (accessToken || refreshToken) {
       try {
         const { userId } = AuthUtils.verifyToken(
@@ -32,13 +30,10 @@ const createGuestUserIfNeed = catchAsync(
 
         if (userId) return next();
       } catch (error) {
-        handleRefreshToken(req, res);
-
+        handleRefreshToken(req, res, false);
         return next();
       }
     }
-
-    console.log({ guestToken });
 
     if (!guestToken) {
       const guestUser = await GuestUserModel.createGuestUser();
