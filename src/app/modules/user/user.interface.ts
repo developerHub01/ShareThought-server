@@ -28,6 +28,8 @@ export interface IUserModel extends Model<IUser> {
 
   createHash(str: string): Promise<string>;
 
+  isVerified(id: string): Promise<boolean>;
+
   isUserExist(id: string): Promise<boolean>;
 
   updateUserPassword(

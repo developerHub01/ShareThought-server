@@ -21,6 +21,10 @@ userSchema.statics.isUserExist = async (id: string): Promise<boolean> => {
   return Boolean(await UserModel.findById(id));
 };
 
+userSchema.statics.isVerified = async (id: string): Promise<boolean> => {
+  return Boolean((await UserModel.findById(id))?.isVerified);
+};
+
 userSchema.statics.updateUserPassword = async (
   payload: IUserChangePassword,
   userId: string,

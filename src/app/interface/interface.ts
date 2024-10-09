@@ -14,8 +14,9 @@ export interface IRequestWithActiveDetails extends Request {
   userId: string;
   channelId?: string;
   guestId?: string;
-  forgetPasswordTokenData?: IForgetPasswordTokenData
-  verifyEmailTokenData?: IVerifyEmailTokenData
+  forgetPasswordTokenData?: IForgetPasswordTokenData;
+  verifyEmailTokenData?: IVerifyEmailTokenData;
+  isVerified?: boolean;
 }
 
 export interface IResponse<T> {
