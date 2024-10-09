@@ -4,7 +4,7 @@ import catchAsync from "../utils/catch.async";
 import { UserModel } from "../modules/user/model/model";
 import { IRequestWithActiveDetails } from "../interface/interface";
 
-const isVerfied = catchAsync(async (req, res, next) => {
+const isVerified = catchAsync(async (req, res, next) => {
   const { userId } = req as IRequestWithActiveDetails;
 
   const result = await UserModel.isVerified(userId);
@@ -17,4 +17,4 @@ const isVerfied = catchAsync(async (req, res, next) => {
   return next();
 });
 
-export default isVerfied;
+export default isVerified;

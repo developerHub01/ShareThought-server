@@ -11,6 +11,7 @@ import haveAccessDeleteComment from "../../middleware/have.access.delete.comment
 import verifyMyCommunityPost from "../../middleware/verify.my.community.post";
 import getActiveChannel from "../../middleware/get.active.channel";
 import readReqBodyFiles from "../../middleware/read.req.body.files";
+import isVerified from "../../middleware/is.verified";
 
 const router = express.Router();
 
@@ -54,6 +55,7 @@ router.post(
   CommentMiddleware.matchReqBodyFilesWithValidationSchema,
   validateRequest(CommentValidation.createOrUpdateComment),
   getLoggedInUser,
+  isVerified,
   checkChannelStatus,
   CommentController.createComment,
 );
@@ -70,6 +72,7 @@ router.post(
   CommentMiddleware.matchReqBodyFilesWithValidationSchema,
   validateRequest(CommentValidation.createOrUpdateComment),
   getLoggedInUser,
+  isVerified,
   checkChannelStatus,
   CommentController.createComment,
 );
@@ -82,6 +85,7 @@ router.post(
   CommentMiddleware.matchReqBodyFilesWithValidationSchema,
   validateRequest(CommentValidation.createOrUpdateComment),
   getLoggedInUser,
+  isVerified,
   checkChannelStatus,
   CommentController.replyComment,
 );
@@ -93,6 +97,7 @@ router.patch(
   CommentMiddleware.matchReqBodyFilesWithValidationSchema,
   validateRequest(CommentValidation.createOrUpdateComment),
   getLoggedInUser,
+  isVerified,
   checkChannelStatus,
   verifyMyComment,
   CommentController.updateComment,
@@ -101,6 +106,7 @@ router.patch(
 router.delete(
   "/:id" /* :id ===> commentId */,
   getLoggedInUser,
+  isVerified,
   checkChannelStatus,
   haveAccessDeleteComment,
   CommentController.deleteComment,
@@ -116,6 +122,7 @@ router.delete(
   getLoggedInUser,
   getActiveChannel,
   verifyMyPost,
+  isVerified,
   CommentController.deleteAllComment,
 );
 
@@ -127,6 +134,7 @@ router.delete(
 router.delete(
   "/community/:communityPostId" /* :id ===> postId */,
   getLoggedInUser,
+  isVerified,
   getActiveChannel,
   verifyMyCommunityPost,
   CommentController.deleteAllComment,

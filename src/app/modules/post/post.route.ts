@@ -10,6 +10,7 @@ import getActiveChannel from "../../middleware/get.active.channel";
 import checkChannelStatus from "../../middleware/check.channel.status";
 import readReqBodyFiles from "../../middleware/read.req.body.files";
 import rateLimit from "../../middleware/rate.limit";
+import isVerified from "../../middleware/is.verified";
 
 const router = express.Router();
 
@@ -42,6 +43,7 @@ router.post(
   PostMiddleware.matchReqBodyFilesWithValidationSchema,
   validateRequest(PostValidation.createPostValidationSchema),
   getLoggedInUser,
+  isVerified,
   getActiveChannel,
   verifyMyChannel,
   PostMiddleware.isValidTags,
@@ -56,6 +58,7 @@ router.patch(
   PostMiddleware.matchReqBodyFilesWithValidationSchema,
   validateRequest(PostValidation.updatePostValidationSchema),
   getLoggedInUser,
+  isVerified,
   getActiveChannel,
   verifyMyChannel,
   verifyMyPost /* checking is that my post or not */,
@@ -66,6 +69,7 @@ router.patch(
 router.delete(
   "/:postId" /* :postId ===> postId */,
   getLoggedInUser,
+  isVerified,
   getActiveChannel,
   verifyMyChannel,
   verifyMyPost /*checking is that my post or not */,

@@ -7,6 +7,7 @@ import { ReportValidation } from "./report.validation";
 import readReqBodyFiles from "../../middleware/read.req.body.files";
 import { ReportMiddleware } from "./report.middleware";
 import checkChannelStatus from "../../middleware/check.channel.status";
+import isVerified from "../../middleware/is.verified";
 
 const router = express.Router();
 
@@ -16,6 +17,7 @@ router.post(
   readReqBodyFiles,
   validateRequest(ReportValidation.createReportValidator),
   getLoggedInUser,
+  isVerified,
   checkChannelStatus,
   isValidReport,
   ReportController.createReport,

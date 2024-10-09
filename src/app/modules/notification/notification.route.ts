@@ -5,7 +5,11 @@ import getLoggedInUser from "../../middleware/get.loggedin.user";
 const router = express.Router();
 
 router.get("/user", getLoggedInUser, NotificationController.findMyNotification);
-router.get("/user/unseen", getLoggedInUser, NotificationController.findMyNotification);
+router.get(
+  "/user/unseen",
+  getLoggedInUser,
+  NotificationController.findMyNotification,
+);
 
 router.get(
   "/channel/:id" /* id ===> channelId */,

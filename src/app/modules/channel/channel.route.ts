@@ -9,12 +9,13 @@ import { ChannelMiddleware } from "./channel.middleware";
 import getActiveChannel from "../../middleware/get.active.channel";
 import readReqBodyFiles from "../../middleware/read.req.body.files";
 import checkChannelStatus from "../../middleware/check.channel.status";
+import isVerified from "../../middleware/is.verified";
 
 const router = express.Router();
 
-router.get("/all", getLoggedInUser, ChannelController.findChannel);
+router.get("/all", getLoggedInUser, isVerified, ChannelController.findChannel);
 
-router.get("/my", getLoggedInUser, ChannelController.getMyChannel);
+router.get("/my", getLoggedInUser, isVerified, ChannelController.getMyChannel);
 
 router.get(
   "/:id",
@@ -27,6 +28,7 @@ router.post(
   "/",
   validateRequest(ChannelValidation.createChannelValidationSchema),
   getLoggedInUser,
+  isVerified,
   ChannelController.createChannel,
 );
 
@@ -34,6 +36,7 @@ router.post(
 router.patch(
   "/switch/:id" /* id ===> channelId */,
   getLoggedInUser,
+  isVerified,
   ChannelController.switchChannel,
 );
 
@@ -43,6 +46,7 @@ router.patch(
   readReqBodyFiles /* read files info from formData */,
   ChannelMiddleware.matchReqBodyFilesWithValidationSchema,
   validateRequest(ChannelValidation.updateChannelValidationSchema),
+  isVerified,
   getLoggedInUser,
   getActiveChannel,
   verifyMyChannel,
@@ -50,11 +54,17 @@ router.patch(
 );
 
 /* logout from a chnnale or back to main profile */
-router.delete("/logout", getLoggedInUser, ChannelController.logOutChannel);
+router.delete(
+  "/logout",
+  getLoggedInUser,
+  isVerified,
+  ChannelController.logOutChannel,
+);
 
 router.delete(
   "/",
   getLoggedInUser,
+  isVerified,
   getActiveChannel,
   channelExist,
   verifyMyChannel,

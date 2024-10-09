@@ -11,6 +11,7 @@ import verifyMyChannel from "../../middleware/verify.my.channel";
 import verifyCategoryPostMine from "../../middleware/verify.category.post.mine";
 import haveAccessCategoryModify from "../../middleware/have.access.category.modify";
 import isPublicPost from "../../middleware/is.public.post";
+import isVerified from "../../middleware/is.verified";
 const router = express.Router();
 
 router.get(
@@ -37,6 +38,7 @@ router.post(
   id ==> categoryId 
   */
   getLoggedInUser,
+  isVerified,
   getActiveChannel,
   verifyMyChannel,
   haveAccessCategoryModify,
@@ -49,6 +51,7 @@ router.post(
   "/",
   validateRequest(CategoryValidation.createCategory),
   getLoggedInUser,
+  isVerified,
   getActiveChannel,
   verifyMyChannel,
   verifyCategoryPostMine,
@@ -59,6 +62,7 @@ router.patch(
   "/:id" /* id ==> categoryId */,
   validateRequest(CategoryValidation.updateCategory),
   getLoggedInUser,
+  isVerified,
   getActiveChannel,
   haveAccessCategory,
   verifyCategoryPostMine,
@@ -76,6 +80,7 @@ router.delete(
   id ==> categoryId 
   */
   getLoggedInUser,
+  isVerified,
   getActiveChannel,
   verifyMyChannel,
   haveAccessCategoryModify,
@@ -85,6 +90,7 @@ router.delete(
 router.delete(
   "/:id" /* id ==> categoryId */,
   getLoggedInUser,
+  isVerified,
   getActiveChannel,
   haveAccessCategoryModify,
   CategoryController.deleteCategory,

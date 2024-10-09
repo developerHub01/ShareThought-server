@@ -8,6 +8,7 @@ import { CommunityPostValidation } from "./community.post.validation";
 import { validateRequest } from "../../middleware/validate.request";
 import readReqBodyFiles from "../../middleware/read.req.body.files";
 import checkChannelStatus from "../../middleware/check.channel.status";
+import isVerified from "../../middleware/is.verified";
 
 const router = express.Router();
 
@@ -22,6 +23,7 @@ router.get(
 router.get(
   "/my_selection/:id",
   getLoggedInUser,
+  isVerified,
   checkChannelStatus,
   CommunityPostController.findMySelectionPostOption,
 );
@@ -29,6 +31,7 @@ router.get(
 router.get(
   "/my",
   getLoggedInUser,
+  isVerified,
   getActiveChannel,
   CommunityPostController.findCommuityPostsMine,
 );
@@ -46,6 +49,7 @@ router.post(
   CommunityPostMiddleware.matchReqBodyFilesWithValidationSchema,
   validateRequest(CommunityPostValidation.createPostValidationSchema),
   getLoggedInUser,
+  isVerified,
   getActiveChannel,
   CommunityPostController.createPost,
 );
@@ -53,6 +57,7 @@ router.post(
 router.patch(
   "/:id",
   getLoggedInUser,
+  isVerified,
   getActiveChannel,
   verifyMyCommunityPost,
   CommunityPostController.updatePost,
@@ -61,6 +66,7 @@ router.patch(
 router.patch(
   "/:id/select_unselect/:optionIndex",
   getLoggedInUser,
+  isVerified,
   checkChannelStatus,
   CommunityPostController.selectPollOrQuizOption,
 );
@@ -68,6 +74,7 @@ router.patch(
 router.delete(
   "/:id",
   getLoggedInUser,
+  isVerified,
   getActiveChannel,
   verifyMyCommunityPost,
   CommunityPostController.deletePost,
