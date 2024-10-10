@@ -30,6 +30,10 @@ const channelSchema = new Schema<IChannel, IChannelModel>(
       type: String,
       default: ChannelConstant.CHANNEL_DEFAULT_COVER,
     },
+    followerCount: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,

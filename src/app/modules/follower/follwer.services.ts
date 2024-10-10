@@ -55,6 +55,10 @@ const getChannelFollowers = async (
   };
 };
 
+const getChannelFollowersCount = async (channelId: string) => {
+  return await FollowerModel.getChannelFollowersCount(channelId);
+};
+
 const handleChannelFollowToggle = async (channelId: string, userId: string) => {
   return await FollowerModel.followToggle(channelId, userId);
 };
@@ -62,5 +66,6 @@ const handleChannelFollowToggle = async (channelId: string, userId: string) => {
 export const FollowerServices = {
   getChannelFollowing,
   getChannelFollowers,
+  getChannelFollowersCount,
   handleChannelFollowToggle,
 };

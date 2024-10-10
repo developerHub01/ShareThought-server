@@ -1,6 +1,6 @@
 import { model } from "mongoose";
 import { IFollower, IFollowerModel } from "../follower.interface";
-import { FollowerConstant } from "../follower.cosntant";
+import { FollowerConstant } from "../follower.constant";
 
 /* follower schema start =============== */
 import followerSchema from "./model.schema";

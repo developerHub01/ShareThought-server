@@ -20,4 +20,8 @@ const followerSchema = new Schema<IFollower, IFollowerModel>(
   },
 );
 
+followerSchema.index({ userId: 1, channelId: 1 }, { unique: true });
+followerSchema.index({ userId: 1 });
+followerSchema.index({ channelId: 1 });
+
 export default followerSchema;

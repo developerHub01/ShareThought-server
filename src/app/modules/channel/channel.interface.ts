@@ -12,6 +12,7 @@ export interface IChannel {
   channelDescription: string;
   channelAvatar: string;
   channelCover: string;
+  followerCount: number;
 }
 
 export interface IChannelModel extends Model<IChannel> {
@@ -19,9 +20,7 @@ export interface IChannelModel extends Model<IChannel> {
 
   isChannelMine(channelId: string, authorId: string): Promise<boolean>;
 
-  createChannel(
-    payload: ICreateChannel,
-  ): Promise<TDocumentType<IChannel>>;
+  createChannel(payload: ICreateChannel): Promise<TDocumentType<IChannel>>;
 
   updateChannel(
     id: string,

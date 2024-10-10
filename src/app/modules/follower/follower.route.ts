@@ -4,7 +4,9 @@ import express from "express";
 import channelExist from "../../middleware/channel.exist";
 import verifyMyChannel from "../../middleware/verify.my.channel";
 import getActiveChannel from "../../middleware/get.active.channel";
-import isVerified from "../../middleware/is.verified";
+import isValidChannel from "../../middleware/is.valid.channel";
+import isVerified from "../../middleware/is.Verified";
+import checkChannelStatus from "../../middleware/check.channel.status";
 const router = express.Router();
 
 // channel following by me
@@ -15,13 +17,19 @@ router.get(
   FollowerController.getChannelFollowing,
 );
 
+router.get(
+  "/:channelId/followers_count",
+  isValidChannel,
+  FollowerController.getChannelFollowersCount,
+);
+
 // channel follow or unfollow
 router.get(
-  "/follow_toggle",
+  "/:channelId/follow_toggle",
   getLoggedInUser,
   isVerified,
-  getActiveChannel,
-  channelExist,
+  checkChannelStatus,
+  isValidChannel,
   FollowerController.handleChannelFollowToggle,
 );
 
