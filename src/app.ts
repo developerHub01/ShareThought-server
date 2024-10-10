@@ -7,18 +7,8 @@ import { notFound } from "./app/middleware/notfound";
 import { globalErrorHandler } from "./app/middleware/global.error.handler";
 import "./app/config/cloudinary.config";
 import createGuestUserIfNeed from "./app/middleware/create.guest.user";
-import Redis from "ioredis";
-import config from "./app/config";
 
-export const redisOptions = {
-  port: Number(config.REDIS_PORT),
-  host: config.REDIS_HOST,
-  // username: config.REDIS_USER_NAME,
-  password: config.REDIS_PASSWORD,
-  db: Number(config.REDIS_DB),
-};
-
-export const redis = new Redis(redisOptions);
+import "./app/config/redis.config";
 
 import "./app/queues/email/worker";
 

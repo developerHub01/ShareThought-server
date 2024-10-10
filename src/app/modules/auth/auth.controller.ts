@@ -3,14 +3,20 @@ import catchAsync from "../../utils/catch.async";
 import { AuthServices } from "./auth.services";
 import AppError from "../../errors/AppError";
 import { sendResponse } from "../../utils/send.response";
-import { IRequestWithActiveDetails, IVerifyEmailTokenData } from "../../interface/interface";
+import {
+  IRequestWithActiveDetails,
+  IVerifyEmailTokenData,
+} from "../../interface/interface";
 import { AuthUtils } from "./auth.utils";
 import { Constatnt } from "../../constants/constants";
 import config from "../../config";
 import { isEmail, millisecondsConvert } from "../../utils/utils";
 
 const loginUser = catchAsync(async (req, res) => {
-  const { guestId } = req as IRequestWithActiveDetails;
+  const { guestId, userId } = req as IRequestWithActiveDetails;
+
+  if (userId)
+    throw new AppError(httpStatus.BAD_REQUEST, "you are already logged in");
 
   const { emailOrUserName } = req.body;
 
@@ -95,7 +101,9 @@ const emailVerifyRequest = catchAsync(async (req, res) => {
 const verifyEmail = catchAsync(async (req, res) => {
   const { verifyEmailTokenData } = req as IRequestWithActiveDetails;
 
-  const result = await AuthServices.verifyEmail(verifyEmailTokenData as IVerifyEmailTokenData);
+  const result = await AuthServices.verifyEmail(
+    verifyEmailTokenData as IVerifyEmailTokenData,
+  );
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,

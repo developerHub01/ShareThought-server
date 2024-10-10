@@ -1,4 +1,4 @@
-import { redis } from "../../../app";
+import { redis } from "../../config/redis.config";
 import { RedisKeys } from "../../redis.keys";
 import { FollowerConstant } from "./follower.constant";
 import { IFollowerCount } from "./follower.interface";

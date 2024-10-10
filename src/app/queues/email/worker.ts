@@ -1,6 +1,6 @@
 import { Worker } from "bullmq";
-import { redisOptions } from "../../../app";
 import { AuthUtils } from "../../modules/auth/auth.utils";
+import { redisOptions } from "../../config/redis.config";
 
 export const emailWorker = new Worker(
   "emailQueue",
