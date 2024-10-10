@@ -61,9 +61,9 @@ const createUser = catchAsync(async (req, res) => {
   const result = await UserCache.createUser(userData);
 
   const emailData = {
-    _id: userData._id?.toString(),
-    email: userData.email,
-    fullName: userData.fullName,
+    _id: result._id?.toString(),
+    email: result.email,
+    fullName: result.fullName,
   };
 
   await emailQueue.add(QueueJobList.SEND_VERIFICATION_EMAIL, emailData, {
