@@ -16,7 +16,7 @@ const getChannelFollowersCount = async (channelId: string) => {
     const { count } = followerCount as unknown as IFollowerCount;
 
     if (count === undefined || count === null) return null;
-    
+
     return followerCount;
   }
 

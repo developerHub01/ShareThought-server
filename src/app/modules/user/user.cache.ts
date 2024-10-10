@@ -1,4 +1,4 @@
-import { redis } from "../../../app";
+import { redis } from "../../config/redis.config";
 import { TDocumentType } from "../../interface/interface";
 import { RedisKeys } from "../../redis.keys";
 import { IUser, IUserChangePassword } from "./user.interface";
