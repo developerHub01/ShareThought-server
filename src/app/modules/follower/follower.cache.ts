@@ -1,3 +1,4 @@
+import { io } from "../../../app";
 import { redis } from "../../config/redis.config";
 import { RedisKeys } from "../../redis.keys";
 import { FollowerConstant } from "./follower.constant";
@@ -53,6 +54,8 @@ const handleChannelFollowToggle = async (channelId: string, userId: string) => {
     FollowerConstant.FOLLOWERS_COUNT_TTL,
     JSON.stringify(channelFollowerCount),
   );
+
+  io.emit(`followers_count_${channelId}`, channelFollowerCount);
 
   return result;
 };

@@ -9,9 +9,23 @@
   <body>
     <h1>Follow/Unfollow Channel</h1>
 
+    <!-- follow moduole start -->
+    <h2>ChannelId = <span id="channelId">6707f009b81825f4fa6ce900</span></h2>
+
+    <h2>Total Followers : <span id="followersCount"></span></h2>
+    <!-- follow moduole end -->
+
     <script>
       const socket = io();
 
+      const channelId = document.querySelector("#channelId").innerText;
+
+      socket.emit("get_followers_count", { channelId });
+
+      // Listen for the followers count for this specific channel
+      socket.on(`followers_count_${channelId}`, ({ count }) => {
+        document.querySelector("#followersCount").innerText = count;
+      });
     </script>
   </body>
 </html>
