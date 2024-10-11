@@ -7,12 +7,16 @@ import { notFound } from "./app/middleware/notfound";
 import { globalErrorHandler } from "./app/middleware/global.error.handler";
 import "./app/config/cloudinary.config";
 import createGuestUserIfNeed from "./app/middleware/create.guest.user";
+import http from "http";
+import initSocket from "./app/config/socket.config";
 
 import "./app/config/redis.config";
 
 import "./app/queues/email/worker";
 
 const app: Application = express();
+const server = http.createServer(app);
+export const io = initSocket(server);
 
 /*
  *
@@ -47,12 +51,17 @@ app.use(createGuestUserIfNeed);
 // application routes
 app.use("/api/v1", IndexRoute);
 
+
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello");
 });
+
+app.get("/socket", (req: Request, res:Response)=>{
+  res.sendFile(path.join(__dirname, "views/index.html"))
+})
 
 app.get("*", notFound);
 
 app.use(globalErrorHandler);
 
-export default app;
+export default server;

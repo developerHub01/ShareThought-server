@@ -1,11 +1,11 @@
-import app from "./app";
+import server from "./app";
 import mongoose from "mongoose";
 import config from "./app/config";
 import { Server } from "http";
 
 const { PORT, DB_CONNECTION_STRING } = config;
 
-let server: Server;
+let mainServer: Server;
 
 (async () => {
   try {
@@ -14,7 +14,7 @@ let server: Server;
 
     await mongoose.connect(DB_CONNECTION_STRING as string);
     // eslint-disable-next-line no-console
-    server = app.listen(PORT, () =>
+    mainServer = server.listen(PORT, () =>
       // eslint-disable-next-line no-console
       console.log(`server is running at port ${PORT}`),
     );
@@ -28,7 +28,7 @@ process.on("unhandledRejection", () => {
   // eslint-disable-next-line no-console
   console.log("unhandledRejection is detected.....");
 
-  if (server) return server?.close(() => process.exit(1));
+  if (mainServer) return mainServer?.close(() => process.exit(1));
 
   process.exit(1);
 });
