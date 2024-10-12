@@ -1,7 +1,6 @@
 import axios from "axios";
 import { Constatnt } from "../constants/constants";
 import config from "../config";
-import { IIPDetailsInfo } from "../interface/interface";
 
 export const isObject = (value: unknown) => {
   return value instanceof Object && value.constructor === Object;
@@ -53,8 +52,14 @@ export const getIPDetails = async (ip: string) => {
 
   const { data } = await axios.get(API);
 
-  const { country_name, region_name, city, country_flag, latitude, longitude } =
-    data as IIPDetailsInfo;
+  const {
+    country_name,
+    region_name,
+    city,
+    location: { country_flag },
+    latitude,
+    longitude,
+  } = data;
 
   return {
     country_name,

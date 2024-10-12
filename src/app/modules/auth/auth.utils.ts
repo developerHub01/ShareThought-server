@@ -1,4 +1,5 @@
 import jwt, { JwtPayload } from "jsonwebtoken";
+import { format } from "date-fns";
 import {
   IErrorDetails,
   IJWTPayload,
@@ -8,7 +9,7 @@ import {
 import { Request, Response } from "express";
 import config from "../../config";
 import AppError from "../../errors/AppError";
-import { TDocumentType } from "../../interface/interface";
+import { IUserLoginInfo, TDocumentType } from "../../interface/interface";
 import { IUser } from "../user/user.interface";
 import path from "path";
 import ejs from "ejs";
@@ -127,6 +128,46 @@ const sendForgetPasswordEmail = async (userData: TDocumentType<IUser>) => {
   });
 };
 
+const sendLoggedInUserInfoEmail = async (
+  emailData: IUserLoginInfo & { fullName: string; email: string },
+) => {
+  const { email, fullName } = emailData;
+  const templatePath = path.join(
+    __dirname,
+    "../../../views/LoggedInUserInfo.ejs",
+  );
+
+  const emailTemplateData = {
+    FULL_NAME: fullName,
+    DEVICE: emailData.device,
+    BROWSER: emailData.browser,
+    IP: emailData.ip,
+    CITY: emailData?.userLocation?.city,
+    REGION_NAME: emailData?.userLocation?.region_name,
+    COUNTRY_NAME: emailData?.userLocation?.country_name,
+    COUNTRY_FLAG: emailData?.userLocation?.country_flag,
+    LATITUDE: emailData?.userLocation?.latitude,
+    LONGITUDE: emailData?.userLocation?.longitude,
+    TIME: format(
+      new Date(emailData?.userLocation?.time as string),
+      "MMMM do, yyyy H:mm:ss a",
+    ),
+  };
+
+  const htmlEmailTemplate = await ejs.renderFile(
+    templatePath,
+    emailTemplateData,
+  );
+
+  await sendEmail({
+    from: config.ADMIN_USER_EMAIL,
+    to: email,
+    subject: "Security Alert: New Login Detected",
+    text: "We detected a new login to your Share Thought account from a different location. If this wasn't you, please secure your account.",
+    html: htmlEmailTemplate,
+  });
+};
+
 export const AuthUtils = {
   createToken,
   verifyToken,
@@ -135,4 +176,5 @@ export const AuthUtils = {
   forgetPasswordTokenGenerator,
   sendVerificationEmail,
   sendForgetPasswordEmail,
+  sendLoggedInUserInfoEmail,
 };

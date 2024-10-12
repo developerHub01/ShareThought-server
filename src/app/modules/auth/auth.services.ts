@@ -6,6 +6,7 @@ import { AuthUtils } from "./auth.utils";
 import config from "../../config";
 import { GuestUserModel } from "../guest/model/model";
 import {
+  IUserLoginInfo,
   IVerifyEmailTokenData,
   TDocumentType,
 } from "../../interface/interface";
@@ -45,6 +46,7 @@ const loginUser = async (payload: ILoginUser, guestId: string | undefined) => {
   return {
     accessToken,
     refreshToken,
+    userId,
   };
 };
 
@@ -165,10 +167,31 @@ const resetPassword = async (userId: string, password: string) => {
   );
 };
 
+const handleLoggedInUserInfo = async (
+  userId: string,
+  userLoinInfo: IUserLoginInfo,
+) => {
+  const userData = await UserModel.findById(userId);
+
+  if (!userData) throw new AppError(httpStatus.NOT_FOUND, "user not found");
+
+  const { fullName, email } = userData;
+
+  return await emailQueue.add(
+    QueueJobList.SEND_LOGGED_IN_USER_INFO,
+    { ...userLoinInfo, fullName, email },
+    {
+      removeOnComplete: true,
+      removeOnFail: true,
+    },
+  );
+};
+
 export const AuthServices = {
   loginUser,
   emailVerifyRequest,
   verifyEmail,
   forgetPassword,
   resetPassword,
+  handleLoggedInUserInfo,
 };

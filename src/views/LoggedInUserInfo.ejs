@@ -1,0 +1,124 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>New Login Detected</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+      }
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+      }
+      table,
+      th,
+      td {
+        border: 1px solid #ddd;
+      }
+      th,
+      td {
+        padding: 12px;
+        text-align: left;
+      }
+      th {
+        background-color: #f4f4f4;
+      }
+      .email-container {
+        max-width: 600px;
+        margin: 0 auto;
+        border: 1px solid #ddd;
+      }
+      .email-header {
+        background-color: #4caf50;
+        color: white;
+        text-align: center;
+        padding: 20px;
+        font-size: 24px;
+        font-weight: bold;
+      }
+      .email-body {
+        padding: 20px;
+        font-size: 16px;
+        line-height: 1.6;
+      }
+      .email-footer {
+        padding: 20px;
+        text-align: center;
+        font-size: 12px;
+        color: #888;
+      }
+      .country-flag {
+        width: 20px;
+        height: 14px;
+        vertical-align: middle;
+      }
+    </style>
+  </head>
+  <body>
+    <table class="email-container">
+      <!-- Header -->
+      <tr>
+        <td class="email-header">New Login Alert</td>
+      </tr>
+
+      <!-- Body -->
+      <tr>
+        <td class="email-body">
+          <p>Hello <%= FULL_NAME %>,</p>
+          <p>We noticed a new login to your account. Here are the details:</p>
+
+          <table>
+            <tr>
+              <th>Information</th>
+              <th>Details</th>
+            </tr>
+            <tr>
+              <td><strong>Device</strong></td>
+              <td><%= DEVICE %></td>
+            </tr>
+            <tr>
+              <td><strong>Browser</strong></td>
+              <td><%= BROWSER %></td>
+            </tr>
+            <tr>
+              <td><strong>IP Address</strong></td>
+              <td><%= IP %></td>
+            </tr>
+            <tr>
+              <td><strong>Location</strong></td>
+              <td>
+                <%= CITY %>, <%= REGION_NAME %>, <%= COUNTRY_NAME %>
+                <img
+                  src="<%= COUNTRY_FLAG %>"
+                  alt="Country Flag"
+                  class="country-flag"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td><strong>Coordinates</strong></td>
+              <td><%= LATITUDE %>, <%= LONGITUDE %></td>
+            </tr>
+            <tr>
+              <td><strong>Login Time</strong></td>
+              <td><%= TIME %></td>
+            </tr>
+          </table>
+
+          <p>If this wasn't you, please secure your account immediately.</p>
+        </td>
+      </tr>
+
+      <!-- Footer -->
+      <tr>
+        <td class="email-footer">
+          &copy; <%= (new Date()).getFullYear() %> sharedThought. All rights
+          reserved.
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

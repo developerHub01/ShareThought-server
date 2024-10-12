@@ -13,7 +13,7 @@ import config from "../../config";
 import { isEmail, millisecondsConvert } from "../../utils/utils";
 
 const loginUser = catchAsync(async (req, res) => {
-  const { guestId, userId } = req as IRequestWithActiveDetails;
+  const { guestId, userId, userLoginInfo } = req as IRequestWithActiveDetails;
 
   if (userId)
     throw new AppError(httpStatus.BAD_REQUEST, "you are already logged in");
@@ -31,10 +31,11 @@ const loginUser = catchAsync(async (req, res) => {
     password: req.body?.password,
   };
 
-  const { accessToken, refreshToken } = await AuthServices.loginUser(
-    body,
-    guestId,
-  );
+  const {
+    accessToken,
+    refreshToken,
+    userId: loggedInUserId,
+  } = await AuthServices.loginUser(body, guestId);
 
   if (!accessToken || !refreshToken)
     throw new AppError(
@@ -63,10 +64,14 @@ const loginUser = catchAsync(async (req, res) => {
       1000 * 60 * 60 * 24,
   });
 
+  /* send warning email for security concern */
+
+  await AuthServices.handleLoggedInUserInfo(loggedInUserId, userLoginInfo);
+
   sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "User is logged in succesfully!",
+    message: "you logged in succesfully!",
     data: {
       accessToken,
       refreshToken,
