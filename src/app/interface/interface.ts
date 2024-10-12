@@ -17,6 +17,7 @@ export interface IRequestWithActiveDetails extends Request {
   forgetPasswordTokenData?: IForgetPasswordTokenData;
   verifyEmailTokenData?: IVerifyEmailTokenData;
   isVerified?: boolean;
+  userLoginInfo: IUserLoginInfo;
 }
 
 export interface IResponse<T> {
@@ -70,3 +71,20 @@ export type TDocumentType<T> = Document<unknown, object, T> &
     createdAt?: Date;
     updatedAt?: Date;
   };
+
+export interface IIPDetailsInfo {
+  country_name: string;
+  region_name: string;
+  city: string;
+  country_flag: string;
+  latitude: string;
+  longitude: string;
+  time: string | Date;
+}
+
+export interface IUserLoginInfo {
+  device: string;
+  browser: string;
+  ip: string;
+  userLocation?: IIPDetailsInfo;
+}

@@ -1,3 +1,8 @@
+import axios from "axios";
+import { Constatnt } from "../constants/constants";
+import config from "../config";
+import { IIPDetailsInfo } from "../interface/interface";
+
 export const isObject = (value: unknown) => {
   return value instanceof Object && value.constructor === Object;
 };
@@ -39,4 +44,25 @@ export const millisecondsConvert = (time: string | number): number | null => {
 export const isEmail = (input: string): boolean => {
   const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   return emailRegex.test(input);
+};
+
+export const getIPDetails = async (ip: string) => {
+  const API = Constatnt.LOCATION_API(
+    config.PROJECT_ENVIRONMENT === "development" ? config.DUMMY_IP : ip,
+  );
+
+  const { data } = await axios.get(API);
+
+  const { country_name, region_name, city, country_flag, latitude, longitude } =
+    data as IIPDetailsInfo;
+
+  return {
+    country_name,
+    region_name,
+    city,
+    country_flag,
+    latitude,
+    longitude,
+    time: new Date(),
+  };
 };

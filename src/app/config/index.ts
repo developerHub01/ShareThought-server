@@ -21,8 +21,7 @@ export default {
   JWT_GUEST_SECRET: process.env.JWT_GUEST_SECRET as string,
   JWT_EMAIL_VERIFICATION_SECRET: process.env
     .JWT_EMAIL_VERIFICATION_SECRET as string,
-  JWT_FORGET_PASSWORD_SECRET: process.env
-    .JWT_FORGET_PASSWORD_SECRET as string,
+  JWT_FORGET_PASSWORD_SECRET: process.env.JWT_FORGET_PASSWORD_SECRET as string,
 
   JWT_ACCESS_EXPIRES_IN: process.env.JWT_ACCESS_EXPIRES_IN as string,
   JWT_REFRESH_EXPIRES_IN: process.env.JWT_REFRESH_EXPIRES_IN as string,
@@ -42,6 +41,10 @@ export default {
   CLOUDINARY_CLOUD_NAME: process.env.CLOUDINARY_CLOUD_NAME as string,
   CLOUDINARY_API_KEY: process.env.CLOUDINARY_API_KEY as string,
   CLOUDINARY_API_SECRET: process.env.CLOUDINARY_API_SECRET as string,
+
+  LOCATION_API_KEY: process.env.LOCATION_API_KEY as string,
+  LOCATION_API_PREFIX: process.env.LOCATION_API_PREFIX as string,
+  DUMMY_IP: process.env.DUMMY_IP as string,
 
   REDIS_PORT: process.env.REDIS_PORT as string,
   REDIS_HOST: process.env.REDIS_HOST as string,

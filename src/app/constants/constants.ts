@@ -1,3 +1,5 @@
+import config from "../config";
+
 const REACTION_TYPES = {
   LIKE: "LIKE",
   LOVE: "LOVE",
@@ -16,7 +18,11 @@ const TOKENS = {
   FORGET_PASSWORD_TOKEN: "forget_password_token",
 };
 
+const LOCATION_API = (ip: string) =>
+  `${config.LOCATION_API_PREFIX}/${ip}?access_key=${config.LOCATION_API_KEY}`;
+
 export const Constatnt = {
   TOKENS,
   REACTION_TYPES,
+  LOCATION_API,
 };

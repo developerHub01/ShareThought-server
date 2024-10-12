@@ -2,6 +2,7 @@ import path from "path";
 import express, { Application, Request, Response } from "express";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import userAgent from "express-useragent";
 import IndexRoute from "./app/routes";
 import { notFound } from "./app/middleware/notfound";
 import { globalErrorHandler } from "./app/middleware/global.error.handler";
@@ -27,7 +28,7 @@ app.use(
   cors({
     credentials: true,
     methods: ["GET", "POST", "PATCH", "DELETE"],
-    origin: ["http://localhost:5173"],
+    origin: ["http://localhost:5173", "http://127.0.0.1:5500"],
   }),
 );
 
@@ -41,6 +42,7 @@ app.use(
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(cookieParser());
+app.use(userAgent.express());
 
 /*
  *
@@ -51,14 +53,13 @@ app.use(createGuestUserIfNeed);
 // application routes
 app.use("/api/v1", IndexRoute);
 
-
 app.get("/", (req: Request, res: Response) => {
   res.send("Hello");
 });
 
-app.get("/socket", (req: Request, res:Response)=>{
-  res.sendFile(path.join(__dirname, "views/index.html"))
-})
+app.get("/socket", (req: Request, res: Response) => {
+  res.sendFile(path.join(__dirname, "views/index.html"));
+});
 
 app.get("*", notFound);
 
