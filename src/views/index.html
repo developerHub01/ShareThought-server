@@ -6,6 +6,17 @@
     <title>Socket.IO Follow/Unfollow</title>
     <script src="/socket.io/socket.io.js"></script>
   </head>
+  <style>
+    .userListItem {
+      display: flex;
+      gap: 10;
+    }
+    .userListItem img {
+      width: 50px;
+      height: 50px;
+      object-fit: cover;
+    }
+  </style>
   <body>
     <h1>Follow/Unfollow Channel</h1>
 
@@ -13,6 +24,8 @@
     <h2>ChannelId = <span id="channelId">6707f009b81825f4fa6ce900</span></h2>
 
     <h2>Total Followers : <span id="followersCount"></span></h2>
+    <h2>Followers List :</h2>
+    <ul id="followersList"></ul>
     <!-- follow moduole end -->
 
     <script>
@@ -24,7 +37,31 @@
 
       // Listen for the followers count for this specific channel
       socket.on(`followers_count_${channelId}`, ({ count }) => {
+        console.log({ count });
         document.querySelector("#followersCount").innerText = count;
+      });
+
+      socket.emit("get_followers_list", { channelId });
+
+      socket.on(`followers_list_${channelId}`, (data) => {
+        console.log(data);
+        const followersList = document.querySelector("#followersList");
+
+        followersList.innerHTML = "";
+
+        data.forEach(({ fullName, userName, avatar }) => {
+          followersList.innerHTML += `
+            <li class="userListItem">
+              <div>
+                <img src=${avatar} alt="" />
+              </div>
+              <div>
+                <p>Name: ${fullName}</p>
+                <p>Username: ${userName}</p>
+              </div>
+            </li>
+            `;
+        });
       });
     </script>
   </body>

@@ -56,6 +56,10 @@ const handleChannelFollowToggle = async (channelId: string, userId: string) => {
   );
 
   io.emit(`followers_count_${channelId}`, channelFollowerCount);
+  io.emit(
+    `followers_list_${channelId}`,
+    await FollowerServices.socketGetFollowers({ channelId }),
+  );
 
   return result;
 };
