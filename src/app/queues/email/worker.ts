@@ -1,23 +1,25 @@
 import { Worker } from "bullmq";
-import { AuthUtils } from "../../modules/auth/auth.utils";
 import { redisOptions } from "../../config/redis.config";
 import { QueueJobList } from "..";
-import { ModeratorUtils } from "../../modules/moderator/moderator.utils";
+import { AuthEmailServices } from "./services/auth";
+import { ModeratorEmailServices } from "./services/moderator";
 
 export const emailWorker = new Worker(
   "emailQueue",
   async ({ name, data }) => {
     switch (name) {
       case QueueJobList.SEND_VERIFICATION_EMAIL:
-        return await AuthUtils.sendVerificationEmail(data);
+        return await AuthEmailServices.sendVerificationEmail(data);
       case QueueJobList.SEND_RESET_PASSWORD_EMAIL:
-        return await AuthUtils.sendForgetPasswordEmail(data);
+        return await AuthEmailServices.sendForgetPasswordEmail(data);
       case QueueJobList.SEND_LOGGED_IN_USER_INFO:
-        return await AuthUtils.sendLoggedInUserInfoEmail(data);
+        return await AuthEmailServices.sendLoggedInUserInfoEmail(data);
       case QueueJobList.SEND_MODERATOR_REQUEST_EMAIL:
-        return await ModeratorUtils.sendModeratorRequestEmail(data);
+        return await ModeratorEmailServices.sendModeratorRequestEmail(data);
       case QueueJobList.SEND_MODERATOR_REQUEST_ACCEPTANCE_EMAIL:
-        return await ModeratorUtils.sendModeratorRequestAccptanceEmail(data);
+        return await ModeratorEmailServices.sendModeratorRequestAccptanceEmail(
+          data,
+        );
     }
   },
   {

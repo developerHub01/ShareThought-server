@@ -14,7 +14,7 @@ export interface IRequestWithActiveDetails extends Request {
   userId: string;
   channelId?: string;
   guestId?: string;
-  moderatorId?: string; 
+  moderatorId?: string;
   forgetPasswordTokenData?: IForgetPasswordTokenData;
   verifyEmailTokenData?: IVerifyEmailTokenData;
   isVerified?: boolean;
@@ -88,4 +88,9 @@ export interface IUserLoginInfo {
   browser: string;
   ip: string;
   userLocation?: IIPDetailsInfo;
+}
+
+export interface IUserLoginInfoEmailData extends IUserLoginInfo {
+  fullName: string;
+  email: string;
 }
