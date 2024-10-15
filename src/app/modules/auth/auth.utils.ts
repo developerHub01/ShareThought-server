@@ -49,7 +49,7 @@ const clearAllCookies = (req: Request, res: Response) => {
 const emailVerificationTokenGenerator: TEmailVarificationLinkGenerator = (
   userData,
 ) => {
-  return createToken(
+  return AuthUtils.createToken(
     userData,
     config.JWT_EMAIL_VERIFICATION_SECRET,
     config.JWT_EMAIL_VERIFICATION_EXPIRES_IN,

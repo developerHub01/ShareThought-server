@@ -1,0 +1,203 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Moderation Request</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        margin: 0;
+        padding: 0;
+      }
+
+      table {
+        border-spacing: 0;
+        width: 100%;
+      }
+
+      td {
+        padding: 0;
+      }
+
+      img {
+        display: block;
+        border: none;
+        outline: none;
+      }
+
+      .email-container {
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: #ffffff;
+        border-radius: 8px;
+        overflow: hidden;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+      }
+
+      .header-cover {
+        position: relative;
+      }
+
+      .channel-logo {
+        position: absolute;
+        top: 15px;
+        left: 15px;
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+      }
+
+      .content {
+        padding: 20px;
+      }
+
+      .moderator-info {
+        margin-top: 20px;
+      }
+
+      .moderator-photo {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        vertical-align: middle;
+        margin-right: 15px;
+      }
+
+      .cta-button {
+        background-color: #4caf50;
+        color: #ffffff;
+        padding: 10px 20px;
+        text-align: center;
+        text-decoration: none;
+        display: inline-block;
+        border-radius: 5px;
+        margin-top: 20px;
+      }
+
+      .cta-button:hover {
+        background-color: #45a049;
+      }
+
+      .footer {
+        background-color: #333333;
+        color: #ffffff;
+        text-align: center;
+        padding: 10px;
+        font-size: 14px;
+      }
+
+      .unsubscribe {
+        color: #ffffff;
+        text-decoration: underline;
+      }
+    </style>
+  </head>
+
+  <body>
+    <table class="email-container" align="center">
+      <!-- Header with Cover Image and Logo -->
+      <tr>
+        <td>
+          <table>
+            <tr>
+              <td class="header-cover">
+                <img
+                  src="<%= CHANNEL_COVER %>"
+                  alt="Channel Cover"
+                  width="600"
+                  height="200"
+                />
+                <img
+                  class="channel-logo"
+                  src="<%= CHANNEL_AVATAR %>"
+                  alt="Channel Logo"
+                />
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+
+      <!-- Main Content -->
+      <tr>
+        <td class="content">
+          <table>
+            <tr>
+              <td>
+                <h1>Moderation Request for <%= CHANNEL_NAME %></h1>
+                <p>Hi <%= MODERATOR_NAME %>,</p>
+                <p>
+                  You have been requested to become a moderator for the
+                  <strong><%= CHANNEL_NAME %></strong> community. Your role will
+                  include managing posts, comments, and user activities within
+                  the channel.
+                </p>
+                <p>
+                  Please review the details of the request and confirm if you
+                  accept the responsibility.
+                </p>
+              </td>
+            </tr>
+
+            <!-- Moderator Info -->
+            <tr>
+              <td>
+                <table class="moderator-info">
+                  <tr>
+                    <td>
+                      <img
+                        class="moderator-photo"
+                        src="<%= MODERATOR_AVATAR %>"
+                        alt="Moderator Photo"
+                      />
+                    </td>
+                    <td>
+                      <strong><%= MODERATOR_NAME %></strong><br />
+                      Role: <strong>Moderator</strong>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+
+            <!-- Call to Action -->
+            <tr>
+              <td align="center">
+                <a href="<%= CONFIRMATION_LINK %>" class="cta-button"
+                  >Accept Moderation Role</a
+                >
+              </td>
+            </tr>
+
+            <!-- Closing Message -->
+            <tr>
+              <td>
+                <p>
+                  If you have any questions or need further details, feel free
+                  to contact us.
+                </p>
+                <p>
+                  Best Regards,<br />
+                  The <%= CHANNEL_NAME %> Team
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+
+      <!-- Footer -->
+      <tr>
+        <td class="footer">
+          <p>
+            &copy; <%= (new Date()).getFullYear()%> <%= CHANNEL_NAME %>. All
+            rights reserved.
+          </p>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

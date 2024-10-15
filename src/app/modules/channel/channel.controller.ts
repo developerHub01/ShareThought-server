@@ -172,15 +172,13 @@ const switchChannel = catchAsync(async (req, res) => {
 
   const channelToken = AuthUtils.createToken(
     { channelId },
-    config?.JWT_ACCESS_SECRET as string,
-    config?.JWT_ACCESS_EXPIRES_IN as string,
+    config?.JWT_CHANNEL_ACCESS_SECRET as string,
   );
 
   res.cookie("channel_token", channelToken, {
     secure: true,
     httpOnly: true,
     sameSite: "none",
-    maxAge: 1000 * 60 * 60 * 24 * 365,
   });
 
   return sendResponse(res, {

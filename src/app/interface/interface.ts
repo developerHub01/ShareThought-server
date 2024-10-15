@@ -14,6 +14,7 @@ export interface IRequestWithActiveDetails extends Request {
   userId: string;
   channelId?: string;
   guestId?: string;
+  moderatorId?: string; 
   forgetPasswordTokenData?: IForgetPasswordTokenData;
   verifyEmailTokenData?: IVerifyEmailTokenData;
   isVerified?: boolean;

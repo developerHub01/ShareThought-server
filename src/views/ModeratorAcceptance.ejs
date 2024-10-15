@@ -1,0 +1,169 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Moderator Request Accepted</title>
+    <style>
+      body {
+        font-family: Arial, sans-serif;
+        background-color: #f4f4f4;
+        color: #333333;
+        padding: 0;
+        margin: 0;
+      }
+      table {
+        width: 100%;
+        background-color: #f4f4f4;
+        border-spacing: 0;
+        padding: 0;
+      }
+      .email-container {
+        max-width: 600px;
+        margin: 0 auto;
+        background-color: #ffffff;
+        border: 1px solid #e0e0e0;
+      }
+      .header {
+        background-color: #333333;
+        color: #ffffff;
+        text-align: center;
+        padding: 20px;
+      }
+      .header h1 {
+        margin: 0;
+        font-size: 24px;
+      }
+      .content {
+        padding: 20px;
+      }
+      .content p {
+        margin: 0 0 10px 0;
+      }
+      .moderator-info img {
+        border-radius: 50%;
+        width: 80px;
+        height: 80px;
+      }
+      .footer {
+        font-size: 12px;
+        color: #999999;
+        text-align: center;
+        padding: 20px;
+        background-color: #f4f4f4;
+      }
+      a {
+        color: #0066cc;
+        text-decoration: none;
+      }
+    </style>
+  </head>
+  <body>
+    <table
+      role="presentation"
+      cellpadding="0"
+      cellspacing="0"
+      class="email-container"
+    >
+      <!-- Header with channel cover photo -->
+      <tr>
+        <td>
+          <table
+            role="presentation"
+            cellpadding="0"
+            cellspacing="0"
+            width="100%"
+          >
+            <tr>
+              <td>
+                <img
+                  src="<%= CHANNEL_COVER %>"
+                  alt="Channel Cover Photo"
+                  style="width: 100%; height: auto"
+                />
+              </td>
+            </tr>
+            <tr>
+              <td class="header">
+                <h1><%= CHANNEL_NAME %> Moderator Request Accepted</h1>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+
+      <!-- Email content -->
+      <tr>
+        <td class="content">
+          <table
+            role="presentation"
+            cellpadding="0"
+            cellspacing="0"
+            width="100%"
+          >
+            <tr>
+              <td>
+                <p>Hi <%= AUTHOR_NAME %>,</p>
+                <p>
+                  The moderator request for your channel
+                  <strong><%= CHANNEL_NAME %></strong> has been accepted by
+                  <strong><%= MODERATOR_NAME %></strong>.
+                </p>
+              </td>
+            </tr>
+            <!-- Moderator Details -->
+            <tr>
+              <td>
+                <table
+                  role="presentation"
+                  cellpadding="10"
+                  cellspacing="0"
+                  width="100%"
+                  class="moderator-info"
+                >
+                  <tr>
+                    <td width="80" align="left" valign="top">
+                      <img
+                        src="<%= MODERATOR_AVATAR %>"
+                        alt="Moderator Profile Picture"
+                      />
+                    </td>
+                    <td valign="top">
+                      <p><strong>Moderator:</strong> <%= MODERATOR_NAME %></p>
+                      <p><strong>Email:</strong> <%= MODERATOR_EMAIL %></p>
+                      <p>
+                        <strong>Date Accepted:</strong> <%= DATE_ACCEPTED %>
+                      </p>
+                    </td>
+                  </tr>
+                </table>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+
+      <!-- Footer -->
+      <tr>
+        <td class="footer">
+          <table
+            role="presentation"
+            cellpadding="0"
+            cellspacing="0"
+            width="100%"
+          >
+            <tr>
+              <td>
+                <p>
+                  &copy; <%= new Date().getFullYear() %> <%= CHANNEL_NAME %>.
+                  All Rights Reserved.
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>

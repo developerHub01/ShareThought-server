@@ -3,8 +3,9 @@ import { Model, Types } from "mongoose";
 
 export interface IModeratorContextPermissions {
   add: boolean;
-  remove: boolean;
+  canRemove: boolean;
 }
+
 export interface IPostContextPermissions {
   create: boolean;
   update: boolean;
@@ -13,6 +14,7 @@ export interface IPostContextPermissions {
   show: boolean;
   pin: boolean;
 }
+
 export interface ICommunityPostContextPermissions {
   create: boolean;
   update: boolean;
@@ -20,6 +22,7 @@ export interface ICommunityPostContextPermissions {
   hide: boolean;
   show: boolean;
 }
+
 export interface ICommentContextPermissions {
   create: boolean;
   delete: boolean;
@@ -27,6 +30,7 @@ export interface ICommentContextPermissions {
   show: boolean;
   pin: boolean;
 }
+
 export interface IChannelContextPermissions {}
 
 export interface IModeratorPermissions {
@@ -40,12 +44,45 @@ export interface IModeratorPermissions {
 export interface IModerator extends Document {
   userId: Types.ObjectId;
   channelId: Types.ObjectId;
-  isVerified: boolean;
+  isVerified?: boolean;
   permissions: IModeratorPermissions;
 }
 
-export interface IModeratorModel extends Model<IModerator> {
-  // isFollowing(channelId: string, userId: string): Promise<boolean>;
+export interface IModeratorPayload
+  extends Omit<IModerator, "userId" | "channelId"> {
+  userId: string;
+  channelId: string;
+}
 
+export interface IModeratorRequestEmailData {
+  moderatorId: string;
+  channelCover: string;
+  channelAvatar: string;
+  channelName: string;
+  moderatorName: string;
+  moderatorAvatar: string;
+  moderatorEmail: string;
+}
+export interface IModeratorRequestAcceptanceEmailData {
+  channelCover: string;
+  channelName: string;
+  authorName: string;
+  authorEmail: string;
+  moderatorName: string;
+  moderatorAvatar: string;
+  moderatorEmail: string;
+  dateAccepted: Date;
+}
+
+export interface IModeratorModel extends Model<IModerator> {
   getChannelModeratorsCount(channelId: string): Promise<number>;
+
+  isAlreadyModerator(channelId: string, userId: string): Promise<boolean>;
+
+  addChannelModerator(
+    channelId: string,
+    payload: IModeratorPayload,
+  ): Promise<unknown>;
+
+  acceptModeratorRequest(userId: string, moderatorId: string): Promise<unknown>;
 }

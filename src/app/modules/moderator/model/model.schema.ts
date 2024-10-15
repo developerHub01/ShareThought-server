@@ -13,38 +13,22 @@ import {
 } from "../moderator.interface";
 
 const moderatorContextPermissionSchema =
-  new Schema<IModeratorContextPermissions>({
-    add: {
-      type: Boolean,
+  new Schema<IModeratorContextPermissions>(
+    {
+      add: {
+        type: Boolean,
+      },
+      canRemove: {
+        type: Boolean,
+      },
     },
-    remove: {
-      type: Boolean,
+    {
+      _id: false,
     },
-  });
+  );
 
-const postContextPermissionSchema = new Schema<IPostContextPermissions>({
-  create: {
-    type: Boolean,
-  },
-  update: {
-    type: Boolean,
-  },
-  delete: {
-    type: Boolean,
-  },
-  hide: {
-    type: Boolean,
-  },
-  show: {
-    type: Boolean,
-  },
-  pin: {
-    type: Boolean,
-  },
-});
-
-const communityPostContextPermissionSchema =
-  new Schema<ICommunityPostContextPermissions>({
+const postContextPermissionSchema = new Schema<IPostContextPermissions>(
+  {
     create: {
       type: Boolean,
     },
@@ -60,37 +44,81 @@ const communityPostContextPermissionSchema =
     show: {
       type: Boolean,
     },
-  });
+    pin: {
+      type: Boolean,
+    },
+  },
+  {
+    _id: false,
+  },
+);
 
-const commentContextPermissionSchema = new Schema<ICommentContextPermissions>({
-  create: {
-    type: Boolean,
+const communityPostContextPermissionSchema =
+  new Schema<ICommunityPostContextPermissions>(
+    {
+      create: {
+        type: Boolean,
+      },
+      update: {
+        type: Boolean,
+      },
+      delete: {
+        type: Boolean,
+      },
+      hide: {
+        type: Boolean,
+      },
+      show: {
+        type: Boolean,
+      },
+    },
+    {
+      _id: false,
+    },
+  );
+
+const commentContextPermissionSchema = new Schema<ICommentContextPermissions>(
+  {
+    create: {
+      type: Boolean,
+    },
+    delete: {
+      type: Boolean,
+    },
+    hide: {
+      type: Boolean,
+    },
+    show: {
+      type: Boolean,
+    },
+    pin: {
+      type: Boolean,
+    },
   },
-  delete: {
-    type: Boolean,
+  {
+    _id: false,
   },
-  hide: {
-    type: Boolean,
-  },
-  show: {
-    type: Boolean,
-  },
-  pin: {
-    type: Boolean,
-  },
-});
+);
 
 const channelContextPermissionSchema = new Schema<IChannelContextPermissions>(
   {},
+  {
+    _id: false,
+  },
 );
 
-const moderatorPermissionsSchema = new Schema<IModeratorPermissions>({
-  moderator: moderatorContextPermissionSchema,
-  post: postContextPermissionSchema,
-  communityPost: communityPostContextPermissionSchema,
-  comment: commentContextPermissionSchema,
-  channel: channelContextPermissionSchema,
-});
+const moderatorPermissionsSchema = new Schema<IModeratorPermissions>(
+  {
+    moderator: moderatorContextPermissionSchema,
+    post: postContextPermissionSchema,
+    communityPost: communityPostContextPermissionSchema,
+    comment: commentContextPermissionSchema,
+    channel: channelContextPermissionSchema,
+  },
+  {
+    _id: false,
+  },
+);
 
 const moderatorSchema = new Schema<IModerator, IModeratorModel>(
   {
@@ -102,6 +130,7 @@ const moderatorSchema = new Schema<IModerator, IModeratorModel>(
       type: Schema.Types.ObjectId,
       ref: UserConstant.USER_COLLECTION_NAME,
     },
+    /* means that is moderator accepted the request to be moderator */
     isVerified: {
       type: Boolean,
       default: false,
