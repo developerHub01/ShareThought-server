@@ -8,27 +8,29 @@ import config from "../config";
 
 const readForgetPasswordToken = catchAsync(async (req, res, next) => {
   const { token } = req.query;
+  
+  if (!token) throw new AppError(httpStatus.BAD_REQUEST, "token is missing");
 
-    const tokenData = AuthUtils.verifyToken(
-      token as string,
-      config.JWT_FORGET_PASSWORD_SECRET,
-      {
-        statusCode: httpStatus.UNAUTHORIZED,
-        message: "Try again",
-      },
-    );
-    const forgetPasswordTokenData: IForgetPasswordTokenData = {
-      userId: tokenData.userId,
-      email: tokenData.email,
-    };
+  const tokenData = AuthUtils.verifyToken(
+    token as string,
+    config.JWT_FORGET_PASSWORD_SECRET,
+    {
+      statusCode: httpStatus.UNAUTHORIZED,
+      message: "Try again",
+    },
+  );
+  const forgetPasswordTokenData: IForgetPasswordTokenData = {
+    userId: tokenData.userId,
+    email: tokenData.email,
+  };
 
-    if (!tokenData)
-      throw new AppError(httpStatus.BAD_REQUEST, "Token data is not valid");
+  if (!tokenData)
+    throw new AppError(httpStatus.BAD_REQUEST, "Token data is not valid");
 
-    (req as IRequestWithActiveDetails).forgetPasswordTokenData =
-      forgetPasswordTokenData;
+  (req as IRequestWithActiveDetails).forgetPasswordTokenData =
+    forgetPasswordTokenData;
 
-    return next();
+  return next();
 });
 
 export default readForgetPasswordToken;
