@@ -12,9 +12,10 @@ import { SavedCategoryRoutes } from "../modules/saved.category/saved.category.ro
 import { HistoryRoutes } from "../modules/history/history.route";
 import { SearchHistoryRoutes } from "../modules/search.history/search.history.route";
 import { CommunityPostRoutes } from "../modules/community.post/community.post.route";
-import { ModeratorRoutes } from "../modules/modarator/moderator.route";
+import { ModeratorRoutes } from "../modules/moderator/moderator.route";
 import { ReportRoutes } from "../modules/report/report.route";
 import { AppealReportRoutes } from "../modules/appeal.report/appeal.report.route";
+import { TagRoutes } from "../modules/tags/tag.route";
 
 interface IRouteSchema {
   path: string;
@@ -79,6 +80,10 @@ const moduleRoutes: Array<IRouteSchema> = [
   {
     path: "/appeal_report",
     route: AppealReportRoutes,
+  },
+  {
+    path: "/tag",
+    route: TagRoutes,
   },
   {
     path: "/moderator",
