@@ -1,7 +1,7 @@
 import express from "express";
 import getLoggedInUser from "../../middleware/get.loggedin.user";
 import { SavedCategoryController } from "./saved.category.controller";
-import isVerified from "../../middleware/is.verified";
+import isVerified from "../../middleware/is.Verified";
 
 const router = express.Router();
 

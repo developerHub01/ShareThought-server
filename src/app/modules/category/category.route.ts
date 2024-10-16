@@ -11,7 +11,7 @@ import verifyMyChannel from "../../middleware/verify.my.channel";
 import verifyCategoryPostMine from "../../middleware/verify.category.post.mine";
 import haveAccessCategoryModify from "../../middleware/have.access.category.modify";
 import isPublicPost from "../../middleware/is.public.post";
-import isVerified from "../../middleware/is.verified";
+import isVerified from "../../middleware/is.Verified";
 const router = express.Router();
 
 router.get(

@@ -8,7 +8,7 @@ import { CommunityPostValidation } from "./community.post.validation";
 import { validateRequest } from "../../middleware/validate.request";
 import readReqBodyFiles from "../../middleware/read.req.body.files";
 import checkChannelStatus from "../../middleware/check.channel.status";
-import isVerified from "../../middleware/is.verified";
+import isVerified from "../../middleware/is.Verified";
 
 const router = express.Router();
 

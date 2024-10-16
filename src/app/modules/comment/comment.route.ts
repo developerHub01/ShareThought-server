@@ -11,7 +11,7 @@ import haveAccessDeleteComment from "../../middleware/have.access.delete.comment
 import verifyMyCommunityPost from "../../middleware/verify.my.community.post";
 import getActiveChannel from "../../middleware/get.active.channel";
 import readReqBodyFiles from "../../middleware/read.req.body.files";
-import isVerified from "../../middleware/is.verified";
+import isVerified from "../../middleware/is.Verified";
 
 const router = express.Router();
 

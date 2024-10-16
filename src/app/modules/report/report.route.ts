@@ -7,7 +7,7 @@ import { ReportValidation } from "./report.validation";
 import readReqBodyFiles from "../../middleware/read.req.body.files";
 import { ReportMiddleware } from "./report.middleware";
 import checkChannelStatus from "../../middleware/check.channel.status";
-import isVerified from "../../middleware/is.verified";
+import isVerified from "../../middleware/is.Verified";
 
 const router = express.Router();
 
