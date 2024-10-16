@@ -56,7 +56,7 @@ export const getIPDetails = async (ip: string) => {
     country_name,
     region_name,
     city,
-    location: { country_flag },
+    location: { country_flag } = {},
     latitude,
     longitude,
   } = data;
