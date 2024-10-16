@@ -9,6 +9,7 @@ const singleChannel = async (id: string, author: boolean) => {
       path: "authorId",
       select: "fullName avatar",
     });
+
   return await ChannelModel.findById(id);
 };
 
@@ -73,6 +74,11 @@ const deleteChannel = async (id: string) => {
   return ChannelModel.deleteChannel(id);
 };
 
+const channelModeratorCount = async (channelId: string) => {
+  return ChannelModel.channelModeratorCount(channelId)
+};
+
+
 export const ChannelServices = {
   findChannel,
   singleChannel,
@@ -80,4 +86,5 @@ export const ChannelServices = {
   createChannel,
   updateChannel,
   deleteChannel,
+  channelModeratorCount,
 };

@@ -37,10 +37,9 @@ const addModerator = async (channelId: string, payload: IModeratorPayload) => {
     let moderatorData = (await ModeratorModel.findOne({
       channelId,
       userId,
-    }).select({
-      moderatorCount: true,
-      moderatorPendingCount: true,
-    })) as TDocumentType<IModerator>;
+    }).select(
+      "+moderatorCount +moderatorPendingCount",
+    )) as TDocumentType<IModerator>;
 
     if (moderatorData && moderatorData?.isVerified) {
       throw new AppError(
@@ -121,7 +120,11 @@ const addModerator = async (channelId: string, payload: IModeratorPayload) => {
       );
 
     await session.commitTransaction();
-    return moderatorData;
+
+    return {
+      moderatorData,
+      isRequesting: isPendingModerator,
+    };
   } catch (error) {
     await session.abortTransaction();
     throw error;
@@ -166,6 +169,7 @@ const acceptModerationRequest = async (userId: string, moderatorId: string) => {
         httpStatus.FORBIDDEN,
         "something went wrong. please try again",
       );
+
     const emailDetails: IModeratorRequestAcceptanceEmailData = {
       channelCover: (moderatorData?.channelId as unknown as IChannel)
         ?.channelCover,

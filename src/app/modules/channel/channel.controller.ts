@@ -43,23 +43,17 @@ const singleChannel = catchAsync(async (req, res) => {
   let result;
 
   /*
-   *
    * if any channelId not exist in params means it can be my own channel
-   *
    */
   if (!channelId) {
     /*
-     *
      * if any channelId and activeChannelId not exist then
-     *
      */
     if (!activeChannelId)
       throw new AppError(httpStatus.UNAUTHORIZED, "no channel activated");
 
     /*
-     *
      * find my activated channel data
-     *
      */
     result = await ChannelCache.singleChannel(
       activeChannelId,
@@ -202,6 +196,21 @@ const logOutChannel = catchAsync(async (req, res) => {
   });
 });
 
+const channelModeratorCount = catchAsync(async (req, res) => {
+  const { channelId } = req as IRequestWithActiveDetails;
+
+  const result = await ChannelCache.channelModeratorCount(
+    channelId as string,
+  );
+
+  return sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "channel moderator count found succesfully",
+    data: result,
+  });
+});
+
 export const ChannelController = {
   findChannel,
   singleChannel,
@@ -211,4 +220,5 @@ export const ChannelController = {
   deleteChannel,
   switchChannel,
   logOutChannel,
+  channelModeratorCount,
 };

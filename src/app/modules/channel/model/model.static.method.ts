@@ -3,7 +3,11 @@ import channelSchema from "./model.schema";
 import { PostModel } from "../../post/model/model";
 import AppError from "../../../errors/AppError";
 import httpStatus from "http-status";
-import { IChannel, ICreateChannel } from "../channel.interface";
+import {
+  IChannel,
+  ICreateChannel,
+  IChannelModeratorCount,
+} from "../channel.interface";
 import { TDocumentType } from "../../../interface/interface";
 import { ChannelModel } from "./model";
 
@@ -119,4 +123,20 @@ channelSchema.statics.deleteChannel = async (id: string) => {
     await session.endSession();
     throw error;
   }
+};
+
+channelSchema.statics.channelModeratorCount = async (
+  channelId: string,
+): Promise<IChannelModeratorCount> => {
+  const channelData = await ChannelModel.findById(channelId).select(
+    "moderatorCount moderatorPendingCount authorId",
+  );
+
+  if (!channelData)
+    throw new AppError(httpStatus.NOT_FOUND, "channel not found");
+
+  return {
+    moderatorCount: channelData.moderatorCount,
+    moderatorPendingCount: channelData.moderatorPendingCount,
+  };
 };

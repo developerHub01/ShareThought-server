@@ -74,9 +74,28 @@ const deleteChannel = async (channelId: string) => {
   return result;
 };
 
+const channelModeratorCount = async (channelId: string) => {
+  const moderatorsCountKey = RedisKeys.channelModeratorsCount(channelId);
+
+  const moderatorsCount = await redis.get(moderatorsCountKey);
+
+  if (moderatorsCount) return JSON.parse(moderatorsCount);
+
+  const result = await ChannelServices.channelModeratorCount(channelId);
+
+  await redis.setex(
+    moderatorsCountKey,
+    ChannelConstant.CHANNEL_MODERATOR_COUNT_TTL,
+    JSON.stringify(result),
+  );
+
+  return result;
+};
+
 export const ChannelCache = {
   singleChannel,
   createChannel,
   updateChannel,
   deleteChannel,
+  channelModeratorCount,
 };

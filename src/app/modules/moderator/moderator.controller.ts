@@ -3,21 +3,21 @@ import AppError from "../../errors/AppError";
 import catchAsync from "../../utils/catch.async";
 import { UserModel } from "../user/model/model";
 import { sendResponse } from "../../utils/send.response";
-import { ModeratorServices } from "./moderator.services";
 import { IRequestWithActiveDetails } from "../../interface/interface";
+import { ModeratorCache } from "./moderator.cache";
 
 const addModerator = catchAsync(async (req, res) => {
-  const { userId } = req.body;
+  const { userId } = req.body; /* userId ===> moderatorId */
   const { channelId } = req as IRequestWithActiveDetails;
 
   const userData = await UserModel.findById(userId);
 
   if (!userData) throw new AppError(httpStatus.NOT_FOUND, "user doesn't exist");
-  
+
   if (!userData.isVerified)
     throw new AppError(httpStatus.FORBIDDEN, "user is not verified");
 
-  const result = await ModeratorServices.addModerator(
+  const result = await ModeratorCache.addModerator(
     channelId as string,
     req.body,
   );
@@ -33,7 +33,7 @@ const addModerator = catchAsync(async (req, res) => {
 const acceptModerationRequest = catchAsync(async (req, res) => {
   const { userId, moderatorId } = req as IRequestWithActiveDetails;
 
-  const result = await ModeratorServices.acceptModerationRequest(
+  const result = await ModeratorCache.acceptModerationRequest(
     userId,
     moderatorId as string,
   );

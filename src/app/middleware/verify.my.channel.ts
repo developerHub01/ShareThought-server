@@ -9,7 +9,7 @@ const verifyMyChannel = catchAsync(async (req, res, next) => {
 
   if (!channelId)
     throw new AppError(httpStatus.BAD_REQUEST, "your channel is not activated");
-
+  
   const result = await ChannelModel.isChannelMine(channelId, userId);
 
   if (!result)

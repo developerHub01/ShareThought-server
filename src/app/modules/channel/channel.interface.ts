@@ -6,15 +6,19 @@ export interface ICreateChannel {
   channelName: string;
   authorId: string;
 }
-export interface IChannel {
+
+export interface IChannelModeratorCount {
+  moderatorCount: number;
+  moderatorPendingCount: number;
+}
+
+export interface IChannel extends IChannelModeratorCount {
   channelName: string;
   authorId: Types.ObjectId;
   channelDescription: string;
   channelAvatar: string;
   channelCover: string;
   followerCount: number;
-  moderatorCount: number;
-  moderatorPendingCount: number;
 }
 
 export interface IChannelModel extends Model<IChannel> {
@@ -30,4 +34,8 @@ export interface IChannelModel extends Model<IChannel> {
   ): Promise<TDocumentType<IChannel>>;
 
   deleteChannel(id: string): Promise<unknown>;
+
+  channelModeratorCount(
+    channelId: string,
+  ): Promise<IChannelModeratorCount>;
 }

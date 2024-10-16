@@ -18,6 +18,14 @@ router.get("/all", getLoggedInUser, isVerified, ChannelController.findChannel);
 router.get("/my", getLoggedInUser, isVerified, ChannelController.getMyChannel);
 
 router.get(
+  "/moderator_count",
+  getLoggedInUser,
+  getActiveChannel,
+  verifyMyChannel,
+  ChannelController.channelModeratorCount,
+);
+
+router.get(
   "/:id",
   getLoggedInUser,
   checkChannelStatus,

@@ -19,6 +19,9 @@ const requestCountKey = (userIP: string, prefix: string) =>
 
 const channelFollowersCount = (channelId: string)=> `followers_count:${channelId}`;
 
+const channelModeratorsCount = (channelId: string) =>
+  `moderator_count:${channelId}`;
+
 export const RedisKeys = {
   userKey,
   channelKey,
@@ -28,4 +31,5 @@ export const RedisKeys = {
   cummunityPostSelectionField,
   requestCountKey,
   channelFollowersCount,
+  channelModeratorsCount,
 };
