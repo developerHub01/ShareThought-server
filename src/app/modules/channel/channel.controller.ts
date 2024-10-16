@@ -30,7 +30,20 @@ const getMyChannel = catchAsync(async (req, res) => {
   return sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "channel found succesfully",
+    message: "channels found succesfully",
+    data: result,
+  });
+});
+
+const getMyModeratedChannel = catchAsync(async (req, res) => {
+  const { userId } = req as IRequestWithActiveDetails;
+
+  const result = await ChannelServices.getMyModeratedChannel(req.query, userId);
+
+  return sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "channels found succesfully",
     data: result,
   });
 });
@@ -199,9 +212,7 @@ const logOutChannel = catchAsync(async (req, res) => {
 const channelModeratorCount = catchAsync(async (req, res) => {
   const { channelId } = req as IRequestWithActiveDetails;
 
-  const result = await ChannelCache.channelModeratorCount(
-    channelId as string,
-  );
+  const result = await ChannelCache.channelModeratorCount(channelId as string);
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -215,6 +226,7 @@ export const ChannelController = {
   findChannel,
   singleChannel,
   getMyChannel,
+  getMyModeratedChannel,
   createChannel,
   updateChannel,
   deleteChannel,

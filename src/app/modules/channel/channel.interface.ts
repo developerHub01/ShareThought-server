@@ -21,6 +21,17 @@ export interface IChannel extends IChannelModeratorCount {
   followerCount: number;
 }
 
+export interface IModeratedChannelListInitial {
+  _id: string;
+  channelId: TDocumentType<IChannel>;
+  permissions: {
+    moderator: {
+      add: boolean;
+      canRemove: boolean;
+    };
+  };
+}
+
 export interface IChannelModel extends Model<IChannel> {
   isChannelExist(id: string): Promise<boolean>;
 
@@ -35,7 +46,5 @@ export interface IChannelModel extends Model<IChannel> {
 
   deleteChannel(id: string): Promise<unknown>;
 
-  channelModeratorCount(
-    channelId: string,
-  ): Promise<IChannelModeratorCount>;
+  channelModeratorCount(channelId: string): Promise<IChannelModeratorCount>;
 }

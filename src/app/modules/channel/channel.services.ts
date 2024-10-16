@@ -1,6 +1,11 @@
 import QueryBuilder from "../../builder/QueryBuilder";
+import { ModeratorModel } from "../moderator/model/model";
 import { ChannelConstant } from "./channel.constant";
-import { IChannel, ICreateChannel } from "./channel.interface";
+import {
+  IChannel,
+  ICreateChannel,
+  IModeratedChannelListInitial,
+} from "./channel.interface";
 import { ChannelModel } from "./model/model";
 
 const singleChannel = async (id: string, author: boolean) => {
@@ -62,6 +67,47 @@ const getChannelOfMine = async (
   };
 };
 
+const getMyModeratedChannel = async (
+  query: Record<string, unknown>,
+  userId: string,
+) => {
+  const chennelQuery = new QueryBuilder(
+    ModeratorModel.find({
+      userId,
+    })
+      .select({
+        channelId: true,
+        "permissions.moderator": true,
+      })
+      .populate({
+        path: "channelId",
+      }),
+    query,
+  )
+    .search(ChannelConstant.CHANNEL_SEARCHABLE_FIELD)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  const meta = await chennelQuery.countTotal();
+  const channelsData =
+    (await chennelQuery.modelQuery) as unknown as Array<IModeratedChannelListInitial>;
+
+  const result = channelsData.map((data) => ({
+    ...data.channelId.toObject(),
+    role:
+      data.permissions.moderator.add || data.permissions.moderator.canRemove
+        ? "SUPER MODERATOR"
+        : "MODERATOR",
+  }));
+
+  return {
+    meta,
+    result,
+  };
+};
+
 const createChannel = async (payload: ICreateChannel) => {
   return ChannelModel.createChannel(payload);
 };
@@ -75,14 +121,14 @@ const deleteChannel = async (id: string) => {
 };
 
 const channelModeratorCount = async (channelId: string) => {
-  return ChannelModel.channelModeratorCount(channelId)
+  return ChannelModel.channelModeratorCount(channelId);
 };
-
 
 export const ChannelServices = {
   findChannel,
   singleChannel,
   getChannelOfMine,
+  getMyModeratedChannel,
   createChannel,
   updateChannel,
   deleteChannel,
