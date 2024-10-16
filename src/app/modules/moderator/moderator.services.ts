@@ -54,7 +54,7 @@ const addModerator = async (channelId: string, payload: IModeratorPayload) => {
     moderatorEmail: (moderatorData?.userId as unknown as IUser)?.email,
   };
 
-  return await emailQueue.add(
+  await emailQueue.add(
     QueueJobList.SEND_MODERATOR_REQUEST_EMAIL,
     emailDetails,
     {
@@ -62,6 +62,8 @@ const addModerator = async (channelId: string, payload: IModeratorPayload) => {
       removeOnFail: true,
     },
   );
+
+  return newModerator;
 };
 
 const acceptModerationRequest = async (userId: string, moderatorId: string) => {
@@ -110,7 +112,7 @@ const acceptModerationRequest = async (userId: string, moderatorId: string) => {
     dateAccepted: new Date(),
   };
 
-  return await emailQueue.add(
+  await emailQueue.add(
     QueueJobList.SEND_MODERATOR_REQUEST_ACCEPTANCE_EMAIL,
     emailDetails,
     {
@@ -118,6 +120,8 @@ const acceptModerationRequest = async (userId: string, moderatorId: string) => {
       removeOnFail: true,
     },
   );
+
+  return newModerator;
 };
 
 export const ModeratorServices = {

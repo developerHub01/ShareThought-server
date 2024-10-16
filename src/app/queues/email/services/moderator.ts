@@ -20,7 +20,7 @@ const sendModeratorRequestEmail = async (
 
   const templatePath = path.join(
     __dirname,
-    "../../../views/ModerationRequest.ejs",
+     "../../../../views/ModerationRequest.ejs",
   );
 
   const emailTemplateData = {
@@ -54,7 +54,7 @@ const sendModeratorRequestAccptanceEmail = async (
 
   const templatePath = path.join(
     __dirname,
-    "../../../views/ModeratorAcceptance.ejs",
+    "../../../../views/ModeratorAcceptance.ejs",
   );
 
   const emailTemplateData = {

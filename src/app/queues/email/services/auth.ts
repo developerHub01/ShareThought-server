@@ -24,7 +24,7 @@ const sendVerificationEmail = async (userData: TDocumentType<IUser>) => {
 
   const templatePath = path.join(
     __dirname,
-    "../../../views/EmailVarification.ejs",
+    "../../../../views/EmailVarification.ejs",
   );
 
   const htmlEmailTemplate = await ejs.renderFile(templatePath, {
@@ -55,7 +55,7 @@ const sendForgetPasswordEmail = async (userData: TDocumentType<IUser>) => {
 
   const templatePath = path.join(
     __dirname,
-    "../../../views/ForgetPassword.ejs",
+    "../../../../views/ForgetPassword.ejs",
   );
 
   const htmlEmailTemplate = await ejs.renderFile(templatePath, {
@@ -78,7 +78,7 @@ const sendLoggedInUserInfoEmail = async (
   const { email, fullName } = emailData;
   const templatePath = path.join(
     __dirname,
-    "../../../views/LoggedInUserInfo.ejs",
+    "../../../../views/LoggedInUserInfo.ejs",
   );
 
   const emailTemplateData = {

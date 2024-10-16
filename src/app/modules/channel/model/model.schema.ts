@@ -34,6 +34,14 @@ const channelSchema = new Schema<IChannel, IChannelModel>(
       type: Number,
       default: 0,
     },
+    moderatorCount: {
+      type: Number,
+      default: 0,
+    },
+    moderatorPendingCount: {
+      type: Number,
+      default: 0,
+    },
   },
   {
     timestamps: true,
