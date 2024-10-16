@@ -15,7 +15,7 @@ const readModeratorRequestToken = catchAsync(async (req, res, next) => {
     config.JWT_MODERATOR_REQUEST_SECRET,
     {
       statusCode: httpStatus.UNAUTHORIZED,
-      message: "Try again",
+      message: "this is not a valid token",
     },
   );
 

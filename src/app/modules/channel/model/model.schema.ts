@@ -34,13 +34,21 @@ const channelSchema = new Schema<IChannel, IChannelModel>(
       type: Number,
       default: 0,
     },
+    /* 
+    moderatorCount, moderatorPendingCount 
+    select: false
+    bacuse by default we dont't want that it will be public 
+    it only shown to channel author and moderators
+    */
     moderatorCount: {
       type: Number,
       default: 0,
+      select: false,
     },
     moderatorPendingCount: {
       type: Number,
       default: 0,
+      select: false,
     },
   },
   {

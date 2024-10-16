@@ -1,4 +1,4 @@
-import { Document } from "mongoose";
+import { ClientSession, Document } from "mongoose";
 import { Model, Types } from "mongoose";
 
 export interface IModeratorContextPermissions {
@@ -84,5 +84,9 @@ export interface IModeratorModel extends Model<IModerator> {
     payload: IModeratorPayload,
   ): Promise<unknown>;
 
-  acceptModeratorRequest(userId: string, moderatorId: string): Promise<unknown>;
+  acceptModeratorRequest(
+    userId: string,
+    moderatorId: string,
+    session?: ClientSession,
+  ): Promise<unknown>;
 }

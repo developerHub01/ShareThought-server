@@ -6,6 +6,7 @@ import moderatorSchema from "./model.schema";
 import { ChannelModel } from "../../channel/model/model";
 import { TDocumentType } from "../../../interface/interface";
 import { IChannel } from "../../channel/channel.interface";
+import { ClientSession } from "mongoose";
 
 moderatorSchema.statics.getChannelModeratorsCount = async (
   channelId: string,
@@ -16,6 +17,7 @@ moderatorSchema.statics.getChannelModeratorsCount = async (
 moderatorSchema.statics.addChannelModerator = async (
   channelId: string,
   payload: IModeratorPayload,
+  session?: ClientSession,
 ) => {
   const { userId, permissions } = payload;
 
@@ -34,12 +36,19 @@ moderatorSchema.statics.addChannelModerator = async (
       "channel author already a super moderator",
     );
 
-  return await ModeratorModel.create({
-    channelId,
-    userId,
-    permissions,
-    isVerified: false,
-  });
+  return (
+    await ModeratorModel.create(
+      [
+        {
+          channelId,
+          userId,
+          permissions,
+          isVerified: false,
+        },
+      ],
+      session ? { session } : {},
+    )
+  )[0];
 };
 
 moderatorSchema.statics.isAlreadyModerator = async (

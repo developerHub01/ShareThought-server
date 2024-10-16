@@ -13,6 +13,8 @@ export interface IChannel {
   channelAvatar: string;
   channelCover: string;
   followerCount: number;
+  moderatorCount: number;
+  moderatorPendingCount: number;
 }
 
 export interface IChannelModel extends Model<IChannel> {
