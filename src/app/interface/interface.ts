@@ -19,6 +19,10 @@ export interface IRequestWithActiveDetails extends Request {
   verifyEmailTokenData?: IVerifyEmailTokenData;
   isVerified?: boolean;
   userLoginInfo: IUserLoginInfo;
+  moderatorChannels: Record<
+    string,
+    boolean
+  > /* {channelId: true} true is just a placeholder not logical here only need channelId which is main point*/;
 }
 
 export interface IResponse<T> {

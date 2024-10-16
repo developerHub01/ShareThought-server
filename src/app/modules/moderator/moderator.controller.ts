@@ -31,6 +31,42 @@ const addModerator = catchAsync(async (req, res) => {
 });
 
 const acceptModerationRequest = catchAsync(async (req, res) => {
+  const { userId, moderatorId } =
+    req as IRequestWithActiveDetails;
+
+  const result = await ModeratorCache.acceptModerationRequest(
+    userId,
+    moderatorId as string,
+  );
+
+  return sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "moderation request accepted",
+    data: result,
+  });
+});
+
+/* 
+    TODO
+*/
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const updateModerator = catchAsync(async (req, res) => {
+  // const { userId, moderatorId } = req as IRequestWithActiveDetails;
+  // const result = await ModeratorCache.acceptModerationRequest(
+  //   userId,
+  //   moderatorId as string,
+  // );
+  // return sendResponse(res, {
+  //   statusCode: httpStatus.OK,
+  //   success: true,
+  //   message: "moderation request accepted",
+  //   data: result,
+  // });
+});
+
+const leaveModeratorRole = catchAsync(async (req, res) => {
   const { userId, moderatorId } = req as IRequestWithActiveDetails;
 
   const result = await ModeratorCache.acceptModerationRequest(
@@ -46,4 +82,29 @@ const acceptModerationRequest = catchAsync(async (req, res) => {
   });
 });
 
-export const ModeratorController = { addModerator, acceptModerationRequest };
+/* 
+    TODO
+*/
+
+// eslint-disable-next-line @typescript-eslint/no-unused-vars
+const deleteModerator = catchAsync(async (req, res) => {
+  // const { userId, moderatorId } = req as IRequestWithActiveDetails;
+  // const result = await ModeratorCache.acceptModerationRequest(
+  //   userId,
+  //   moderatorId as string,
+  // );
+  // return sendResponse(res, {
+  //   statusCode: httpStatus.OK,
+  //   success: true,
+  //   message: "moderation request accepted",
+  //   data: result,
+  // });
+});
+
+export const ModeratorController = {
+  addModerator,
+  acceptModerationRequest,
+  updateModerator,
+  leaveModeratorRole,
+  deleteModerator,
+};

@@ -75,7 +75,17 @@ const permissionsSchema = zod.object({
   channel: channelPermissionsSchema,
 });
 
-const moderatorSchema = zod.object({
+const createModeratorSchema = zod.object({
+  userId: zod
+    .string({
+      required_error: "userId is required",
+      invalid_type_error: "userId must be string",
+    })
+    .trim(),
+  permissions: permissionsSchema,
+});
+
+const updateModeratorSchema = zod.object({
   userId: zod
     .string({
       required_error: "userId is required",
@@ -86,5 +96,6 @@ const moderatorSchema = zod.object({
 });
 
 export const ModeratorValidation = {
-  moderatorSchema,
+  createModeratorSchema,
+  updateModeratorSchema,
 };

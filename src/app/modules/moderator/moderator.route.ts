@@ -8,19 +8,42 @@ import readModeratorRequestToken from "../../middleware/read.moderator.request.t
 
 const router = express.Router();
 
-router.post(
-  "/",
-  validateRequest(ModeratorValidation.moderatorSchema),
-  getLoggedInUser,
-  getActiveChannel,
-  ModeratorController.addModerator,
-);
-
 router.get(
   "/accept_moderation_request",
   getLoggedInUser,
   readModeratorRequestToken,
   ModeratorController.acceptModerationRequest,
 );
+
+router.post(
+  "/",
+  validateRequest(ModeratorValidation.createModeratorSchema),
+  getLoggedInUser,
+  getActiveChannel,
+  ModeratorController.addModerator,
+);
+
+router.patch(
+  "/:moderatorId",
+  validateRequest(ModeratorValidation.updateModeratorSchema),
+  getLoggedInUser,
+  getActiveChannel,
+  ModeratorController.addModerator,
+);
+
+router.delete(
+  "/leave_moderator_role",
+  getLoggedInUser,
+  getActiveChannel,
+  ModeratorController.leaveModeratorRole,
+);
+
+router.delete(
+  "/:moderatorId",
+  getLoggedInUser,
+  getActiveChannel,
+  ModeratorController.deleteModerator,
+);
+
 
 export const ModeratorRoutes = router;
