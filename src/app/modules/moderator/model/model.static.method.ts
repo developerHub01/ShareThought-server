@@ -102,10 +102,17 @@ moderatorSchema.statics.isAlreadyModerator = async (
   );
 };
 
+/**
+ *
+ * Verifies that a moderator request is accepted by the user.
+ * - Ensures the requesting user is indeed the moderator.
+ * - Throws an error if the user is not a moderator or already verified.
+ *
+ */
 moderatorSchema.statics.acceptModeratorRequest = async (
   userId: string,
   moderatorId: string,
-): Promise<unknown> => {
+): Promise<IModerator> => {
   const moderatorData =
     await ModeratorModel.findById(moderatorId).select("userId isVerified");
 
@@ -115,18 +122,15 @@ moderatorSchema.statics.acceptModeratorRequest = async (
   if (moderatorData.isVerified)
     throw new AppError(
       httpStatus.NOT_ACCEPTABLE,
-      "moderator is already verified and accpeted",
+      "moderator is already verified and accepted",
     );
 
   if (moderatorData?.userId?.toString() !== userId)
     throw new AppError(httpStatus.UNAUTHORIZED, "you are not that moderator");
 
-  if (moderatorData.isVerified)
-    throw new AppError(httpStatus.FORBIDDEN, "request is already accepted");
-
-  return await ModeratorModel.findByIdAndUpdate(
+  return (await ModeratorModel.findByIdAndUpdate(
     moderatorId,
     { isVerified: true },
     { new: true },
-  );
+  )) as IModerator;
 };
