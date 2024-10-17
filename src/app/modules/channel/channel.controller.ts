@@ -176,7 +176,6 @@ const deleteChannel = catchAsync(async (req, res) => {
   });
 });
 
-
 /* 
 - if user is the channel owner then create a channel_token and pass it in cookies
 - if user is not the channel owner then check that is he is moderator or not
@@ -187,7 +186,7 @@ const switchChannel = catchAsync(async (req, res) => {
   const { id: channelId } = req.params;
   const { userId } = req as IRequestWithActiveDetails;
 
-  let moderatorId: string = "";
+  let moderatorId: string | null = null;
 
   if (!(await ChannelModel.isChannelMine(channelId, userId))) {
     const moderatorData = (await ModeratorModel.channelModeratorData(
