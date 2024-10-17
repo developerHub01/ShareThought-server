@@ -3,7 +3,10 @@ import httpStatus from "http-status";
 import catchAsync from "../../utils/catch.async";
 import { sendResponse } from "../../utils/send.response";
 import { ChannelServices } from "./channel.services";
-import { IRequestWithActiveDetails } from "../../interface/interface";
+import {
+  IRequestWithActiveDetails,
+  TDocumentType,
+} from "../../interface/interface";
 import { CloudinaryConstant } from "../../constants/cloudinary.constant";
 import { ChannelModel } from "./model/model";
 import AppError from "../../errors/AppError";
@@ -11,6 +14,9 @@ import { ChannelUtils } from "./channel.utils";
 import { AuthUtils } from "../auth/auth.utils";
 import config from "../../config";
 import { ChannelCache } from "./channel.cache";
+import { IModerator } from "../moderator/moderator.interface";
+import { Constatnt } from "../../constants/constants";
+import { ModeratorModel } from "../moderator/model/model";
 
 const findChannel = catchAsync(async (req, res) => {
   const result = await ChannelServices.findChannel(req.query);
@@ -170,23 +176,55 @@ const deleteChannel = catchAsync(async (req, res) => {
   });
 });
 
+
+/* 
+- if user is the channel owner then create a channel_token and pass it in cookies
+- if user is not the channel owner then check that is he is moderator or not
+- if user it moderator then with channel_token create another token moderator_token and pass it in cookies
+- if nighter then throw an error that user have not authenticated to switch to the channel 
+*/
 const switchChannel = catchAsync(async (req, res) => {
   const { id: channelId } = req.params;
   const { userId } = req as IRequestWithActiveDetails;
 
-  if (!(await ChannelModel.isChannelMine(channelId, userId)))
-    throw new AppError(httpStatus.UNAUTHORIZED, "This is not your channel");
+  let moderatorId: string = "";
+
+  if (!(await ChannelModel.isChannelMine(channelId, userId))) {
+    const moderatorData = (await ModeratorModel.channelModeratorData(
+      channelId,
+      userId,
+    )) as TDocumentType<IModerator>;
+
+    if (!moderatorData)
+      throw new AppError(httpStatus.UNAUTHORIZED, "This is not your channel");
+
+    moderatorId = moderatorData._id.toString();
+  }
 
   const channelToken = AuthUtils.createToken(
     { channelId },
     config?.JWT_CHANNEL_ACCESS_SECRET as string,
   );
 
-  res.cookie("channel_token", channelToken, {
+  const moderatorToken =
+    moderatorId &&
+    AuthUtils.createToken(
+      { moderatorId },
+      config?.JWT_MODERATOR_SECRET as string,
+    );
+
+  res.cookie(Constatnt.TOKENS.CHANNEL_TOKEN, channelToken, {
     secure: true,
     httpOnly: true,
     sameSite: "none",
   });
+
+  if (moderatorToken)
+    res.cookie(Constatnt.TOKENS.MODERATOR_TOKEN, moderatorToken, {
+      secure: true,
+      httpOnly: true,
+      sameSite: "none",
+    });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,

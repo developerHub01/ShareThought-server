@@ -1,12 +1,23 @@
 import httpStatus from "http-status";
 import AppError from "../../../errors/AppError";
-import { IModeratorPayload } from "../moderator.interface";
+import { IModerator, IModeratorPayload } from "../moderator.interface";
 import { ModeratorModel } from "./model";
 import moderatorSchema from "./model.schema";
 import { ChannelModel } from "../../channel/model/model";
 import { TDocumentType } from "../../../interface/interface";
 import { IChannel } from "../../channel/channel.interface";
 import { ClientSession } from "mongoose";
+
+moderatorSchema.statics.channelModeratorData = async (
+  channelId: string,
+  userId: string,
+): Promise<IModerator | null> => {
+  return await ModeratorModel.findOne({
+    channelId,
+    userId,
+    isVerified: true,
+  });
+};
 
 moderatorSchema.statics.getChannelModeratorsCount = async (
   channelId: string,

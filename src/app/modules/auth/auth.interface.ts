@@ -8,6 +8,7 @@ export interface IJWTPayload {
   userId?: string;
   channelId?: string;
   guestId?: string;
+  moderatorId?: string;
 }
 
 export interface IEmailVarificationLinkGeneratorParameter {

@@ -75,6 +75,11 @@ export interface IModeratorRequestAcceptanceEmailData {
 }
 
 export interface IModeratorModel extends Model<IModerator> {
+  channelModeratorData(
+    channelId: string,
+    userId: string,
+  ): Promise<IModerator | null>;
+
   getChannelModeratorsCount(channelId: string): Promise<number>;
 
   isAlreadyModerator(channelId: string, userId: string): Promise<boolean>;
