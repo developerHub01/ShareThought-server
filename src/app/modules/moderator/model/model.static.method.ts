@@ -70,7 +70,7 @@ moderatorSchema.statics.resign = async (
   const moderatorData = (await ModeratorModel.findById(
     moderatorId,
   )) as TDocumentType<IModerator>;
-  
+
   if (!moderatorData)
     throw new AppError(httpStatus.NOT_FOUND, "moderator not found");
 
@@ -107,10 +107,16 @@ moderatorSchema.statics.acceptModeratorRequest = async (
   moderatorId: string,
 ): Promise<unknown> => {
   const moderatorData =
-    await ModeratorModel.findById(moderatorId).select("userId");
+    await ModeratorModel.findById(moderatorId).select("userId isVerified");
 
   if (!moderatorData)
     throw new AppError(httpStatus.NOT_FOUND, "moderator not found");
+
+  if (moderatorData.isVerified)
+    throw new AppError(
+      httpStatus.NOT_ACCEPTABLE,
+      "moderator is already verified and accpeted",
+    );
 
   if (moderatorData?.userId?.toString() !== userId)
     throw new AppError(httpStatus.UNAUTHORIZED, "you are not that moderator");
