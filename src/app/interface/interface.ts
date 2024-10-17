@@ -1,5 +1,6 @@
 import { Request } from "express";
 import { Document, Types } from "mongoose";
+import { IModeratorPermissions } from "../modules/moderator/moderator.interface";
 
 export interface IForgetPasswordTokenData {
   email: string;
@@ -19,10 +20,7 @@ export interface IRequestWithActiveDetails extends Request {
   verifyEmailTokenData?: IVerifyEmailTokenData;
   isVerified?: boolean;
   userLoginInfo: IUserLoginInfo;
-  moderatorChannels: Record<
-    string,
-    boolean
-  > /* {channelId: true} true is just a placeholder not logical here only need channelId which is main point*/;
+  moderatorPermissions?: IModeratorPermissions;
 }
 
 export interface IResponse<T> {
