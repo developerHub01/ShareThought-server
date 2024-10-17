@@ -68,7 +68,39 @@ const acceptModerationRequest = async (userId: string, moderatorId: string) => {
   return result;
 };
 
+const resign = async (userId: string, moderatorId: string) => {
+  const result = await ModeratorServices.resign(userId, moderatorId);
+
+  if (!result) return result;
+
+  const channelId = result?._id?.toString();
+
+  /* getting redis key for channel moderators count */
+  const moderatorsCountKey = RedisKeys.channelModeratorsCount(channelId);
+
+  const cachedJSON = await redis.get(moderatorsCountKey);
+
+  let cachedData = cachedJSON && JSON.parse(cachedJSON);
+
+  if (!cachedData)
+    cachedData = await ChannelModel.channelModeratorCount(channelId);
+  else
+    cachedData = {
+      ...cachedData,
+      moderatorCount: cachedData.moderatorCount - 1,
+    };
+
+  await redis.setex(
+    moderatorsCountKey,
+    ChannelConstant.CHANNEL_MODERATOR_COUNT_TTL,
+    JSON.stringify(cachedData),
+  );
+
+  return result;
+};
+
 export const ModeratorCache = {
   addModerator,
   acceptModerationRequest,
+  resign,
 };

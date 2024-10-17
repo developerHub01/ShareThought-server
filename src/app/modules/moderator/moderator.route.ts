@@ -5,6 +5,7 @@ import getActiveChannel from "../../middleware/get.active.channel";
 import { validateRequest } from "../../middleware/validate.request";
 import { ModeratorValidation } from "./moderator.validation";
 import readModeratorRequestToken from "../../middleware/read.moderator.request.token";
+import isModerator from "../../middleware/is.moderator";
 
 const router = express.Router();
 
@@ -32,10 +33,11 @@ router.patch(
 );
 
 router.delete(
-  "/leave_moderator_role",
+  "/resign",
   getLoggedInUser,
   getActiveChannel,
-  ModeratorController.leaveModeratorRole,
+  isModerator,
+  ModeratorController.resign,
 );
 
 router.delete(

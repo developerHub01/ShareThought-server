@@ -62,6 +62,37 @@ moderatorSchema.statics.addChannelModerator = async (
   )[0];
 };
 
+moderatorSchema.statics.resign = async (
+  userId: string,
+  moderatorId: string,
+  session?: ClientSession,
+) => {
+  const moderatorData = (await ModeratorModel.findById(
+    moderatorId,
+  )) as TDocumentType<IModerator>;
+  
+  if (!moderatorData)
+    throw new AppError(httpStatus.NOT_FOUND, "moderator not found");
+
+  /* if user is not that moderator */
+  if (moderatorData.userId?.toString() !== userId || !moderatorData.isVerified)
+    throw new AppError(httpStatus.UNAUTHORIZED, "you are not that moderator");
+
+  const deletedModeratorData = await ModeratorModel.findByIdAndDelete(
+    moderatorId,
+    session ? { session } : {},
+  );
+
+  const channelId = moderatorData?.channelId?.toString();
+
+  return deletedModeratorData && channelId
+    ? {
+        moderatorData: deletedModeratorData,
+        channelId,
+      }
+    : null;
+};
+
 moderatorSchema.statics.isAlreadyModerator = async (
   channelId: string,
   userId: string,
@@ -75,7 +106,8 @@ moderatorSchema.statics.acceptModeratorRequest = async (
   userId: string,
   moderatorId: string,
 ): Promise<unknown> => {
-  const moderatorData = await ModeratorModel.findById(moderatorId);
+  const moderatorData =
+    await ModeratorModel.findById(moderatorId).select("userId");
 
   if (!moderatorData)
     throw new AppError(httpStatus.NOT_FOUND, "moderator not found");

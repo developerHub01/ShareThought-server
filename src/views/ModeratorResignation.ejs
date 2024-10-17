@@ -1,0 +1,54 @@
+<table style="width: 100%; border-collapse: collapse;">
+  <tr>
+    <td style="padding: 20px; font-family: Arial, sans-serif; background-color: #f7f7f7; text-align: center;">
+      <h2 style="color: #333;">Moderator Exit Notification</h2>
+    </td>
+  </tr>
+
+  <tr>
+    <td style="padding: 20px; font-family: Arial, sans-serif;">
+      <p style="color: #333; font-size: 16px;">
+        Dear <strong><%= AUTHOR_NAME %></strong>,
+      </p>
+      <p style="color: #333; font-size: 16px;">
+        This is to inform you that <strong><%= MODERATOR_NAME %></strong> has resigned from their moderator role for the following channel:
+      </p>
+
+      <table style="width: 100%; border: 1px solid #ddd; margin-top: 10px;">
+        <tr>
+          <td style="padding: 10px; border-bottom: 1px solid #ddd; background-color: #f9f9f9;">Channel Name</td>
+          <td style="padding: 10px; border-bottom: 1px solid #ddd;"><%= CHANNEL_NAME %></td>
+        </tr>
+        <tr>
+          <td style="padding: 10px; border-bottom: 1px solid #ddd; background-color: #f9f9f9;">Channel ID</td>
+          <td style="padding: 10px; border-bottom: 1px solid #ddd;"><%= CHANNEL_ID %></td>
+        </tr>
+        <tr>
+          <td style="padding: 10px; border-bottom: 1px solid #ddd; background-color: #f9f9f9;">Moderator</td>
+          <td style="padding: 10px; border-bottom: 1px solid #ddd;"><%= MODERATOR_NAME %> (<%= MODERATOR_EMAIL %>)</td>
+        </tr>
+        <tr>
+          <td style="padding: 10px; background-color: #f9f9f9;">Resignation Date</td>
+          <td style="padding: 10px;"><%= LEAVE_DATE %></td>
+        </tr>
+      </table>
+
+      <p style="color: #333; font-size: 16px; margin-top: 20px;">
+        If you need to take further actions or need assistance, feel free to reach out to us.
+      </p>
+
+      <p style="color: #333; font-size: 16px; margin-top: 20px;">
+        Best regards,<br />
+        <strong>Your Team</strong>
+      </p>
+    </td>
+  </tr>
+
+  <tr>
+    <td style="padding: 20px; font-family: Arial, sans-serif; background-color: #f7f7f7; text-align: center;">
+      <p style="color: #777; font-size: 12px;">
+        © <%= new Date().getFullYear() %> Your Company. All rights reserved.
+      </p>
+    </td>
+  </tr>
+</table>

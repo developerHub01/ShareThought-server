@@ -2,7 +2,11 @@ import path from "path";
 import ejs from "ejs";
 import { format } from "date-fns";
 import config from "../../../config";
-import { IModeratorRequestAcceptanceEmailData, IModeratorRequestEmailData } from "../../../modules/moderator/moderator.interface";
+import {
+  IModeratorRequestAcceptanceEmailData,
+  IModeratorRequestEmailData,
+  IModeratorResignationEmailData,
+} from "../../../modules/moderator/moderator.interface";
 import { ModeratorUtils } from "../../../modules/moderator/moderator.utils";
 import sendEmail from "../../../utils/sendEmail";
 
@@ -20,7 +24,7 @@ const sendModeratorRequestEmail = async (
 
   const templatePath = path.join(
     __dirname,
-     "../../../../views/ModerationRequest.ejs",
+    "../../../../views/ModerationRequest.ejs",
   );
 
   const emailTemplateData = {
@@ -84,7 +88,48 @@ const sendModeratorRequestAccptanceEmail = async (
   });
 };
 
+const sendModeratorResignationEmail = async (
+  emailDetails: IModeratorResignationEmailData,
+) => {
+  const { authorEmail, authorName, moderatorName, channelName } = emailDetails;
+
+  const formatedDate = format(
+    new Date(emailDetails.leaveDate),
+    "MMMM do, yyyy H:mm:ss a",
+  );
+
+  const templatePath = path.join(
+    __dirname,
+    "../../../../views/ModeratorResignation.ejs",
+  );
+
+  const emailTemplateData = {
+    AUTHOR_NAME: authorName,
+    MODERATOR_NAME: moderatorName,
+    MODERATOR_EMAIL: emailDetails.moderatorEmail,
+    CHANNEL_NAME: channelName,
+    CHANNEL_ID: emailDetails.channelId,
+    LEAVE_DATE: formatedDate,
+  };
+
+  const htmlEmailTemplate = await ejs.renderFile(
+    templatePath,
+    emailTemplateData,
+  );
+
+  await sendEmail({
+    from: config.ADMIN_USER_EMAIL,
+    to: authorEmail,
+    subject: "Moderator Role Relinquished: Update for Your Channel",
+    text: `Dear ${authorName}, 
+         We wanted to inform you that ${moderatorName} has left the role of moderator for your channel "${channelName}" as of ${formatedDate}. 
+         Please let us know if you require further assistance.`,
+    html: htmlEmailTemplate, // Use the HTML template here
+  });
+};
+
 export const ModeratorEmailServices = {
   sendModeratorRequestEmail,
   sendModeratorRequestAccptanceEmail,
+  sendModeratorResignationEmail,
 };

@@ -1,6 +1,7 @@
 import { Model } from "mongoose";
 import { Types } from "mongoose";
 import { TDocumentType } from "../../interface/interface";
+import { IUser } from "../user/user.interface";
 
 export interface ICreateChannel {
   channelName: string;
@@ -19,6 +20,10 @@ export interface IChannel extends IChannelModeratorCount {
   channelAvatar: string;
   channelCover: string;
   followerCount: number;
+}
+
+export interface IChannelPopulated extends Omit<IChannel, "authorId"> {
+  authorId: IUser;
 }
 
 export interface IModeratedChannelListInitial {

@@ -31,8 +31,7 @@ const addModerator = catchAsync(async (req, res) => {
 });
 
 const acceptModerationRequest = catchAsync(async (req, res) => {
-  const { userId, moderatorId } =
-    req as IRequestWithActiveDetails;
+  const { userId, moderatorId } = req as IRequestWithActiveDetails;
 
   const result = await ModeratorCache.acceptModerationRequest(
     userId,
@@ -66,13 +65,10 @@ const updateModerator = catchAsync(async (req, res) => {
   // });
 });
 
-const leaveModeratorRole = catchAsync(async (req, res) => {
+const resign = catchAsync(async (req, res) => {
   const { userId, moderatorId } = req as IRequestWithActiveDetails;
 
-  const result = await ModeratorCache.acceptModerationRequest(
-    userId,
-    moderatorId as string,
-  );
+  const result = await ModeratorCache.resign(userId, moderatorId as string);
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -105,6 +101,6 @@ export const ModeratorController = {
   addModerator,
   acceptModerationRequest,
   updateModerator,
-  leaveModeratorRole,
+  resign,
   deleteModerator,
 };

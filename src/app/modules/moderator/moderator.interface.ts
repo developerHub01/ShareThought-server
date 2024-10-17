@@ -63,6 +63,7 @@ export interface IModeratorRequestEmailData {
   moderatorAvatar: string;
   moderatorEmail: string;
 }
+
 export interface IModeratorRequestAcceptanceEmailData {
   channelCover: string;
   channelName: string;
@@ -72,6 +73,16 @@ export interface IModeratorRequestAcceptanceEmailData {
   moderatorAvatar: string;
   moderatorEmail: string;
   dateAccepted: Date;
+}
+
+export interface IModeratorResignationEmailData {
+  authorName: string;
+  authorEmail: string;
+  moderatorName: string;
+  moderatorEmail: string;
+  channelName: string;
+  channelId: string;
+  leaveDate: Date;
 }
 
 export interface IModeratorModel extends Model<IModerator> {
@@ -87,6 +98,12 @@ export interface IModeratorModel extends Model<IModerator> {
   addChannelModerator(
     channelId: string,
     payload: IModeratorPayload,
+  ): Promise<unknown>;
+
+  resign(
+    userId: string,
+    moderatorId: string,
+    session?: ClientSession,
   ): Promise<unknown>;
 
   acceptModeratorRequest(

@@ -6,14 +6,16 @@ import {
   IModeratorPayload,
   IModeratorRequestAcceptanceEmailData,
   IModeratorRequestEmailData,
+  IModeratorResignationEmailData,
 } from "./moderator.interface";
 import { emailQueue } from "../../queues/email/queue";
 import { QueueJobList } from "../../queues";
 import { TDocumentType } from "../../interface/interface";
-import { IChannel } from "../channel/channel.interface";
+import { IChannel, IChannelPopulated } from "../channel/channel.interface";
 import { IUser } from "../user/user.interface";
 import { ChannelModel } from "../channel/model/model";
 import mongoose from "mongoose";
+import { UserModel } from "../user/model/model";
 
 /* 
 - if that user is already a moderator then request not acceptable
@@ -210,9 +212,75 @@ const acceptModerationRequest = async (userId: string, moderatorId: string) => {
       },
       { session },
     );
-
+    
     await session.commitTransaction();
     return newModerator;
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    await session.endSession();
+  }
+};
+
+const resign = async (userId: string, moderatorId: string) => {
+  const session = await mongoose.startSession();
+
+  try {
+    session.startTransaction();
+    const operationResult = (await ModeratorModel.resign(
+      userId,
+      moderatorId,
+      session,
+    )) as TDocumentType<IModerator>;
+
+    if (!operationResult)
+      throw new AppError(
+        httpStatus.INTERNAL_SERVER_ERROR,
+        "something went wrong. please try again",
+      );
+
+    const { channelId } = operationResult;
+
+    const updatedChannelData = (await ChannelModel.findByIdAndUpdate(
+      channelId,
+      {
+        $inc: { moderatorCount: -1 },
+      },
+      {
+        new: true,
+        session,
+      },
+    )
+      .populate({
+        path: "authorId",
+        select: "fullName email",
+      })
+      .select("channelId channelAvatar")) as TDocumentType<IChannelPopulated>;
+
+    const userData = (await UserModel.findById(userId)) as TDocumentType<IUser>;
+
+    const emailDetails: IModeratorResignationEmailData = {
+      authorName: updatedChannelData.authorId.fullName,
+      authorEmail: updatedChannelData.authorId.email,
+      moderatorName: userData.fullName,
+      moderatorEmail: userData.email,
+      channelName: updatedChannelData.channelName,
+      channelId: updatedChannelData._id.toString(),
+      leaveDate: new Date(),
+    };
+
+    await emailQueue.add(
+      QueueJobList.SEND_MODERATOR_RESIGNATION_EMAIL,
+      emailDetails,
+      {
+        removeOnComplete: true,
+        removeOnFail: true,
+      },
+    );
+
+    await session.commitTransaction();
+    return updatedChannelData;
   } catch (error) {
     await session.abortTransaction();
     throw error;
@@ -224,4 +292,5 @@ const acceptModerationRequest = async (userId: string, moderatorId: string) => {
 export const ModeratorServices = {
   addModerator,
   acceptModerationRequest,
+  resign,
 };
