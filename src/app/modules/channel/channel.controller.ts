@@ -236,7 +236,8 @@ const switchChannel = catchAsync(async (req, res) => {
 });
 
 const logOutChannel = catchAsync(async (req, res) => {
-  res.clearCookie("channel_token");
+  res.clearCookie(Constatnt.TOKENS.CHANNEL_TOKEN);
+  res.clearCookie(Constatnt.TOKENS.MODERATOR_TOKEN);
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
