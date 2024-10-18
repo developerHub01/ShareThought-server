@@ -19,10 +19,12 @@ import httpStatus from "http-status";
  * - if moderator then add moderator permissions in request
  * - else throw and error that user is not a moderator
  *
+ *
+ * - so it will alow only moderators and based on the parameter 'isVerified' it also restrict on verified on not verified moderator
  */
 
-const isModerator = catchAsync(
-  async (req: Request, res: Response, next: NextFunction) => {
+const isModerator = (isVerified = false) =>
+  catchAsync(async (req: Request, res: Response, next: NextFunction) => {
     const token = req?.cookies[Constatnt.TOKENS.MODERATOR_TOKEN];
     const { userId } = req as IRequestWithActiveDetails;
 
@@ -37,9 +39,9 @@ const isModerator = catchAsync(
     if (!moderatorId)
       throw new AppError(httpStatus.UNAUTHORIZED, "user is not a moderator");
 
-    const moderatorData = (await ModeratorModel.findById(
-      moderatorId,
-    )) as TDocumentType<IModerator>;
+    const moderatorData = (await ModeratorModel.findById(moderatorId)
+      .select("userId isVerified permissions")
+      .lean()) as TDocumentType<IModerator>;
 
     if (!moderatorData)
       throw new AppError(httpStatus.NOT_FOUND, "this moderator not found");
@@ -50,12 +52,16 @@ const isModerator = catchAsync(
         "you are not a valid moderator",
       );
 
+    if (isVerified && !moderatorData.isVerified)
+      throw new AppError(httpStatus.UNAUTHORIZED, "moderator is not verified");
+
     (req as IRequestWithActiveDetails).moderatorId = moderatorId;
     (req as IRequestWithActiveDetails).moderatorPermissions =
       moderatorData.permissions;
+    (req as IRequestWithActiveDetails).isVerifiedModerator =
+      moderatorData.isVerified;
 
     next();
-  },
-);
+  });
 
 export default isModerator;
