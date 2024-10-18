@@ -1,5 +1,7 @@
 import { ClientSession, Document } from "mongoose";
 import { Model, Types } from "mongoose";
+import { IUser } from "../user/user.interface";
+import { IChannel } from "../channel/channel.interface";
 
 export interface IModeratorContextPermissions {
   add: boolean;
@@ -48,6 +50,12 @@ export interface IModerator extends Document {
   permissions: IModeratorPermissions;
 }
 
+export interface IModeratorPopulated
+  extends Omit<IModerator, "userId" | "channelId"> {
+  userId: IUser;
+  channelId: IChannel;
+}
+
 export interface IModeratorPayload
   extends Omit<IModerator, "userId" | "channelId"> {
   userId: string;
@@ -83,6 +91,13 @@ export interface IModeratorResignationEmailData {
   channelName: string;
   channelId: string;
   leaveDate: Date;
+}
+
+export interface IModeratorRemoveEmailData {
+  moderatorName: string;
+  channelName: string;
+  moderatorEmail: string;
+  removedDate: Date;
 }
 
 export interface IModeratorModel extends Model<IModerator> {

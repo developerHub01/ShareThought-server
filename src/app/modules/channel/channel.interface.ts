@@ -1,4 +1,4 @@
-import { Model } from "mongoose";
+import { Document, Model } from "mongoose";
 import { Types } from "mongoose";
 import { TDocumentType } from "../../interface/interface";
 import { IUser } from "../user/user.interface";
@@ -13,7 +13,7 @@ export interface IChannelModeratorCount {
   moderatorPendingCount: number;
 }
 
-export interface IChannel extends IChannelModeratorCount {
+export interface IChannel extends IChannelModeratorCount, Document {
   channelName: string;
   authorId: Types.ObjectId;
   channelDescription: string;

@@ -4,6 +4,7 @@ export const QueueJobList = {
   SEND_LOGGED_IN_USER_INFO: "sendLoggedInUserInfo",
   SEND_MODERATOR_REQUEST_EMAIL: "sendModeratorRequestEmail",
   SEND_MODERATOR_RESIGNATION_EMAIL: "sendModeratorResignationEmail",
+  SEND_MODERATOR_REMOVE_EMAIL: "sendModeratorRemoveEmail",
   SEND_MODERATOR_REQUEST_ACCEPTANCE_EMAIL:
     "sendModeratorRequestAcceptanceEmail",
 };

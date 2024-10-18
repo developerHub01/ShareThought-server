@@ -6,6 +6,8 @@ import { validateRequest } from "../../middleware/validate.request";
 import { ModeratorValidation } from "./moderator.validation";
 import readModeratorRequestToken from "../../middleware/read.moderator.request.token";
 import isModerator from "../../middleware/is.moderator";
+import checkModeratorStatus from "../../middleware/check.moderator.status";
+import haveAccessRemoveModerator from "../../middleware/have.access.remove.moderator";
 
 const router = express.Router();
 
@@ -44,7 +46,9 @@ router.delete(
   "/:moderatorId",
   getLoggedInUser,
   getActiveChannel,
-  ModeratorController.deleteModerator,
+  checkModeratorStatus,
+  haveAccessRemoveModerator,
+  ModeratorController.removeModerator,
 );
 
 

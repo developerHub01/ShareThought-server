@@ -73,7 +73,7 @@ const resign = catchAsync(async (req, res) => {
   return sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "moderation request accepted",
+    message: "moderation resigned successfully",
     data: result,
   });
 });
@@ -83,18 +83,17 @@ const resign = catchAsync(async (req, res) => {
 */
 
 // eslint-disable-next-line @typescript-eslint/no-unused-vars
-const deleteModerator = catchAsync(async (req, res) => {
-  // const { userId, moderatorId } = req as IRequestWithActiveDetails;
-  // const result = await ModeratorCache.acceptModerationRequest(
-  //   userId,
-  //   moderatorId as string,
-  // );
-  // return sendResponse(res, {
-  //   statusCode: httpStatus.OK,
-  //   success: true,
-  //   message: "moderation request accepted",
-  //   data: result,
-  // });
+const removeModerator = catchAsync(async (req, res) => {
+  const { moderatorId } = req.params;
+
+  const result = await ModeratorCache.removeModerator(moderatorId);
+
+  return sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "moderator removed successfully",
+    data: result,
+  });
 });
 
 export const ModeratorController = {
@@ -102,5 +101,5 @@ export const ModeratorController = {
   acceptModerationRequest,
   updateModerator,
   resign,
-  deleteModerator,
+  removeModerator,
 };

@@ -22,6 +22,8 @@ export const emailWorker = new Worker(
         );
       case QueueJobList.SEND_MODERATOR_RESIGNATION_EMAIL:
         return await ModeratorEmailServices.sendModeratorResignationEmail(data);
+      case QueueJobList.SEND_MODERATOR_REMOVE_EMAIL:
+        return await ModeratorEmailServices.sendModeratorRemoveEmail(data);
     }
   },
   {

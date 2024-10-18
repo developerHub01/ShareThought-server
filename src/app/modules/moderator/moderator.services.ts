@@ -4,6 +4,8 @@ import { ModeratorModel } from "./model/model";
 import {
   IModerator,
   IModeratorPayload,
+  IModeratorPopulated,
+  IModeratorRemoveEmailData,
   IModeratorRequestAcceptanceEmailData,
   IModeratorRequestEmailData,
   IModeratorResignationEmailData,
@@ -212,7 +214,7 @@ const acceptModerationRequest = async (userId: string, moderatorId: string) => {
       },
       { session },
     );
-    
+
     await session.commitTransaction();
     return newModerator;
   } catch (error) {
@@ -289,8 +291,88 @@ const resign = async (userId: string, moderatorId: string) => {
   }
 };
 
+/**
+ * - first find the moderator data so that we can notify him by mail
+ * - then deleting the moderator data
+ * - if successful not deleted then throw an error
+ * - update the channel moderator counts
+ * - prepare email data
+ * - add email to the email queue
+ * - then return the updated channel data
+ * ***/
+const removeModerator = async (moderatorId: string) => {
+  const session = await mongoose.startSession();
+
+  try {
+    session.startTransaction();
+    const targetedModerator = (await ModeratorModel.findById(
+      moderatorId,
+      null,
+      {
+        session,
+      },
+    )
+      .select("userId channelId")
+      .populate({
+        path: "userId",
+        select: "fullName email -_id",
+      })) as unknown as TDocumentType<IModeratorPopulated>;
+
+    const deletedModerator = await ModeratorModel.findByIdAndDelete(
+      moderatorId,
+      { session },
+    );
+
+    if (!deletedModerator)
+      throw new AppError(
+        httpStatus.INTERNAL_SERVER_ERROR,
+        "something went wrong. please try again",
+      );
+
+    const {
+      channelId: { _id: channelId },
+    } = targetedModerator;
+
+    const updatedChannelData = (await ChannelModel.findByIdAndUpdate(
+      channelId,
+      {
+        $inc: { moderatorCount: -1 },
+      },
+      {
+        new: true,
+        session,
+      },
+    ).select("channelName")) as TDocumentType<IChannelPopulated>;
+
+    const emailDetails: IModeratorRemoveEmailData = {
+      moderatorName: targetedModerator.userId.fullName,
+      channelName: updatedChannelData.channelName,
+      moderatorEmail: targetedModerator.userId.email,
+      removedDate: new Date(),
+    };
+
+    await emailQueue.add(
+      QueueJobList.SEND_MODERATOR_REMOVE_EMAIL,
+      emailDetails,
+      {
+        removeOnComplete: true,
+        removeOnFail: true,
+      },
+    );
+
+    await session.commitTransaction();
+    return updatedChannelData;
+  } catch (error) {
+    await session.abortTransaction();
+    throw error;
+  } finally {
+    await session.endSession();
+  }
+};
+
 export const ModeratorServices = {
   addModerator,
   acceptModerationRequest,
   resign,
+  removeModerator,
 };

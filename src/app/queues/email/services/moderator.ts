@@ -3,6 +3,7 @@ import ejs from "ejs";
 import { format } from "date-fns";
 import config from "../../../config";
 import {
+  IModeratorRemoveEmailData,
   IModeratorRequestAcceptanceEmailData,
   IModeratorRequestEmailData,
   IModeratorResignationEmailData,
@@ -128,8 +129,53 @@ const sendModeratorResignationEmail = async (
   });
 };
 
+const sendModeratorRemoveEmail = async (
+  emailDetails: IModeratorRemoveEmailData,
+) => {
+  const { moderatorName, channelName, moderatorEmail } = emailDetails;
+
+  const formatedDate = format(
+    new Date(emailDetails.removedDate),
+    "MMMM do, yyyy H:mm:ss a",
+  );
+
+  const templatePath = path.join(
+    __dirname,
+    "../../../../views/ModeratorRemovalNotifyEmail.ejs",
+  );
+
+  const emailTemplateData = {
+    MODERATOR_NAME: moderatorName,
+    CHANNEL_NAME: channelName,
+    REMOVED_DATE: formatedDate,
+  };
+
+  const htmlEmailTemplate = await ejs.renderFile(
+    templatePath,
+    emailTemplateData,
+  );
+
+  await sendEmail({
+    from: config.ADMIN_USER_EMAIL,
+    to: moderatorEmail,
+    subject: "Moderator Role Update: You Have Been Removed from Your Channel",
+    text: `Dear ${moderatorName},
+
+    We regret to inform you that you have been removed from your role as a moderator for the channel ${channelName}, effective immediately.
+
+    Thank you for your contributions and efforts during your time as a moderator. Your support has been appreciated, and we wish you all the best in your future endeavors.
+
+    If you have any questions or concerns, please feel free to reach out to us.
+
+    Best regards,
+    The Channel Team`,
+    html: htmlEmailTemplate, // Use the HTML template here
+  });
+};
+
 export const ModeratorEmailServices = {
   sendModeratorRequestEmail,
   sendModeratorRequestAccptanceEmail,
   sendModeratorResignationEmail,
+  sendModeratorRemoveEmail,
 };

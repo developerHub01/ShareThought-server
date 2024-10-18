@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Channel Moderator Role Update</title>
+  </head>
+  <body
+    style="
+      margin: 0;
+      padding: 0;
+      background-color: #f4f4f4;
+      font-family: Arial, sans-serif;
+    "
+  >
+    <table
+      width="100%"
+      cellpadding="0"
+      cellspacing="0"
+      border="0"
+      style="background-color: #f4f4f4"
+    >
+      <tr>
+        <td align="center">
+          <!-- Container table -->
+          <table
+            width="600"
+            cellpadding="0"
+            cellspacing="0"
+            border="0"
+            style="
+              background-color: #ffffff;
+              margin: 20px auto;
+              border: 1px solid #dddddd;
+            "
+          >
+            <!-- Header section -->
+            <tr>
+              <td
+                style="
+                  padding: 20px;
+                  background-color: #007bff;
+                  color: #ffffff;
+                  text-align: center;
+                "
+              >
+                <h1 style="font-size: 24px; margin: 0">
+                  Channel Moderator Role Update
+                </h1>
+              </td>
+            </tr>
+
+            <!-- Body content -->
+            <tr>
+              <td style="padding: 20px; font-size: 16px; color: #333333">
+                <p style="margin: 0 0 20px 0">
+                  Dear <strong><%= MODERATOR_NAME %></strong>,
+                </p>
+
+                <p style="margin: 0 0 20px 0">
+                  We are writing to inform you that your role as a moderator for
+                  the channel <strong><%= CHANNEL_NAME %></strong> has been
+                  removed, effective immediately.
+                </p>
+
+                <p style="margin: 0 0 20px 0">
+                  Removal Date and Time: <strong><%= REMOVED_DATE %></strong>
+                </p>
+
+                <p style="margin: 0 0 20px 0">
+                  Thank you for your contributions to the channel. Your efforts
+                  have been appreciated.
+                </p>
+
+                <p style="margin: 0 0 20px 0">
+                  If you have any questions or concerns, please feel free to
+                  reach out to us.
+                </p>
+
+                <p style="margin: 0">Best regards,</p>
+                <p style="margin: 0"><strong>The Channel Team</strong></p>
+              </td>
+            </tr>
+
+            <!-- Footer section -->
+            <tr>
+              <td
+                style="
+                  padding: 20px;
+                  background-color: #f4f4f4;
+                  text-align: center;
+                  font-size: 14px;
+                  color: #888888;
+                "
+              >
+                <p style="margin: 0">
+                  &copy; <%= new Date().getFullYear() %> <%= CHANNEL_NAME %>.
+                  All Rights Reserved.
+                </p>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </body>
+</html>
