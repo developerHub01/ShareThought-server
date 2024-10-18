@@ -15,6 +15,7 @@ import httpStatus from "http-status";
 /*
  *
  * - this will check that is the user it a moderator or not
+ * - then check that is he is that moderator by comparing his userId with moderatorData userId
  * - if moderator then add moderator permissions in request
  * - else throw and error that user is not a moderator
  *
@@ -23,6 +24,7 @@ import httpStatus from "http-status";
 const isModerator = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const token = req?.cookies[Constatnt.TOKENS.MODERATOR_TOKEN];
+    const { userId } = req as IRequestWithActiveDetails;
 
     if (!token)
       throw new AppError(httpStatus.UNAUTHORIZED, "user is not a moderator");
@@ -39,7 +41,14 @@ const isModerator = catchAsync(
       moderatorId,
     )) as TDocumentType<IModerator>;
 
-    if (!moderatorData) throw new AppError(httpStatus.NOT_FOUND, "this moderator not found");
+    if (!moderatorData)
+      throw new AppError(httpStatus.NOT_FOUND, "this moderator not found");
+
+    if (moderatorData.userId.toString() !== userId)
+      throw new AppError(
+        httpStatus.UNAUTHORIZED,
+        "you are not a valid moderator",
+      );
 
     (req as IRequestWithActiveDetails).moderatorId = moderatorId;
     (req as IRequestWithActiveDetails).moderatorPermissions =
