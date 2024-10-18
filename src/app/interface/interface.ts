@@ -21,6 +21,7 @@ export interface IRequestWithActiveDetails extends Request {
   isVerified?: boolean;
   userLoginInfo: IUserLoginInfo;
   moderatorPermissions?: IModeratorPermissions;
+  isVerifiedModerator?: boolean;
 }
 
 export interface IResponse<T> {

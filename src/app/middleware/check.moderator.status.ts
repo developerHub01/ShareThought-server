@@ -21,6 +21,7 @@ import { IModerator } from "../modules/moderator/moderator.interface";
 const checkModeratorStatus = catchAsync(
   async (req: Request, res: Response, next: NextFunction) => {
     const token = req?.cookies[Constatnt.TOKENS.MODERATOR_TOKEN];
+    const { userId } = req as IRequestWithActiveDetails;
 
     if (!token) return next();
 
@@ -31,15 +32,18 @@ const checkModeratorStatus = catchAsync(
 
     if (!moderatorId) return next();
 
-    const moderatorData = (await ModeratorModel.findById(
-      moderatorId,
-    )) as TDocumentType<IModerator>;
+    const moderatorData = (await ModeratorModel.findById(moderatorId)
+      .select("userId isVerified permissions")
+      .lean()) as TDocumentType<IModerator>;
 
-    if (!moderatorData) return next();
+    if (!moderatorData || moderatorData?.userId?.toString() !== userId)
+      return next();
 
     (req as IRequestWithActiveDetails).moderatorId = moderatorId;
     (req as IRequestWithActiveDetails).moderatorPermissions =
       moderatorData.permissions;
+    (req as IRequestWithActiveDetails).isVerifiedModerator =
+      moderatorData.isVerified;
 
     next();
   },
