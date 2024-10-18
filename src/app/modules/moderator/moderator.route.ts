@@ -38,7 +38,9 @@ router.delete(
   "/resign",
   getLoggedInUser,
   getActiveChannel,
-  isModerator,
+  isModerator(
+    true,
+  ) /* to resign user have to be moderator and also verified moderator */,
   ModeratorController.resign,
 );
 
@@ -50,6 +52,5 @@ router.delete(
   haveAccessRemoveModerator,
   ModeratorController.removeModerator,
 );
-
 
 export const ModeratorRoutes = router;
