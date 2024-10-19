@@ -18,10 +18,17 @@ const moderatorContextPermissionSchema =
       add: {
         type: Boolean,
         default: false,
+        required: true,
       },
       canRemove: {
         type: Boolean,
         default: false,
+        required: true,
+      },
+      update: {
+        type: Boolean,
+        default: false,
+        required: true,
       },
     },
     {
@@ -34,26 +41,32 @@ const postContextPermissionSchema = new Schema<IPostContextPermissions>(
     create: {
       type: Boolean,
       default: false,
+      required: true,
     },
     update: {
       type: Boolean,
       default: false,
+      required: true,
     },
     delete: {
       type: Boolean,
       default: false,
+      required: true,
     },
     hide: {
       type: Boolean,
       default: false,
+      required: true,
     },
     show: {
       type: Boolean,
       default: false,
+      required: true,
     },
     pin: {
       type: Boolean,
       default: false,
+      required: true,
     },
   },
   {
@@ -67,22 +80,27 @@ const communityPostContextPermissionSchema =
       create: {
         type: Boolean,
         default: false,
+        required: true,
       },
       update: {
         type: Boolean,
         default: false,
+        required: true,
       },
       delete: {
         type: Boolean,
         default: false,
+        required: true,
       },
       hide: {
         type: Boolean,
         default: false,
+        required: true,
       },
       show: {
         type: Boolean,
         default: false,
+        required: true,
       },
     },
     {
@@ -95,22 +113,27 @@ const commentContextPermissionSchema = new Schema<ICommentContextPermissions>(
     create: {
       type: Boolean,
       default: false,
+      required: true,
     },
     delete: {
       type: Boolean,
       default: false,
+      required: true,
     },
     hide: {
       type: Boolean,
       default: false,
+      required: true,
     },
     show: {
       type: Boolean,
       default: false,
+      required: true,
     },
     pin: {
       type: Boolean,
       default: false,
+      required: true,
     },
   },
   {
