@@ -12,22 +12,39 @@ import {
 } from "./moderator.interface";
 import { emailQueue } from "../../queues/email/queue";
 import { QueueJobList } from "../../queues";
-import { TChannelRole, TDocumentType } from "../../interface/interface";
-import { IChannel, IChannelPopulated } from "../channel/channel.interface";
+import {
+  IChannel,
+  IChannelPopulated,
+  TChannelRole,
+} from "../channel/channel.interface";
 import { IUser } from "../user/user.interface";
 import { ChannelModel } from "../channel/model/model";
 import mongoose from "mongoose";
 import { UserModel } from "../user/model/model";
 import QueryBuilder from "../../builder/QueryBuilder";
 import { ModeratorConstant } from "./moderator.constant";
+import { TDocumentType } from "../../interface/interface";
+import { ChannelConstant } from "../channel/channel.constant";
 
+/**
+ * - if user is NORMAL_MODERATOR then throw an error thought NORMAL_MODERATOR can't reach that point
+ * - if user is SUPER_MODERATOR then search for only NORMAL_MODERATOR
+ * - else all moderators
+ * - after that modify the result and also add role
+ * ***/
 const getAllModerators = async (
   query: Record<string, unknown>,
   channelId: string,
   channelRole: TChannelRole,
 ) => {
+  if (channelRole === ChannelConstant.CHANNEL_USER_ROLES.NORMAL_MODERATOR)
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      "Access denied: Only channel owners or super moderators can perform this action.",
+    );
+
   const moderatorTypeFilter =
-    channelRole === "SUPER_MODERATOR"
+    channelRole === ChannelConstant.CHANNEL_USER_ROLES.SUPER_MODERATOR
       ? {
           $and: [
             { "permissions.moderator.add": false },
@@ -66,8 +83,8 @@ const getAllModerators = async (
     ...data.userId,
     role:
       data.permissions.moderator?.add || data.permissions.moderator?.canRemove
-        ? "SUPER MODERATOR"
-        : "MODERATOR",
+        ? ChannelConstant.CHANNEL_USER_ROLES.SUPER_MODERATOR
+        : ChannelConstant.CHANNEL_USER_ROLES.NORMAL_MODERATOR,
   }));
 
   return {
@@ -76,11 +93,11 @@ const getAllModerators = async (
   };
 };
 
-/* 
-- if that user is already a moderator then request not acceptable
-- if that user is pending moderator then request acceptable only for sending emails
-- if that user is not a moderator then request acceptable and other process will continue
-*/
+/**
+ * - if that user is already a moderator then request not acceptable
+ * - if that user is pending moderator then request acceptable only for sending emails
+ * - if that user is not a moderator then request acceptable and other process will continue
+ * **/
 const addModerator = async (channelId: string, payload: IModeratorPayload) => {
   const { userId } = payload;
 

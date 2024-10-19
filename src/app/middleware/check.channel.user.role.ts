@@ -4,7 +4,6 @@ import catchAsync from "../utils/catch.async";
 import { IRequestWithActiveDetails } from "../interface/interface";
 
 /**
- *
  * - if channelI, userId and moderatorId exist then user is a moderator
  * - else throw following errors
  *    - if userId not exist then user is not logged in
@@ -12,10 +11,9 @@ import { IRequestWithActiveDetails } from "../interface/interface";
  *
  * - if user is moderator then check moderatorPermissions if have moderator add or remove permissions then he is a SUPER_MODERATOR else NORMA_MODERATOR
  * - else user is the AUTHOR of the channel
- *
  * ***/
 
-const checkChannelRoleType = catchAsync(async (req, res, next) => {
+const checkChannelUserRole = catchAsync(async (req, res, next) => {
   const {
     channelId,
     userId,
@@ -54,4 +52,4 @@ const checkChannelRoleType = catchAsync(async (req, res, next) => {
   if (!moderatorId) return next();
 });
 
-export default checkChannelRoleType;
+export default checkChannelUserRole;

@@ -1,6 +1,7 @@
 import { Request } from "express";
 import { Document, Types } from "mongoose";
 import { IModeratorPermissions } from "../modules/moderator/moderator.interface";
+import { TChannelRole } from "../modules/channel/channel.interface";
 
 export interface IForgetPasswordTokenData {
   email: string;
@@ -10,8 +11,6 @@ export interface IVerifyEmailTokenData {
   email: string;
   userId: string;
 }
-
-export type TChannelRole = "AUTHOR" | "SUPER_MODERATOR" | "NORMAL_MODERATOR";
 
 export interface IRequestWithActiveDetails extends Request {
   userId: string;

@@ -8,7 +8,7 @@ import readModeratorRequestToken from "../../middleware/read.moderator.request.t
 import isModerator from "../../middleware/is.moderator";
 import checkModeratorStatus from "../../middleware/check.moderator.status";
 import haveAccessRemoveModerator from "../../middleware/have.access.remove.moderator";
-import checkChannelRoleType from "../../middleware/check.channel.role.type";
+import checkChannelUserRole from "../../middleware/check.channel.user.role";
 
 const router = express.Router();
 
@@ -17,7 +17,7 @@ router.get(
   getLoggedInUser,
   getActiveChannel,
   checkModeratorStatus,
-  checkChannelRoleType,
+  checkChannelUserRole,
   ModeratorController.getAllModerators,
 );
 

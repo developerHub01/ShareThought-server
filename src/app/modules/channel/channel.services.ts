@@ -96,8 +96,8 @@ const getMyModeratedChannel = async (
     ...data.channelId,
     role:
       data.permissions.moderator?.add || data.permissions.moderator?.canRemove
-        ? "SUPER MODERATOR"
-        : "MODERATOR",
+        ? ChannelConstant.CHANNEL_USER_ROLES.SUPER_MODERATOR
+        : ChannelConstant.CHANNEL_USER_ROLES.NORMAL_MODERATOR,
   }));
 
   return {

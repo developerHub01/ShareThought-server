@@ -2,6 +2,10 @@ import { Document, Model } from "mongoose";
 import { Types } from "mongoose";
 import { TDocumentType } from "../../interface/interface";
 import { IUser } from "../user/user.interface";
+import { ChannelConstant } from "./channel.constant";
+
+export type TChannelRole =
+  (typeof ChannelConstant.CHANNEL_USER_ROLES)[keyof typeof ChannelConstant.CHANNEL_USER_ROLES];
 
 export interface ICreateChannel {
   channelName: string;
