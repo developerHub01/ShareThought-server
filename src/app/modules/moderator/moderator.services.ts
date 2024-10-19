@@ -27,6 +27,61 @@ import { TDocumentType } from "../../interface/interface";
 import { ChannelConstant } from "../channel/channel.constant";
 
 /**
+ * - If the moderator is not found, throw an error.
+ * - If the targeted moderator is not in the user's channel, throw an error.
+ * - Determine the targeted moderator's role.
+ * - If the roles are equivalent but the users are different, deny access.
+ * - If the user is a NORMAL_MODERATOR and the targeted moderator is a SUPER_MODERATOR, deny access.
+ * - Otherwise, allow access to see the moderator's data.
+ */
+const singleModerator = async (
+  channelId: string,
+  myModeratorId: string,
+  targetedModeratorId: string,
+  channelRole: TChannelRole,
+) => {
+  const targetedModeratorData = (await ModeratorModel.findById(
+    targetedModeratorId,
+  ).populate({
+    path: "userId",
+    select: "userName fullName email gender avatar",
+  })) as unknown as TDocumentType<IModeratorPopulated>;
+
+  if (!targetedModeratorData)
+    throw new AppError(httpStatus.NOT_FOUND, "moderator not found");
+
+  if (targetedModeratorData.channelId?.toString() !== channelId)
+    throw new AppError(
+      httpStatus.UNAUTHORIZED,
+      "you have no access in this channel",
+    );
+
+  const targetedModeratorRole =
+    targetedModeratorData.permissions.moderator?.add ||
+    targetedModeratorData.permissions.moderator?.canRemove
+      ? ChannelConstant.CHANNEL_USER_ROLES.SUPER_MODERATOR
+      : ChannelConstant.CHANNEL_USER_ROLES.NORMAL_MODERATOR;
+
+  /**
+   * - if both are same role and are different user then user have no permissions
+   * - if user is NORMAL_USER and targed user is SUPER_USER then user has no permissions
+   * ***/
+  if (
+    (channelRole === targetedModeratorRole &&
+      myModeratorId !== targetedModeratorId) ||
+    (channelRole === ChannelConstant.CHANNEL_USER_ROLES.NORMAL_MODERATOR &&
+      targetedModeratorRole ===
+        ChannelConstant.CHANNEL_USER_ROLES.SUPER_MODERATOR)
+  )
+    throw new AppError(
+      httpStatus.UNAUTHORIZED,
+      "Access denied: you are not authorized to view this moderator's details",
+    );
+
+  return targetedModeratorData;
+};
+
+/**
  * - if user is NORMAL_MODERATOR then throw an error thought NORMAL_MODERATOR can't reach that point
  * - if user is SUPER_MODERATOR then search for only NORMAL_MODERATOR
  * - else all moderators
@@ -445,6 +500,7 @@ const removeModerator = async (moderatorId: string) => {
 };
 
 export const ModeratorServices = {
+  singleModerator,
   getAllModerators,
   addModerator,
   acceptModerationRequest,

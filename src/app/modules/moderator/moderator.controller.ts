@@ -6,11 +6,46 @@ import { sendResponse } from "../../utils/send.response";
 import { IRequestWithActiveDetails } from "../../interface/interface";
 import { ModeratorCache } from "./moderator.cache";
 import { ModeratorServices } from "./moderator.services";
+import { ChannelConstant } from "../channel/channel.constant";
+
+const singleModerator = catchAsync(async (req, res) => {
+  const {
+    channelId,
+    moderatorId: myModeratorId,
+    channelRole,
+  } = req as IRequestWithActiveDetails;
+
+  const { moderatorId: targetedModeratorId } = req.params;
+
+  /* NORMAL_MODERATORS are only allowed to view their own details. You cannot access information about other moderators */
+  if (
+    channelRole === ChannelConstant.CHANNEL_USER_ROLES.NORMAL_MODERATOR &&
+    myModeratorId !== targetedModeratorId
+  )
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      "Access denied: Only channel owners or super moderators can perform this action.",
+    );
+
+  const result = await ModeratorServices.singleModerator(
+    channelId as string,
+    myModeratorId as string,
+    targetedModeratorId as string,
+    channelRole,
+  );
+
+  return sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "moderators list found successfully",
+    data: result,
+  });
+});
 
 const getAllModerators = catchAsync(async (req, res) => {
   const { channelId, channelRole } = req as IRequestWithActiveDetails;
 
-  if (channelRole === "NORMAL_MODERATOR")
+  if (channelRole === ChannelConstant.CHANNEL_USER_ROLES.NORMAL_MODERATOR)
     throw new AppError(
       httpStatus.FORBIDDEN,
       "Access denied: Only channel owners or super moderators can perform this action.",
@@ -116,6 +151,7 @@ const removeModerator = catchAsync(async (req, res) => {
 });
 
 export const ModeratorController = {
+  singleModerator,
   getAllModerators,
   addModerator,
   acceptModerationRequest,
