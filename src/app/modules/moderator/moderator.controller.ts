@@ -8,6 +8,35 @@ import { ModeratorCache } from "./moderator.cache";
 import { ModeratorServices } from "./moderator.services";
 import { ChannelConstant } from "../channel/channel.constant";
 
+const myModerationDetails = catchAsync(async (req, res) => {
+  const {
+    userId,
+    channelId,
+    moderatorId: myModeratorId,
+    channelRole,
+  } = req as IRequestWithActiveDetails;
+
+  if (userId && !myModeratorId)
+    throw new AppError(
+      httpStatus.BAD_REQUEST,
+      "you are the author of the channel not moderator",
+    );
+
+  const result = await ModeratorServices.singleModerator(
+    channelId as string,
+    myModeratorId as string,
+    myModeratorId as string,
+    channelRole,
+  );
+
+  return sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "moderator found successfully",
+    data: result,
+  });
+});
+
 const singleModerator = catchAsync(async (req, res) => {
   const {
     channelId,
@@ -37,7 +66,7 @@ const singleModerator = catchAsync(async (req, res) => {
   return sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "moderators list found successfully",
+    message: "moderator found successfully",
     data: result,
   });
 });
@@ -151,6 +180,7 @@ const removeModerator = catchAsync(async (req, res) => {
 });
 
 export const ModeratorController = {
+  myModerationDetails,
   singleModerator,
   getAllModerators,
   addModerator,

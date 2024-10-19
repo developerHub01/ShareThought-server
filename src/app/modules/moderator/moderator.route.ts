@@ -22,6 +22,16 @@ router.get(
   ModeratorController.getAllModerators,
 );
 
+/* get my moderation permissions under a channel */
+router.get(
+  "/me",
+  getLoggedInUser,
+  getActiveChannel,
+  checkModeratorStatus,
+  checkChannelUserRole,
+  ModeratorController.myModerationDetails,
+);
+
 /* get a specific moderator permissions under a channel */
 router.get(
   "/:moderatorId",
