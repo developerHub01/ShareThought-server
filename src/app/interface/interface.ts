@@ -11,6 +11,8 @@ export interface IVerifyEmailTokenData {
   userId: string;
 }
 
+export type TChannelRole = "AUTHOR" | "SUPER_MODERATOR" | "NORMAL_MODERATOR";
+
 export interface IRequestWithActiveDetails extends Request {
   userId: string;
   channelId?: string;
@@ -22,6 +24,7 @@ export interface IRequestWithActiveDetails extends Request {
   userLoginInfo: IUserLoginInfo;
   moderatorPermissions?: IModeratorPermissions;
   isVerifiedModerator?: boolean;
+  channelRole: TChannelRole;
 }
 
 export interface IResponse<T> {
