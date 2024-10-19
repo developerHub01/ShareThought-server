@@ -12,6 +12,14 @@ import checkChannelUserRole from "../../middleware/check.channel.user.role";
 
 const router = express.Router();
 
+/* accept moderation request send by SUPER_MODERATOR or AUTHOR */
+router.get(
+  "/accept_moderation_request",
+  getLoggedInUser,
+  readModeratorRequestToken,
+  ModeratorController.acceptModerationRequest,
+);
+
 /* get all moderator under a channel */
 router.get(
   "/",
@@ -32,6 +40,7 @@ router.get(
   ModeratorController.myModerationDetails,
 );
 
+
 /* get a specific moderator permissions under a channel */
 router.get(
   "/:moderatorId",
@@ -42,13 +51,6 @@ router.get(
   ModeratorController.singleModerator,
 );
 
-/* accept moderation request send by SUPER_MODERATOR or AUTHOR */
-router.get(
-  "/accept_moderation_request",
-  getLoggedInUser,
-  readModeratorRequestToken,
-  ModeratorController.acceptModerationRequest,
-);
 
 /* create a moderator */
 router.post(
@@ -65,7 +67,9 @@ router.patch(
   validateRequest(ModeratorValidation.updateModeratorSchema),
   getLoggedInUser,
   getActiveChannel,
-  ModeratorController.addModerator,
+  checkModeratorStatus,
+  checkChannelUserRole,
+  ModeratorController.updateModerator,
 );
 
 /* resign from moderator role */

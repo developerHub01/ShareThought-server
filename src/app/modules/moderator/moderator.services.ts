@@ -4,6 +4,7 @@ import { ModeratorModel } from "./model/model";
 import {
   IModerator,
   IModeratorPayload,
+  IModeratorPermissions,
   IModeratorPopulated,
   IModeratorRemoveEmailData,
   IModeratorRequestAcceptanceEmailData,
@@ -266,6 +267,71 @@ const addModerator = async (channelId: string, payload: IModeratorPayload) => {
   }
 };
 
+/**
+ * - first find out the targeted moderator
+ * - if moderator not exist then throw error
+ * - if moderator is not current channels moderator then throw error
+ * - find targeted moderator channel role
+ * - if targed moderator is super moderator
+ * **/
+const updateModerator = async (
+  channelId: string,
+  targetedModeratorId: string,
+  channelRole: TChannelRole,
+  payloadPermissions: IModeratorPermissions,
+) => {
+  const targetedModeratorData = (await ModeratorModel.findById(
+    targetedModeratorId,
+  ).populate({
+    path: "userId",
+    select: "userName fullName email gender avatar",
+  })) as unknown as TDocumentType<IModeratorPopulated>;
+
+  if (!targetedModeratorData)
+    throw new AppError(httpStatus.NOT_FOUND, "moderator not found");
+
+  if (targetedModeratorData.channelId?.toString() !== channelId)
+    throw new AppError(
+      httpStatus.UNAUTHORIZED,
+      "you have no access in this channel",
+    );
+
+  const targetedModeratorRole =
+    targetedModeratorData.permissions.moderator?.add ||
+    targetedModeratorData.permissions.moderator?.canRemove ||
+    targetedModeratorData.permissions.moderator?.update
+      ? ChannelConstant.CHANNEL_USER_ROLES.SUPER_MODERATOR
+      : ChannelConstant.CHANNEL_USER_ROLES.NORMAL_MODERATOR;
+
+  /**
+   * - if targed moderator is SUPER_MODERATOR then throw an error
+   * ***/
+  if (
+    channelRole !== ChannelConstant.CHANNEL_USER_ROLES.AUTHOR &&
+    targetedModeratorRole === ChannelConstant.CHANNEL_USER_ROLES.SUPER_MODERATOR
+  )
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      "Access denied: you are not authorized to view this moderator's details",
+    );
+
+  const updatedModeratorData = await ModeratorModel.findByIdAndUpdate(
+    targetedModeratorId,
+    payloadPermissions,
+    {
+      new: true,
+    },
+  );
+
+  if (!updateModerator)
+    throw new AppError(
+      httpStatus.INTERNAL_SERVER_ERROR,
+      "something went wrong when updating, please try again",
+    );
+
+  return updatedModeratorData;
+};
+
 const acceptModerationRequest = async (userId: string, moderatorId: string) => {
   const session = await mongoose.startSession();
 
@@ -503,6 +569,7 @@ export const ModeratorServices = {
   singleModerator,
   getAllModerators,
   addModerator,
+  updateModerator,
   acceptModerationRequest,
   resign,
   removeModerator,

@@ -7,6 +7,8 @@ import { IRequestWithActiveDetails } from "../../interface/interface";
 import { ModeratorCache } from "./moderator.cache";
 import { ModeratorServices } from "./moderator.services";
 import { ChannelConstant } from "../channel/channel.constant";
+import { ModeratorUtils } from "./moderator.utils";
+import { IModeratorPermissions } from "./moderator.interface";
 
 const myModerationDetails = catchAsync(async (req, res) => {
   const {
@@ -134,23 +136,68 @@ const acceptModerationRequest = catchAsync(async (req, res) => {
   });
 });
 
-/* 
-    TODO
-*/
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const updateModerator = catchAsync(async (req, res) => {
-  // const { userId, moderatorId } = req as IRequestWithActiveDetails;
-  // const result = await ModeratorCache.acceptModerationRequest(
-  //   userId,
-  //   moderatorId as string,
-  // );
-  // return sendResponse(res, {
-  //   statusCode: httpStatus.OK,
-  //   success: true,
-  //   message: "moderation request accepted",
-  //   data: result,
-  // });
+  const {
+    channelId,
+    moderatorId: myModeratorId,
+    channelRole,
+    moderatorPermissions,
+  } = req as IRequestWithActiveDetails;
+  const { moderatorId: targetedModeratorId } = req.params;
+
+  const payloadPermissions = req.body;
+  let warnings = null;
+
+  if (
+    channelRole !== ChannelConstant.CHANNEL_USER_ROLES.AUTHOR &&
+    !moderatorPermissions?.moderator?.update
+  )
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      "Access denied: you are not authorized to view this moderator's details",
+    );
+
+  /* if user is a moderator not author */
+  if (
+    myModeratorId &&
+    channelRole !== ChannelConstant.CHANNEL_USER_ROLES.AUTHOR
+  ) {
+    const resultPayload = ModeratorUtils.comparePermissionAndAdjust(
+      payloadPermissions["permissions"],
+      moderatorPermissions as IModeratorPermissions,
+    );
+
+    warnings = resultPayload.warnings;
+    (warnings as typeof warnings & { message: string }).message =
+      "these warning are adjusted";
+
+    payloadPermissions["permissions"] = resultPayload.payloadPermissions;
+  } else {
+    const resultPayload = ModeratorUtils.comparePermissionAndAdjust(
+      payloadPermissions["permissions"],
+    );
+
+    payloadPermissions["permissions"] = resultPayload.payloadPermissions;
+  }
+
+  const updatedData = await ModeratorServices.updateModerator(
+    channelId as string,
+    targetedModeratorId as string,
+    channelRole,
+    payloadPermissions,
+  );
+
+  const result = {
+    updatedData,
+    ...(warnings && warnings),
+  };
+
+  return sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "moderator updated successfully",
+    data: result,
+  });
 });
 
 const resign = catchAsync(async (req, res) => {
