@@ -17,9 +17,11 @@ const moderatorContextPermissionSchema =
     {
       add: {
         type: Boolean,
+        default: false,
       },
       canRemove: {
         type: Boolean,
+        default: false,
       },
     },
     {
@@ -31,21 +33,27 @@ const postContextPermissionSchema = new Schema<IPostContextPermissions>(
   {
     create: {
       type: Boolean,
+      default: false,
     },
     update: {
       type: Boolean,
+      default: false,
     },
     delete: {
       type: Boolean,
+      default: false,
     },
     hide: {
       type: Boolean,
+      default: false,
     },
     show: {
       type: Boolean,
+      default: false,
     },
     pin: {
       type: Boolean,
+      default: false,
     },
   },
   {
@@ -58,18 +66,23 @@ const communityPostContextPermissionSchema =
     {
       create: {
         type: Boolean,
+        default: false,
       },
       update: {
         type: Boolean,
+        default: false,
       },
       delete: {
         type: Boolean,
+        default: false,
       },
       hide: {
         type: Boolean,
+        default: false,
       },
       show: {
         type: Boolean,
+        default: false,
       },
     },
     {
@@ -81,18 +94,23 @@ const commentContextPermissionSchema = new Schema<ICommentContextPermissions>(
   {
     create: {
       type: Boolean,
+      default: false,
     },
     delete: {
       type: Boolean,
+      default: false,
     },
     hide: {
       type: Boolean,
+      default: false,
     },
     show: {
       type: Boolean,
+      default: false,
     },
     pin: {
       type: Boolean,
+      default: false,
     },
   },
   {
