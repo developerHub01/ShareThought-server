@@ -26,17 +26,6 @@ export interface IChannelPopulated extends Omit<IChannel, "authorId"> {
   authorId: IUser;
 }
 
-export interface IModeratedChannelListInitial {
-  _id: string;
-  channelId: TDocumentType<IChannel>;
-  permissions: {
-    moderator: {
-      add: boolean;
-      canRemove: boolean;
-    };
-  };
-}
-
 export interface IChannelModel extends Model<IChannel> {
   isChannelExist(id: string): Promise<boolean>;
 

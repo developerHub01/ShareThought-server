@@ -1,11 +1,8 @@
 import QueryBuilder from "../../builder/QueryBuilder";
 import { ModeratorModel } from "../moderator/model/model";
+import { IModeratorPopulated } from "../moderator/moderator.interface";
 import { ChannelConstant } from "./channel.constant";
-import {
-  IChannel,
-  ICreateChannel,
-  IModeratedChannelListInitial,
-} from "./channel.interface";
+import { IChannel, ICreateChannel } from "./channel.interface";
 import { ChannelModel } from "./model/model";
 
 const singleChannel = async (id: string, author: boolean) => {
@@ -81,7 +78,8 @@ const getMyModeratedChannel = async (
       })
       .populate({
         path: "channelId",
-      }),
+      })
+      .lean(),
     query,
   )
     .search(ChannelConstant.CHANNEL_SEARCHABLE_FIELD)
@@ -92,12 +90,12 @@ const getMyModeratedChannel = async (
 
   const meta = await chennelQuery.countTotal();
   const channelsData =
-    (await chennelQuery.modelQuery) as unknown as Array<IModeratedChannelListInitial>;
+    (await chennelQuery.modelQuery) as unknown as Array<IModeratorPopulated>;
 
   const result = channelsData.map((data) => ({
-    ...data.channelId.toObject(),
+    ...data.channelId,
     role:
-      data.permissions.moderator.add || data.permissions.moderator.canRemove
+      data.permissions.moderator?.add || data.permissions.moderator?.canRemove
         ? "SUPER MODERATOR"
         : "MODERATOR",
   }));
