@@ -7,6 +7,7 @@ import { z as zod } from "zod";
     "moderator": {
       "add": true,
       "remove": false
+      "update": false
     },
     "post": {
       "create": true,
@@ -38,6 +39,7 @@ import { z as zod } from "zod";
 const moderatorPermissionsSchema = zod.object({
   add: zod.boolean().optional(),
   canRemove: zod.boolean().optional(),
+  update: zod.boolean().optional(),
 });
 
 const postPermissionsSchema = zod.object({
@@ -85,14 +87,16 @@ const createModeratorSchema = zod.object({
   permissions: permissionsSchema,
 });
 
+const updatePermissionsSchema = zod.object({
+  moderator: moderatorPermissionsSchema.optional(),
+  post: postPermissionsSchema.optional(),
+  communityPost: communityPostPermissionsSchema.optional(),
+  comment: commentPermissionsSchema.optional(),
+  channel: channelPermissionsSchema.optional(),
+});
+
 const updateModeratorSchema = zod.object({
-  userId: zod
-    .string({
-      required_error: "userId is required",
-      invalid_type_error: "userId must be string",
-    })
-    .trim(),
-  permissions: permissionsSchema,
+  permissions: updatePermissionsSchema,
 });
 
 export const ModeratorValidation = {

@@ -6,6 +6,7 @@ import { IChannel } from "../channel/channel.interface";
 export interface IModeratorContextPermissions {
   add: boolean;
   canRemove: boolean;
+  update: boolean;
 }
 
 export interface IPostContextPermissions {
@@ -59,7 +60,6 @@ export interface IModeratorPopulated
 export interface IModeratorPayload
   extends Omit<IModerator, "userId" | "channelId"> {
   userId: string;
-  channelId: string;
 }
 
 export interface IModeratorRequestEmailData {
