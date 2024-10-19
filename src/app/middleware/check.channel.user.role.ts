@@ -37,10 +37,11 @@ const checkChannelUserRole = catchAsync(async (req, res, next) => {
         httpStatus.FORBIDDEN,
         "you are not verified moderator. please accept the moderation request",
       );
-      
+
     (req as IRequestWithActiveDetails).channelRole =
       moderatorPermissions?.moderator?.add ||
-      moderatorPermissions?.moderator?.canRemove
+      moderatorPermissions?.moderator?.canRemove ||
+      moderatorPermissions?.moderator?.update
         ? "SUPER_MODERATOR"
         : "NORMAL_MODERATOR";
 
