@@ -33,13 +33,13 @@ const checkChannelRoleType = catchAsync(async (req, res, next) => {
       "your channel is not activated",
     );
 
-  if (!isVerifiedModerator)
-    throw new AppError(
-      httpStatus.FORBIDDEN,
-      "you are not verified moderator. please accept the moderation request",
-    );
-
   if (moderatorId) {
+    if (!isVerifiedModerator)
+      throw new AppError(
+        httpStatus.FORBIDDEN,
+        "you are not verified moderator. please accept the moderation request",
+      );
+      
     (req as IRequestWithActiveDetails).channelRole =
       moderatorPermissions?.moderator?.add ||
       moderatorPermissions?.moderator?.canRemove
