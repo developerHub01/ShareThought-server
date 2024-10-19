@@ -12,12 +12,69 @@ import {
 } from "./moderator.interface";
 import { emailQueue } from "../../queues/email/queue";
 import { QueueJobList } from "../../queues";
-import { TDocumentType } from "../../interface/interface";
+import { TChannelRole, TDocumentType } from "../../interface/interface";
 import { IChannel, IChannelPopulated } from "../channel/channel.interface";
 import { IUser } from "../user/user.interface";
 import { ChannelModel } from "../channel/model/model";
 import mongoose from "mongoose";
 import { UserModel } from "../user/model/model";
+import QueryBuilder from "../../builder/QueryBuilder";
+import { ModeratorConstant } from "./moderator.constant";
+
+const getAllModerators = async (
+  query: Record<string, unknown>,
+  channelId: string,
+  channelRole: TChannelRole,
+) => {
+  const moderatorTypeFilter =
+    channelRole === "SUPER_MODERATOR"
+      ? {
+          $and: [
+            { "permissions.moderator.add": false },
+            { "permissions.moderator.canRemove": false },
+          ],
+        }
+      : {};
+
+  const chennelQuery = new QueryBuilder(
+    ModeratorModel.find({
+      channelId,
+      ...moderatorTypeFilter,
+    })
+      .select({
+        channelId: true,
+        "permissions.moderator": true,
+      })
+      .populate({
+        path: "userId",
+        select: "-isVerified -createdAt -updatedAt",
+      })
+      .lean(),
+    query,
+  )
+    .search(ModeratorConstant.MODERATOR_SEARCHABLE_FIELD)
+    .filter()
+    .sort()
+    .paginate()
+    .fields();
+
+  const meta = await chennelQuery.countTotal();
+  const moderatorsData =
+    (await chennelQuery.modelQuery) as unknown as Array<IModeratorPopulated>;
+
+  const result = moderatorsData.map((data: IModeratorPopulated) => ({
+    ...data.userId,
+    role:
+      data.permissions.moderator?.add || data.permissions.moderator?.canRemove
+        ? "SUPER MODERATOR"
+        : "MODERATOR",
+  }));
+
+  return {
+    meta,
+    result,
+  };
+};
 
 /* 
 - if that user is already a moderator then request not acceptable
@@ -371,6 +428,7 @@ const removeModerator = async (moderatorId: string) => {
 };
 
 export const ModeratorServices = {
+  getAllModerators,
   addModerator,
   acceptModerationRequest,
   resign,

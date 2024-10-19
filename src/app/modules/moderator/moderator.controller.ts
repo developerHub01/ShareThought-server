@@ -5,6 +5,30 @@ import { UserModel } from "../user/model/model";
 import { sendResponse } from "../../utils/send.response";
 import { IRequestWithActiveDetails } from "../../interface/interface";
 import { ModeratorCache } from "./moderator.cache";
+import { ModeratorServices } from "./moderator.services";
+
+const getAllModerators = catchAsync(async (req, res) => {
+  const { channelId, channelRole } = req as IRequestWithActiveDetails;
+
+  if (channelRole === "NORMAL_MODERATOR")
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      "Access denied: Only channel owners or super moderators can perform this action.",
+    );
+
+  const result = await ModeratorServices.getAllModerators(
+    req.query,
+    channelId as string,
+    channelRole,
+  );
+
+  return sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "moderators list found successfully",
+    data: result,
+  });
+});
 
 const addModerator = catchAsync(async (req, res) => {
   const { userId } = req.body; /* userId ===> moderatorId */
@@ -78,11 +102,6 @@ const resign = catchAsync(async (req, res) => {
   });
 });
 
-/* 
-    TODO
-*/
-
-// eslint-disable-next-line @typescript-eslint/no-unused-vars
 const removeModerator = catchAsync(async (req, res) => {
   const { moderatorId } = req.params;
 
@@ -97,6 +116,7 @@ const removeModerator = catchAsync(async (req, res) => {
 });
 
 export const ModeratorController = {
+  getAllModerators,
   addModerator,
   acceptModerationRequest,
   updateModerator,
