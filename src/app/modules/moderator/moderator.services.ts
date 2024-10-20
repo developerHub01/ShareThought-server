@@ -272,7 +272,8 @@ const addModerator = async (channelId: string, payload: IModeratorPayload) => {
  * - if moderator not exist then throw error
  * - if moderator is not current channels moderator then throw error
  * - find targeted moderator channel role
- * - if targed moderator is super moderator
+ * - if targed moderator is super moderator and user is not AUTHOR then throw an error
+ * - update MODERATOR permissions
  * **/
 const updateModerator = async (
   channelId: string,

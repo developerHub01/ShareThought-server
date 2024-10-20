@@ -9,7 +9,7 @@ import { IRequestWithActiveDetails } from "../interface/interface";
  *    - if userId not exist then user is not logged in
  *    - if channelId is not exist means no channel is activated
  *
- * - if user is moderator then check moderatorPermissions if have moderator add or remove permissions then he is a SUPER_MODERATOR else NORMA_MODERATOR
+ * - if user is moderator then check moderatorPermissions if have moderator add, remove or update permissions or any types of moderator permissions then he is a SUPER_MODERATOR else NORMA_MODERATOR
  * - else user is the AUTHOR of the channel
  * ***/
 
