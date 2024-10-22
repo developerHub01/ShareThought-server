@@ -13,7 +13,7 @@ const createOrUpdatePostImages = imageUpload.fields([
 const matchReqBodyFilesWithValidationSchema = catchAsync(
   async (req, res, next) => {
     let bannerPath;
-
+    
     if (req?.body?.banner?.length) bannerPath = req?.body?.banner[0];
 
     if (bannerPath) req.body.banner = bannerPath;
@@ -31,7 +31,9 @@ const matchReqBodyFilesWithValidationSchema = catchAsync(
 const isValidTags = catchAsync(async (req, res, next) => {
   const { tags } = req.body;
 
-  tags.forEach((tag: string, index: number) => {
+  if (!tags) throw new AppError(httpStatus.BAD_REQUEST, `tags not provided`);
+
+  tags?.forEach((tag: string, index: number) => {
     tag = tag.trim();
     if (tag.split(" ").length > 1)
       throw new AppError(httpStatus.BAD_REQUEST, `${tag} is not a valid`);
