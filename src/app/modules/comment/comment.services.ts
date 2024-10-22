@@ -94,29 +94,47 @@ const removeCommentImageField = async (commentId: string) => {
 };
 
 const togglePinComment = async (commentId: string) => {
+  /* used aggregation to make that change in single query */
   return await CommentModel.findByIdAndUpdate(
     commentId,
-    {
-      $set: {
-        isPinned: {
-          $not: "$isPinned",
+    [
+      {
+        $set: {
+          isPinned: {
+            $cond: {
+              if: {
+                $eq: ["$isPinned", true],
+              },
+              then: false,
+              else: true,
+            },
+          },
         },
       },
-    },
+    ],
     { new: true },
   );
 };
 
 const toggleVisibility = async (commentId: string) => {
+  /* used aggregation to make that change in single query */
   return await CommentModel.findByIdAndUpdate(
     commentId,
-    {
-      $set: {
-        isHidden: {
-          $not: "$isHidden",
+    [
+      {
+        $set: {
+          isHidden: {
+            $cond: {
+              if: {
+                $eq: ["$isHidden", true],
+              },
+              then: false,
+              else: true,
+            },
+          },
         },
       },
-    },
+    ],
     { new: true },
   );
 };

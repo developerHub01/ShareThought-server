@@ -42,6 +42,15 @@ router.get(
   CommentController.togglePinComment,
 );
 
+/**
+ *  toggle visibility a comment
+ * ***/
+router.get(
+  "/toggle_visibility/:id",
+  getLoggedInUser,
+  CommentController.toggleVisibility,
+);
+
 router.get(
   "/:id" /* :id ===> commmentId */,
   getLoggedInUser,
