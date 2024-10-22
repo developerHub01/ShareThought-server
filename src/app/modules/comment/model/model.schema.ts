@@ -49,6 +49,14 @@ const commentSchema = new Schema<IComment, ICommentModel>(
     commentImage: {
       type: String,
     },
+    isPinned: {
+      type: Boolean,
+      default: false,
+    },
+    isHidden: {
+      type: Boolean,
+      default: false,
+    },
   },
   {
     timestamps: true,

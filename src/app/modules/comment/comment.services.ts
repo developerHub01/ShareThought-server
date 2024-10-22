@@ -93,6 +93,34 @@ const removeCommentImageField = async (commentId: string) => {
   );
 };
 
+const togglePinComment = async (commentId: string) => {
+  return await CommentModel.findByIdAndUpdate(
+    commentId,
+    {
+      $set: {
+        isPinned: {
+          $not: "$isPinned",
+        },
+      },
+    },
+    { new: true },
+  );
+};
+
+const toggleVisibility = async (commentId: string) => {
+  return await CommentModel.findByIdAndUpdate(
+    commentId,
+    {
+      $set: {
+        isHidden: {
+          $not: "$isHidden",
+        },
+      },
+    },
+    { new: true },
+  );
+};
+
 export const CommentServices = {
   findCommentByPostId,
   findCommentById,
@@ -102,4 +130,6 @@ export const CommentServices = {
   deleteComment,
   deleteAllComment,
   removeCommentImageField,
+  togglePinComment,
+  toggleVisibility,
 };

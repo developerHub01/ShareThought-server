@@ -166,6 +166,32 @@ const deleteAllComment = catchAsync(async (req, res) => {
   });
 });
 
+const togglePinComment = catchAsync(async (req, res) => {
+  const { id: commentId } = req.params;
+
+  const result = await CommentServices.togglePinComment(commentId);
+
+  return sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "comment pinned succesfully",
+    data: result,
+  });
+});
+
+const toggleVisibility = catchAsync(async (req, res) => {
+  const { id: commentId } = req.params;
+
+  const result = await CommentServices.toggleVisibility(commentId);
+
+  return sendResponse(res, {
+    statusCode: httpStatus.OK,
+    success: true,
+    message: "comment hide succesfully",
+    data: result,
+  });
+});
+
 export const CommentController = {
   findCommentByPostId,
   findCommentById,
@@ -174,4 +200,6 @@ export const CommentController = {
   updateComment,
   deleteComment,
   deleteAllComment,
+  togglePinComment,
+  toggleVisibility,
 };

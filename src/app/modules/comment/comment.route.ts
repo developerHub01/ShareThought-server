@@ -16,9 +16,7 @@ import isVerified from "../../middleware/is.Verified";
 const router = express.Router();
 
 /**
- *
  *  get blog post all comments
- *
  * ***/
 router.get(
   "/post/:postId",
@@ -27,14 +25,21 @@ router.get(
 );
 
 /**
- *
  *  get community post all comments
- *
  * ***/
 router.get(
   "/community/:communityPostId",
   getLoggedInUser,
   CommentController.findCommentByPostId,
+);
+
+/**
+ *  toggle pin a comment
+ * ***/
+router.get(
+  "/toggle_pin/:id",
+  getLoggedInUser,
+  CommentController.togglePinComment,
 );
 
 router.get(
@@ -44,9 +49,7 @@ router.get(
 );
 
 /**
- *
  *  post comments in blog post
- *
  * ***/
 router.post(
   "/:postId",
@@ -61,9 +64,7 @@ router.post(
 );
 
 /**
- *
  *  post comments in community post
- *
  * ***/
 router.post(
   "/community/:communityPostId",
@@ -113,9 +114,7 @@ router.delete(
 );
 
 /**
- *
  *  delete blog post all comments
- *
  * ***/
 router.delete(
   "/post/:postId",
@@ -127,9 +126,7 @@ router.delete(
 );
 
 /**
- *
  *  delete community post all comments
- *
  * ***/
 router.delete(
   "/community/:communityPostId" /* :id ===> postId */,

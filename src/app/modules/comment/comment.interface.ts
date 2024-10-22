@@ -10,6 +10,8 @@ export interface IComment {
   content: string;
   replies: Array<Types.ObjectId>;
   commentImage: string;
+  isPinned?: boolean;
+  isHidden?: boolean;
 }
 
 export interface ICreateComment {
