@@ -1,5 +1,9 @@
+import httpStatus from "http-status";
 import QueryBuilder from "../../builder/QueryBuilder";
+import AppError from "../../errors/AppError";
 import { TAuthorType, TPostType } from "../../interface/interface";
+import { TChannelRole } from "../channel/channel.interface";
+import { IModeratorPermissions } from "../moderator/moderator.interface";
 import { ICreateComment } from "./comment.interface";
 import { CommentModel } from "./model/model";
 
@@ -93,48 +97,64 @@ const removeCommentImageField = async (commentId: string) => {
   );
 };
 
-const togglePinComment = async (commentId: string) => {
-  /* used aggregation to make that change in single query */
+const togglePinComment = async (
+  commentId: string,
+  channelRole: TChannelRole,
+  moderatorPermissions: IModeratorPermissions | undefined,
+) => {
+  const commentData = await CommentModel.findById(commentId);
+
+  if (!commentData)
+    throw new AppError(httpStatus.NOT_FOUND, "comment not found");
+
+  const { isPinned: commentPinStatus } = commentData;
+
+  const canPermissionToPinOrUnpin =
+    (commentPinStatus && !moderatorPermissions?.comment?.unpin) ||
+    (!commentPinStatus && !moderatorPermissions?.comment?.pin);
+
+  if (channelRole !== "AUTHOR" && canPermissionToPinOrUnpin)
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      `you are not permitted to ${commentPinStatus ? "unpin" : "pin"} comment`,
+    );
+
   return await CommentModel.findByIdAndUpdate(
     commentId,
-    [
-      {
-        $set: {
-          isPinned: {
-            $cond: {
-              if: {
-                $eq: ["$isPinned", true],
-              },
-              then: false,
-              else: true,
-            },
-          },
-        },
-      },
-    ],
+    {
+      isPinned: !commentPinStatus,
+    },
     { new: true },
   );
 };
 
-const toggleVisibility = async (commentId: string) => {
-  /* used aggregation to make that change in single query */
+const toggleVisibility = async (
+  commentId: string,
+  channelRole: TChannelRole,
+  moderatorPermissions: IModeratorPermissions | undefined,
+) => {
+  const commentData = await CommentModel.findById(commentId);
+
+  if (!commentData)
+    throw new AppError(httpStatus.NOT_FOUND, "comment not found");
+
+  const { isHidden: commentHiddenStatus } = commentData;
+
+  const canPermissionToHideOrUnhide =
+    (commentHiddenStatus && !moderatorPermissions?.comment?.show) ||
+    (!commentHiddenStatus && !moderatorPermissions?.comment?.hide);
+
+  if (channelRole !== "AUTHOR" && canPermissionToHideOrUnhide)
+    throw new AppError(
+      httpStatus.FORBIDDEN,
+      `you are not permitted to ${commentHiddenStatus ? "unhide" : "hide"} comment`,
+    );
+
   return await CommentModel.findByIdAndUpdate(
     commentId,
-    [
-      {
-        $set: {
-          isHidden: {
-            $cond: {
-              if: {
-                $eq: ["$isHidden", true],
-              },
-              then: false,
-              else: true,
-            },
-          },
-        },
-      },
-    ],
+    {
+      isHidden: !commentHiddenStatus,
+    },
     { new: true },
   );
 };

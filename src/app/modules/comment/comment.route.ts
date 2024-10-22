@@ -12,6 +12,8 @@ import verifyMyCommunityPost from "../../middleware/verify.my.community.post";
 import getActiveChannel from "../../middleware/get.active.channel";
 import readReqBodyFiles from "../../middleware/read.req.body.files";
 import isVerified from "../../middleware/is.Verified";
+import checkChannelUserRole from "../../middleware/check.channel.user.role";
+import checkModeratorStatus from "../../middleware/check.moderator.status";
 
 const router = express.Router();
 
@@ -39,6 +41,9 @@ router.get(
 router.get(
   "/toggle_pin/:id",
   getLoggedInUser,
+  getActiveChannel,
+  checkModeratorStatus,
+  checkChannelUserRole,
   CommentController.togglePinComment,
 );
 
@@ -48,6 +53,10 @@ router.get(
 router.get(
   "/toggle_visibility/:id",
   getLoggedInUser,
+  getLoggedInUser,
+  getActiveChannel,
+  checkModeratorStatus,
+  checkChannelUserRole,
   CommentController.toggleVisibility,
 );
 

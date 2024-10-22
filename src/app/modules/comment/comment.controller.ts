@@ -168,26 +168,38 @@ const deleteAllComment = catchAsync(async (req, res) => {
 
 const togglePinComment = catchAsync(async (req, res) => {
   const { id: commentId } = req.params;
+  const { moderatorPermissions, channelRole } =
+    req as IRequestWithActiveDetails;
 
-  const result = await CommentServices.togglePinComment(commentId);
+  const result = await CommentServices.togglePinComment(
+    commentId,
+    channelRole,
+    moderatorPermissions,
+  );
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "comment pinned succesfully",
+    message: `comment ${result?.isPinned ? "pinned" : "unpinned"} succesfully`,
     data: result,
   });
 });
 
 const toggleVisibility = catchAsync(async (req, res) => {
   const { id: commentId } = req.params;
+  const { moderatorPermissions, channelRole } =
+    req as IRequestWithActiveDetails;
 
-  const result = await CommentServices.toggleVisibility(commentId);
+  const result = await CommentServices.toggleVisibility(
+    commentId,
+    channelRole,
+    moderatorPermissions,
+  );
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
-    message: "comment hide succesfully",
+    message: `comment ${result?.isHidden ? "hide" : "unhide"} succesfully`,
     data: result,
   });
 });

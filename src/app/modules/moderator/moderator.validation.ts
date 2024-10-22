@@ -49,6 +49,7 @@ const postPermissionsSchema = zod.object({
   hide: zod.boolean().optional(),
   show: zod.boolean().optional(),
   pin: zod.boolean().optional(),
+  unpin: zod.boolean().optional(),
 });
 
 const communityPostPermissionsSchema = zod.object({
@@ -65,6 +66,7 @@ const commentPermissionsSchema = zod.object({
   hide: zod.boolean().optional(),
   show: zod.boolean().optional(),
   pin: zod.boolean().optional(),
+  unpin: zod.boolean().optional(),
 });
 
 const channelPermissionsSchema = zod.object({});

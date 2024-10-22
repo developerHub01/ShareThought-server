@@ -16,6 +16,7 @@ export interface IPostContextPermissions {
   hide: boolean;
   show: boolean;
   pin: boolean;
+  unpin: boolean;
 }
 
 export interface ICommunityPostContextPermissions {
@@ -32,6 +33,7 @@ export interface ICommentContextPermissions {
   hide: boolean;
   show: boolean;
   pin: boolean;
+  unpin: boolean;
 }
 
 export interface IChannelContextPermissions {}

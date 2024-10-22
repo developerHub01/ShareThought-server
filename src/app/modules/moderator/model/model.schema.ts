@@ -68,6 +68,11 @@ const postContextPermissionSchema = new Schema<IPostContextPermissions>(
       default: false,
       required: true,
     },
+    unpin: {
+      type: Boolean,
+      default: false,
+      required: true,
+    },
   },
   {
     _id: false,
@@ -131,6 +136,11 @@ const commentContextPermissionSchema = new Schema<ICommentContextPermissions>(
       required: true,
     },
     pin: {
+      type: Boolean,
+      default: false,
+      required: true,
+    },
+    unpin: {
       type: Boolean,
       default: false,
       required: true,
