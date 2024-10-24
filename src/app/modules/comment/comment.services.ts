@@ -1,9 +1,6 @@
-import httpStatus from "http-status";
+import mongoose from "mongoose";
 import QueryBuilder from "../../builder/QueryBuilder";
-import AppError from "../../errors/AppError";
 import { TAuthorType, TPostType } from "../../interface/interface";
-import { TChannelRole } from "../channel/channel.interface";
-import { IModeratorPermissions } from "../moderator/moderator.interface";
 import { ICreateComment } from "./comment.interface";
 import { CommentModel } from "./model/model";
 
@@ -37,7 +34,10 @@ const findCommentByPostId = async (
 };
 
 const findCommentById = async (commentId: string) => {
-  return await CommentModel.findComment(commentId);
+  return await CommentModel.findById(commentId).populate({
+    path: "commentAuthorId",
+    select: "fullName avatar",
+  });
 };
 
 const createComment = async (
@@ -76,15 +76,56 @@ const replyComment = async (
 };
 
 const updateComment = async (payload: ICreateComment, commentId: string) => {
-  return await CommentModel.updateComment(payload, commentId);
+  return await CommentModel.findByIdAndUpdate(
+    commentId,
+    {
+      ...payload,
+    },
+    { new: true },
+  );
 };
 
 const deleteComment = async (commentId: string) => {
-  return await CommentModel.deleteComment(commentId);
+  const session = await mongoose.startSession();
+  try {
+    session.startTransaction();
+
+    const result = await CommentModel.deleteCommentsWithReplies(
+      commentId,
+      session,
+    );
+
+    await session.commitTransaction();
+    await session.endSession();
+    return result;
+  } catch (error) {
+    await session.abortTransaction();
+    await session.endSession();
+    throw error;
+  }
 };
 
 const deleteAllComment = async (postId: string, postType: TPostType) => {
-  return await CommentModel.deleteAllCommentByPostId(postId, postType);
+  const session = await mongoose.startSession();
+  session.startTransaction();
+  try {
+    const result = await CommentModel.find(
+      postType === "blogPost" ? { postId } : { communityPostId: postId },
+    ).select("_id");
+
+    for (const commentData of result) {
+      const { _id } = commentData;
+      await CommentModel.deleteCommentsWithReplies(_id?.toString(), session);
+    }
+    await session.commitTransaction();
+    await session.endSession();
+
+    return result;
+  } catch (error) {
+    await session.abortTransaction();
+    await session.endSession();
+    throw error;
+  }
 };
 
 const removeCommentImageField = async (commentId: string) => {
@@ -97,64 +138,47 @@ const removeCommentImageField = async (commentId: string) => {
   );
 };
 
-const togglePinComment = async (
-  commentId: string,
-  channelRole: TChannelRole,
-  moderatorPermissions: IModeratorPermissions | undefined,
-) => {
-  const commentData = await CommentModel.findById(commentId);
-
-  if (!commentData)
-    throw new AppError(httpStatus.NOT_FOUND, "comment not found");
-
-  const { isPinned: commentPinStatus } = commentData;
-
-  const canPermissionToPinOrUnpin =
-    (commentPinStatus && !moderatorPermissions?.comment?.unpin) ||
-    (!commentPinStatus && !moderatorPermissions?.comment?.pin);
-
-  if (channelRole !== "AUTHOR" && canPermissionToPinOrUnpin)
-    throw new AppError(
-      httpStatus.FORBIDDEN,
-      `you are not permitted to ${commentPinStatus ? "unpin" : "pin"} comment`,
-    );
-
+const togglePinComment = async (commentId: string) => {
+  /* used aggregation to make that change in single query */
   return await CommentModel.findByIdAndUpdate(
     commentId,
-    {
-      isPinned: !commentPinStatus,
-    },
+    [
+      {
+        $set: {
+          isPinned: {
+            $cond: {
+              if: {
+                $eq: ["$isPinned", true],
+              },
+              then: false,
+              else: true,
+            },
+          },
+        },
+      },
+    ],
     { new: true },
   );
 };
 
-const toggleVisibility = async (
-  commentId: string,
-  channelRole: TChannelRole,
-  moderatorPermissions: IModeratorPermissions | undefined,
-) => {
-  const commentData = await CommentModel.findById(commentId);
-
-  if (!commentData)
-    throw new AppError(httpStatus.NOT_FOUND, "comment not found");
-
-  const { isHidden: commentHiddenStatus } = commentData;
-
-  const canPermissionToHideOrUnhide =
-    (commentHiddenStatus && !moderatorPermissions?.comment?.show) ||
-    (!commentHiddenStatus && !moderatorPermissions?.comment?.hide);
-
-  if (channelRole !== "AUTHOR" && canPermissionToHideOrUnhide)
-    throw new AppError(
-      httpStatus.FORBIDDEN,
-      `you are not permitted to ${commentHiddenStatus ? "unhide" : "hide"} comment`,
-    );
-
+const toggleVisibility = async (commentId: string) => {
   return await CommentModel.findByIdAndUpdate(
     commentId,
-    {
-      isHidden: !commentHiddenStatus,
-    },
+    [
+      {
+        $set: {
+          isHidden: {
+            $cond: {
+              if: {
+                $eq: ["$isHidden", true],
+              },
+              then: false,
+              else: true,
+            },
+          },
+        },
+      },
+    ],
     { new: true },
   );
 };

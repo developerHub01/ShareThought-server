@@ -25,11 +25,7 @@ const checkChannelUserRole = catchAsync(async (req, res, next) => {
   if (!userId)
     throw new AppError(httpStatus.UNAUTHORIZED, "you are not logged in");
 
-  if (!channelId)
-    throw new AppError(
-      httpStatus.UNAUTHORIZED,
-      "your channel is not activated",
-    );
+  if (!channelId) return next();
 
   if (moderatorId) {
     if (!isVerifiedModerator)

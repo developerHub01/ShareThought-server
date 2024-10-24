@@ -168,14 +168,8 @@ const deleteAllComment = catchAsync(async (req, res) => {
 
 const togglePinComment = catchAsync(async (req, res) => {
   const { id: commentId } = req.params;
-  const { moderatorPermissions, channelRole } =
-    req as IRequestWithActiveDetails;
 
-  const result = await CommentServices.togglePinComment(
-    commentId,
-    channelRole,
-    moderatorPermissions,
-  );
+  const result = await CommentServices.togglePinComment(commentId);
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -187,14 +181,8 @@ const togglePinComment = catchAsync(async (req, res) => {
 
 const toggleVisibility = catchAsync(async (req, res) => {
   const { id: commentId } = req.params;
-  const { moderatorPermissions, channelRole } =
-    req as IRequestWithActiveDetails;
 
-  const result = await CommentServices.toggleVisibility(
-    commentId,
-    channelRole,
-    moderatorPermissions,
-  );
+  const result = await CommentServices.toggleVisibility(commentId);
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,

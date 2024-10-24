@@ -62,6 +62,7 @@ const communityPostPermissionsSchema = zod.object({
 
 const commentPermissionsSchema = zod.object({
   create: zod.boolean().optional(),
+  update: zod.boolean().optional(),
   delete: zod.boolean().optional(),
   hide: zod.boolean().optional(),
   show: zod.boolean().optional(),

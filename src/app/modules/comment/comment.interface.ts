@@ -1,5 +1,9 @@
+import { IChannel } from "./../channel/channel.interface";
+import { IUser } from "./../user/user.interface";
+import { ICommunityPost } from "./../community.post/community.post.interface";
+import { IPost } from "./../post/post.interface";
 import { ClientSession, Model, Types } from "mongoose";
-import { TAuthorType, TPostType } from "../../interface/interface";
+import { TAuthorType } from "../../interface/interface";
 
 export interface IComment {
   postId?: Types.ObjectId;
@@ -10,6 +14,24 @@ export interface IComment {
   content: string;
   replies: Array<Types.ObjectId>;
   commentImage: string;
+  isPinned?: boolean;
+  isHidden?: boolean;
+}
+
+export interface ICommentPopulated
+  extends Omit<
+    IChannel,
+    | "postId"
+    | "communityPostId"
+    | "commentAuthorId"
+    | "commentAuthorChannelId"
+    | "parentCommentId"
+  > {
+  postId?: IPost;
+  communityPostId?: ICommunityPost;
+  commentAuthorId?: IUser;
+  commentAuthorChannelId?: IChannel;
+  parentCommentId: IComment;
   isPinned?: boolean;
   isHidden?: boolean;
 }
@@ -41,21 +63,10 @@ export interface ICommentModel extends Model<IComment> {
     authorType: TAuthorType,
   ): Promise<unknown>;
 
-  findComment(id: string): Promise<unknown>;
-
   createComment(payload: ICreateComment): Promise<unknown>;
 
   deleteCommentsWithReplies(
     commentId: string,
     session?: ClientSession,
   ): Promise<unknown>;
-
-  deleteComment(id: string): Promise<boolean | unknown>;
-
-  deleteAllCommentByPostId(
-    postId: string,
-    postType: TPostType,
-  ): Promise<unknown>;
-
-  updateComment(payload: ICreateComment, commentId: string): Promise<unknown>;
 }

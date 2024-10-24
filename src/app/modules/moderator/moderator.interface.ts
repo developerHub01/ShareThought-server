@@ -29,6 +29,7 @@ export interface ICommunityPostContextPermissions {
 
 export interface ICommentContextPermissions {
   create: boolean;
+  update: boolean;
   delete: boolean;
   hide: boolean;
   show: boolean;

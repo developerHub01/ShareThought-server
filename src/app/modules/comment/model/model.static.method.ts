@@ -3,19 +3,12 @@ import { CommentModel } from "./model";
 import commentSchema from "./model.schema";
 import mongoose, { ClientSession, Types } from "mongoose";
 import AppError from "../../../errors/AppError";
-import { TAuthorType, TPostType } from "../../../interface/interface";
+import { TAuthorType } from "../../../interface/interface";
 import { ICreateComment } from "../comment.interface";
 import { CommentReactionModel } from "../../comment.reaction/model/model";
 import { CloudinaryUtils } from "../../../utils/cloudinary.utils";
 import { CommunityPostModel } from "../../community.post/model/model";
 import { PostModel } from "../../post/model/model";
-
-commentSchema.statics.findComment = async (id: string): Promise<unknown> => {
-  return await CommentModel.findById(id).populate({
-    path: "commentAuthorId",
-    select: "fullName avatar",
-  });
-};
 
 commentSchema.statics.isCommentOfMyAnyChannel = async (
   userId: string,
@@ -207,19 +200,6 @@ commentSchema.statics.createComment = async (
   }
 };
 
-commentSchema.statics.updateComment = async (
-  payload: Partial<ICreateComment>,
-  commentId: string,
-): Promise<unknown> => {
-  return await CommentModel.findByIdAndUpdate(
-    commentId,
-    {
-      ...payload,
-    },
-    { new: true },
-  );
-};
-
 commentSchema.statics.deleteCommentsWithReplies = async (
   commentId: string,
   session?: ClientSession,
@@ -260,52 +240,4 @@ commentSchema.statics.deleteCommentsWithReplies = async (
   if (result && commentImage) await CloudinaryUtils.deleteFile([commentImage]);
 
   return result;
-};
-
-commentSchema.statics.deleteComment = async (
-  commentId: string,
-): Promise<boolean | unknown> => {
-  const session = await mongoose.startSession();
-  try {
-    session.startTransaction();
-
-    const result = await CommentModel.deleteCommentsWithReplies(
-      commentId,
-      session,
-    );
-
-    await session.commitTransaction();
-    await session.endSession();
-    return result;
-  } catch (error) {
-    await session.abortTransaction();
-    await session.endSession();
-    throw error;
-  }
-};
-
-commentSchema.statics.deleteAllCommentByPostId = async (
-  postId: string,
-  postType: TPostType,
-): Promise<unknown> => {
-  const session = await mongoose.startSession();
-  session.startTransaction();
-  try {
-    const result = await CommentModel.find(
-      postType === "blogPost" ? { postId } : { communityPostId: postId },
-    ).select("_id");
-
-    for (const commentData of result) {
-      const { _id } = commentData;
-      await CommentModel.deleteCommentsWithReplies(_id?.toString(), session);
-    }
-    await session.commitTransaction();
-    await session.endSession();
-
-    return result;
-  } catch (error) {
-    await session.abortTransaction();
-    await session.endSession();
-    throw error;
-  }
 };

@@ -5,7 +5,6 @@ import { validateRequest } from "../../middleware/validate.request";
 import { CommentValidation } from "./comment.validation";
 import verifyMyPost from "../../middleware/verify.my.post";
 import { CommentMiddleware } from "./comment.middleware";
-import verifyMyComment from "../../middleware/verify.my.comment";
 import checkChannelStatus from "../../middleware/check.channel.status";
 import haveAccessDeleteComment from "../../middleware/have.access.delete.comment";
 import verifyMyCommunityPost from "../../middleware/verify.my.community.post";
@@ -44,6 +43,7 @@ router.get(
   getActiveChannel,
   checkModeratorStatus,
   checkChannelUserRole,
+  CommentMiddleware.havePermissionToComment("pin"), // for pin/unpin anyone can be pass as argument
   CommentController.togglePinComment,
 );
 
@@ -53,10 +53,10 @@ router.get(
 router.get(
   "/toggle_visibility/:id",
   getLoggedInUser,
-  getLoggedInUser,
   getActiveChannel,
   checkModeratorStatus,
   checkChannelUserRole,
+  CommentMiddleware.havePermissionToComment("hide"), // for hide/show anyone can be pass as argument
   CommentController.toggleVisibility,
 );
 
@@ -78,6 +78,9 @@ router.post(
   getLoggedInUser,
   isVerified,
   checkChannelStatus,
+  checkModeratorStatus,
+  checkChannelUserRole,
+  CommentMiddleware.havePermissionToComment("create"),
   CommentController.createComment,
 );
 
@@ -93,6 +96,9 @@ router.post(
   getLoggedInUser,
   isVerified,
   checkChannelStatus,
+  checkModeratorStatus,
+  checkChannelUserRole,
+  CommentMiddleware.havePermissionToComment("create"),
   CommentController.createComment,
 );
 
@@ -106,9 +112,15 @@ router.post(
   getLoggedInUser,
   isVerified,
   checkChannelStatus,
+  checkModeratorStatus,
+  checkChannelUserRole,
+  CommentMiddleware.havePermissionToComment("create"),
   CommentController.replyComment,
 );
 
+/***
+ * update comment
+ * **/
 router.patch(
   "/:id" /* :id ===> commentId */,
   CommentMiddleware.createOrUpdateCommentImages,
@@ -118,7 +130,9 @@ router.patch(
   getLoggedInUser,
   isVerified,
   checkChannelStatus,
-  verifyMyComment,
+  checkModeratorStatus,
+  checkChannelUserRole,
+  CommentMiddleware.havePermissionToComment("update"),
   CommentController.updateComment,
 );
 
@@ -128,6 +142,9 @@ router.delete(
   isVerified,
   checkChannelStatus,
   haveAccessDeleteComment,
+  checkModeratorStatus,
+  checkChannelUserRole,
+  CommentMiddleware.havePermissionToComment("delete"),
   CommentController.deleteComment,
 );
 

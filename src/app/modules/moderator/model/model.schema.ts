@@ -120,6 +120,11 @@ const commentContextPermissionSchema = new Schema<ICommentContextPermissions>(
       default: false,
       required: true,
     },
+    update: {
+      type: Boolean,
+      default: false,
+      required: true,
+    },
     delete: {
       type: Boolean,
       default: false,
