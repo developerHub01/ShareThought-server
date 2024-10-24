@@ -1,9 +1,6 @@
 import httpStatus from "http-status";
 import AppError from "../../errors/AppError";
-import {
-  IRequestWithActiveDetails,
-  TDocumentType,
-} from "../../interface/interface";
+import { IRequestWithActiveDetails } from "../../interface/interface";
 import catchAsync from "../../utils/catch.async";
 import { imageUpload } from "../../utils/multer.image.upload";
 import { ICommentContextPermissions } from "../moderator/moderator.interface";
@@ -55,7 +52,10 @@ const havePermissionToComment = (action: keyof ICommentContextPermissions) =>
         .populate({
           path: "communityPostId",
           select: "channelId",
-        })) as unknown as TDocumentType<ICommentPopulated>);
+        })
+        .select(
+          "-createdAt -updatedAt -replies -content -commentImage",
+        )) as ICommentPopulated);
 
     // If action is not create and the comment is not found, throw an error
     if (action !== "create" && !commentData)
@@ -117,6 +117,57 @@ const havePermissionToComment = (action: keyof ICommentContextPermissions) =>
     // Authors can always perform these actions, otherwise check moderator permissions
     if (["hide", "show", "pin", "unpin", "create"].includes(action)) {
       if (isAuthor) return next();
+      if (
+        moderatorPermissions?.comment &&
+        moderatorPermissions?.comment[action]
+      )
+        return next();
+      throw new AppError(
+        httpStatus.FORBIDDEN,
+        "You are not permitted to take that action",
+      );
+    }
+
+    if (["pin", "unpin"].includes(action) && commentData) {
+      if (isAuthor) return next();
+
+      const commentCurrentPinStatus = commentData?.isPinned;
+
+      if (
+        (commentCurrentPinStatus && !moderatorPermissions?.comment?.unpin) ||
+        (!commentCurrentPinStatus && !moderatorPermissions?.comment?.pin)
+      )
+        throw new AppError(
+          httpStatus.FORBIDDEN,
+          "You are not permitted to take that action",
+        );
+
+      if (
+        moderatorPermissions?.comment &&
+        moderatorPermissions?.comment[action]
+      )
+        return next();
+      throw new AppError(
+        httpStatus.FORBIDDEN,
+        "You are not permitted to take that action",
+      );
+    }
+    if (["hide", "show"].includes(action) && commentData) {
+      if (isAuthor) return next();
+
+      const commentCurrentVisibilityStatus = commentData?.isHidden;
+
+      if (
+        (commentCurrentVisibilityStatus &&
+          !moderatorPermissions?.comment?.show) ||
+        (!commentCurrentVisibilityStatus &&
+          !moderatorPermissions?.comment?.hide)
+      )
+        throw new AppError(
+          httpStatus.FORBIDDEN,
+          "You are not permitted to take that action",
+        );
+
       if (
         moderatorPermissions?.comment &&
         moderatorPermissions?.comment[action]
