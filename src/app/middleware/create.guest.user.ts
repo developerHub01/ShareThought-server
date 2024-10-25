@@ -132,9 +132,10 @@ const createGuestUserIfNeed = catchAsync(
 
         // Set new guest token in cookie
         res.cookie(Constatnt.TOKENS.GUEST_TOKEN, guestToken, {
-          secure: true,
+          secure: config.PROJECT_ENVIRONMENT !== "development", // if development environment then false else true
           httpOnly: true,
-          sameSite: "none",
+          sameSite:
+            config.PROJECT_ENVIRONMENT === "development" ? "lax" : "none",
         });
 
         // Clear any other tokens if only guest token is valid

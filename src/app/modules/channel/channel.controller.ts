@@ -213,16 +213,16 @@ const switchChannel = catchAsync(async (req, res) => {
     );
 
   res.cookie(Constatnt.TOKENS.CHANNEL_TOKEN, channelToken, {
-    secure: true,
+    secure: config.PROJECT_ENVIRONMENT !== "development", // if development environment then false else true
     httpOnly: true,
-    sameSite: "none",
+    sameSite: config.PROJECT_ENVIRONMENT === "development" ? "lax" : "none",
   });
 
   if (moderatorToken)
     res.cookie(Constatnt.TOKENS.MODERATOR_TOKEN, moderatorToken, {
-      secure: true,
+      secure: config.PROJECT_ENVIRONMENT !== "development", // if development environment then false else true
       httpOnly: true,
-      sameSite: "none",
+      sameSite: config.PROJECT_ENVIRONMENT === "development" ? "lax" : "none",
     });
 
   return sendResponse(res, {

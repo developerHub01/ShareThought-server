@@ -47,18 +47,18 @@ const loginUser = catchAsync(async (req, res) => {
   res.clearCookie(Constatnt.TOKENS.GUEST_TOKEN);
 
   res.cookie(Constatnt.TOKENS.ACCESS_TOKEN, accessToken, {
-    secure: !(config.PROJECT_ENVIRONMENT === "development"), // if development environment then false else true
+    secure: config.PROJECT_ENVIRONMENT !== "development", // if development environment then false else true
     httpOnly: true,
-    sameSite: "none",
+    sameSite: config.PROJECT_ENVIRONMENT === "development" ? "lax" : "none",
     maxAge:
       Number(millisecondsConvert(config.JWT_ACCESS_EXPIRES_IN)) ??
       1000 * 60 * 60 * 24,
   });
 
   res.cookie(Constatnt.TOKENS.REFRESH_TOKEN, refreshToken, {
-    secure: !(config.PROJECT_ENVIRONMENT === "development"), // if development environment then false else true
+    secure: config.PROJECT_ENVIRONMENT !== "development", // if development environment then false else true
     httpOnly: true,
-    sameSite: "none",
+    sameSite: config.PROJECT_ENVIRONMENT === "development" ? "lax" : "none",
     maxAge:
       Number(millisecondsConvert(config.JWT_REFRESH_EXPIRES_IN)) ??
       1000 * 60 * 60 * 24,

@@ -42,9 +42,9 @@ const handleRefreshToken = async (
   );
 
   res.cookie(Constatnt.TOKENS.ACCESS_TOKEN, newAccessToken, {
-    secure: !(config.PROJECT_ENVIRONMENT === "development"), // if development environment then false else true
+    secure: config.PROJECT_ENVIRONMENT !== "development", // if development environment then false else true
     httpOnly: true,
-    sameSite: "none",
+    sameSite: config.PROJECT_ENVIRONMENT === "development" ? "lax" : "none",
     maxAge:
       Number(millisecondsConvert(config.JWT_ACCESS_EXPIRES_IN)) ??
       1000 * 60 * 60 * 24,
