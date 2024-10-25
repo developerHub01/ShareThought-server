@@ -11,11 +11,14 @@ import { CommentModel } from "./model/model";
 const findCommentByPostId = catchAsync(async (req, res) => {
   const { postId, communityPostId } = req.params;
 
-  const result = await CommentServices.findCommentByPostId(
-    req.query,
-    postId || communityPostId,
-    postId ? "blogPost" : "communityPost",
-  );
+  const {  isMyPost } = req as IRequestWithActiveDetails;
+
+  const result = await CommentServices.findCommentByPostId({
+    query: req.query,
+    postId: postId || communityPostId,
+    postType: postId ? "blogPost" : "communityPost",
+    isMyPost,
+  });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,

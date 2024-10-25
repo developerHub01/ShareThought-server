@@ -1,17 +1,35 @@
 import mongoose from "mongoose";
 import QueryBuilder from "../../builder/QueryBuilder";
 import { TAuthorType, TPostType } from "../../interface/interface";
-import { ICreateComment } from "./comment.interface";
+import {
+  ICreateComment,
+  IFindCommentByPostIdServiceParams,
+} from "./comment.interface";
 import { CommentModel } from "./model/model";
 
-const findCommentByPostId = async (
-  query: Record<string, unknown>,
-  postId: string,
-  postType: TPostType,
-) => {
+/**
+ * - first check that is that my post if my post means I am the AUTHOR or an MODERATOR
+ * - if my post then only I can show the hidden comments
+ * - and we are finding those comments which are not pinned
+ * - after finding regular comments now check that is it first first page query? if then find all pinned comments
+ * - after finding pinned comments then merge them into an single array of comments
+ * - and also update comments count by adding pinned comments number with other comments count
+ * **/
+const findCommentByPostId = async ({
+  query,
+  postId,
+  postType,
+  isMyPost,
+}: IFindCommentByPostIdServiceParams) => {
+  let showHiddenComments = false;
+
+  if (isMyPost) showHiddenComments = true;
+
   const commentQuery = new QueryBuilder(
     CommentModel.find({
       ...(postType === "blogPost" ? { postId } : { communityPostId: postId }),
+      ...(showHiddenComments ? {} : { isHidden: false }),
+      isPinned: false,
       parentCommentId: { $exists: false },
     }).populate({
       path: "commentAuthorId",
@@ -25,7 +43,23 @@ const findCommentByPostId = async (
     .fields();
 
   const meta = await commentQuery.countTotal();
-  const result = await commentQuery.modelQuery;
+  let result = await commentQuery.modelQuery;
+
+  if (!query.page || Number(query.page) <= 1) {
+    const pinnedComments = await CommentModel.find({
+      ...(postType === "blogPost" ? { postId } : { communityPostId: postId }),
+      ...(showHiddenComments ? {} : { isHidden: false }),
+      isPinned: true,
+      parentCommentId: { $exists: false },
+    }).populate({
+      path: "commentAuthorId",
+      select: "fullName avatar",
+    });
+
+    result = [...pinnedComments, ...result];
+
+    meta.total = meta.total + pinnedComments.length;
+  }
 
   return {
     meta,

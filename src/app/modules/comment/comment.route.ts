@@ -3,16 +3,16 @@ import getLoggedInUser from "../../middleware/get.loggedin.user";
 import { CommentController } from "./comment.controller";
 import { validateRequest } from "../../middleware/validate.request";
 import { CommentValidation } from "./comment.validation";
-import verifyMyPost from "../../middleware/verify.my.post";
 import { CommentMiddleware } from "./comment.middleware";
 import checkChannelStatus from "../../middleware/check.channel.status";
 import haveAccessDeleteComment from "../../middleware/have.access.delete.comment";
-import verifyMyCommunityPost from "../../middleware/verify.my.community.post";
+import verifyMyPost from "../../middleware/verify.my.post";
 import getActiveChannel from "../../middleware/get.active.channel";
 import readReqBodyFiles from "../../middleware/read.req.body.files";
 import isVerified from "../../middleware/is.Verified";
 import checkChannelUserRole from "../../middleware/check.channel.user.role";
 import checkModeratorStatus from "../../middleware/check.moderator.status";
+import isMyPost from "../../middleware/is.my.post";
 
 const router = express.Router();
 
@@ -22,6 +22,10 @@ const router = express.Router();
 router.get(
   "/post/:postId",
   getLoggedInUser,
+  checkChannelStatus,
+  checkModeratorStatus,
+  checkChannelUserRole,
+  isMyPost,
   CommentController.findCommentByPostId,
 );
 
@@ -31,6 +35,10 @@ router.get(
 router.get(
   "/community/:communityPostId",
   getLoggedInUser,
+  checkChannelStatus,
+  checkModeratorStatus,
+  checkChannelUserRole,
+  isMyPost,
   CommentController.findCommentByPostId,
 );
 
@@ -168,7 +176,7 @@ router.delete(
   getLoggedInUser,
   isVerified,
   getActiveChannel,
-  verifyMyCommunityPost,
+  verifyMyPost,
   CommentController.deleteAllComment,
 );
 

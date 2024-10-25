@@ -3,7 +3,7 @@ import { IUser } from "./../user/user.interface";
 import { ICommunityPost } from "./../community.post/community.post.interface";
 import { IPost } from "./../post/post.interface";
 import { ClientSession, Model, Types } from "mongoose";
-import { TAuthorType } from "../../interface/interface";
+import { TAuthorType, TPostType } from "../../interface/interface";
 
 export interface IComment {
   postId?: Types.ObjectId;
@@ -44,6 +44,13 @@ export interface ICreateComment {
   parentCommentId?: string;
   content?: string;
   commentImage: string;
+}
+
+export interface IFindCommentByPostIdServiceParams {
+  query: Record<string, unknown>;
+  postId: string;
+  postType: TPostType;
+  isMyPost: boolean;
 }
 
 export interface ICommentModel extends Model<IComment> {
