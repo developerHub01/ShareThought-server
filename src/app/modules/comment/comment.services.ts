@@ -10,6 +10,8 @@ import { CommentModel } from "./model/model";
 /**
  * - first check that is that my post if my post means I am the AUTHOR or an MODERATOR
  * - if my post then only I can show the hidden comments
+ * - also maintain pin and hidden properties for query parameters
+ * - if I am not channel author or moderator then then I can't use query params on isHidden
  * - and we are finding those comments which are not pinned
  * - after finding regular comments now check that is it first first page query? if then find all pinned comments
  * - after finding pinned comments then merge them into an single array of comments
@@ -24,6 +26,8 @@ const findCommentByPostId = async ({
   let showHiddenComments = false;
 
   if (isMyPost) showHiddenComments = true;
+
+  if (query["isHidden"]) delete query["isHidden"];
 
   const commentQuery = new QueryBuilder(
     CommentModel.find({
