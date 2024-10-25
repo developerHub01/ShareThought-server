@@ -1,10 +1,13 @@
 import mongoose from "mongoose";
 import QueryBuilder from "../../builder/QueryBuilder";
-import { TAuthorType, TPostType } from "../../interface/interface";
 import {
-  ICreateComment,
+  IByCommentIdParams,
+  ICreateCommentParams,
+  IDeleteAllCommentParams,
   IFindCommentByIdParams,
   IFindCommentByPostIdServiceParams,
+  IReplyCommentParams,
+  IUpdateCommentParams,
 } from "./comment.interface";
 import { CommentModel } from "./model/model";
 
@@ -97,13 +100,13 @@ const findCommentById = async ({
   return commentData;
 };
 
-const createComment = async (
-  payload: ICreateComment,
-  postId: string,
-  postType: TPostType,
-  authorId: string,
-  authorType: TAuthorType,
-) => {
+const createComment = async ({
+  payload,
+  postId,
+  postType,
+  authorId,
+  authorType,
+}: ICreateCommentParams) => {
   payload = {
     ...payload,
     ...(postType === "blogPost" ? { postId } : { communityPostId: postId }),
@@ -115,12 +118,12 @@ const createComment = async (
   return await CommentModel.createComment(payload);
 };
 
-const replyComment = async (
-  payload: ICreateComment,
-  parentCommentId: string,
-  authorId: string,
-  authorType: TAuthorType,
-) => {
+const replyComment = async ({
+  payload,
+  parentCommentId,
+  authorId,
+  authorType,
+}: IReplyCommentParams) => {
   payload = {
     ...payload,
     parentCommentId,
@@ -132,7 +135,7 @@ const replyComment = async (
   return await CommentModel.createComment(payload);
 };
 
-const updateComment = async (payload: ICreateComment, commentId: string) => {
+const updateComment = async ({ payload, commentId }: IUpdateCommentParams) => {
   return await CommentModel.findByIdAndUpdate(
     commentId,
     {
@@ -142,7 +145,7 @@ const updateComment = async (payload: ICreateComment, commentId: string) => {
   );
 };
 
-const deleteComment = async (commentId: string) => {
+const deleteComment = async ({ commentId }: IByCommentIdParams) => {
   const session = await mongoose.startSession();
   try {
     session.startTransaction();
@@ -162,7 +165,10 @@ const deleteComment = async (commentId: string) => {
   }
 };
 
-const deleteAllComment = async (postId: string, postType: TPostType) => {
+const deleteAllComment = async ({
+  postId,
+  postType,
+}: IDeleteAllCommentParams) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
@@ -185,7 +191,7 @@ const deleteAllComment = async (postId: string, postType: TPostType) => {
   }
 };
 
-const removeCommentImageField = async (commentId: string) => {
+const removeCommentImageField = async ({ commentId }: IByCommentIdParams) => {
   return await CommentModel.findByIdAndUpdate(
     commentId,
     {
@@ -195,7 +201,7 @@ const removeCommentImageField = async (commentId: string) => {
   );
 };
 
-const togglePinComment = async (commentId: string) => {
+const togglePinComment = async ({ commentId }: IByCommentIdParams) => {
   /* used aggregation to make that change in single query */
   return await CommentModel.findByIdAndUpdate(
     commentId,
@@ -218,7 +224,7 @@ const togglePinComment = async (commentId: string) => {
   );
 };
 
-const toggleVisibility = async (commentId: string) => {
+const toggleVisibility = async ({ commentId }: IByCommentIdParams) => {
   return await CommentModel.findByIdAndUpdate(
     commentId,
     [

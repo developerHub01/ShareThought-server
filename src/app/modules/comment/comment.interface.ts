@@ -58,6 +58,35 @@ export interface IFindCommentByIdParams {
   activeChannelId: string;
 }
 
+export interface ICreateCommentParams {
+  payload: ICreateComment;
+  postId: string;
+  postType: TPostType;
+  authorId: string;
+  authorType: TAuthorType;
+}
+
+export interface IReplyCommentParams {
+  payload: ICreateComment;
+  parentCommentId: string;
+  authorId: string;
+  authorType: TAuthorType;
+}
+
+export interface IUpdateCommentParams {
+  payload: ICreateComment;
+  commentId: string;
+}
+
+export interface IByCommentIdParams {
+  commentId: string;
+}
+
+export interface IDeleteAllCommentParams {
+  postId: string;
+  postType: TPostType;
+}
+
 export interface ICommentModel extends Model<IComment> {
   isMyComment(
     commentId: string,

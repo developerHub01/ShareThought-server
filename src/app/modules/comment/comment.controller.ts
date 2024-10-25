@@ -29,12 +29,12 @@ const findCommentByPostId = catchAsync(async (req, res) => {
 });
 
 const findCommentById = catchAsync(async (req, res) => {
-  const { id } = req.params;
+  const { id: commentId } = req.params;
 
   const { channelId } = req as IRequestWithActiveDetails;
 
   const result = await CommentServices.findCommentById({
-    commentId: id,
+    commentId,
     activeChannelId: channelId as string,
   });
 
@@ -59,13 +59,13 @@ const createComment = catchAsync(async (req, res) => {
     req.body.commentImage = commentImage;
   }
 
-  const result = await CommentServices.createComment(
-    req.body,
-    postId || communityPostId,
-    postId ? "blogPost" : "communityPost",
-    channelId || userId,
-    channelId ? "channelId" : "userId",
-  );
+  const result = await CommentServices.createComment({
+    payload: req.body,
+    postId: postId || communityPostId,
+    postType: postId ? "blogPost" : "communityPost",
+    authorId: channelId || userId,
+    authorType: channelId ? "channelId" : "userId",
+  });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -89,12 +89,12 @@ const replyComment = catchAsync(async (req, res) => {
     req.body.commentImage = commentImage;
   }
 
-  const result = await CommentServices.replyComment(
-    req.body,
+  const result = await CommentServices.replyComment({
+    payload: req.body,
     parentCommentId,
-    channelId || userId,
-    channelId ? "channelId" : "userId",
-  );
+    authorId: channelId || userId,
+    authorType: channelId ? "channelId" : "userId",
+  });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -105,12 +105,13 @@ const replyComment = catchAsync(async (req, res) => {
 });
 
 const updateComment = catchAsync(async (req, res) => {
-  const { id } = req.params;
+  const { id: commentId } = req.params;
 
   const isRemovingImage =
     req.body.commentImage && !req.body?.commentImage?.length;
 
-  const previousCommentImage = (await CommentModel.findById(id))?.commentImage;
+  const previousCommentImage = (await CommentModel.findById(commentId))
+    ?.commentImage;
 
   if (req.body?.commentImage) {
     const commentImage = await CommentUtils.uploadCommentImage(
@@ -125,11 +126,14 @@ const updateComment = catchAsync(async (req, res) => {
 
   if (isRemovingImage && previousCommentImage) {
     await CloudinaryUtils.deleteFile([previousCommentImage]);
-    CommentServices.removeCommentImageField(id);
+    CommentServices.removeCommentImageField({ commentId });
     delete req.body["commentImage"];
   }
 
-  const result = await CommentServices.updateComment(req.body, id);
+  const result = await CommentServices.updateComment({
+    payload: req.body,
+    commentId,
+  });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -140,15 +144,15 @@ const updateComment = catchAsync(async (req, res) => {
 });
 
 const deleteComment = catchAsync(async (req, res) => {
-  const { id } = req.params;
+  const { id: commentId } = req.params;
 
-  const commentImage = (await CommentModel.findById(id))?.commentImage;
+  const commentImage = (await CommentModel.findById(commentId))?.commentImage;
 
   if (commentImage) {
     await CloudinaryUtils.deleteFile([commentImage]);
   }
 
-  const result = await CommentServices.deleteComment(id);
+  const result = await CommentServices.deleteComment({ commentId });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -161,10 +165,10 @@ const deleteComment = catchAsync(async (req, res) => {
 const deleteAllComment = catchAsync(async (req, res) => {
   const { postId, communityPostId } = req.params;
 
-  const result = await CommentServices.deleteAllComment(
-    postId || communityPostId,
-    postId ? "blogPost" : "communityPost",
-  );
+  const result = await CommentServices.deleteAllComment({
+    postId: postId || communityPostId,
+    postType: postId ? "blogPost" : "communityPost",
+  });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -177,7 +181,7 @@ const deleteAllComment = catchAsync(async (req, res) => {
 const togglePinComment = catchAsync(async (req, res) => {
   const { id: commentId } = req.params;
 
-  const result = await CommentServices.togglePinComment(commentId);
+  const result = await CommentServices.togglePinComment({ commentId });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -190,7 +194,7 @@ const togglePinComment = catchAsync(async (req, res) => {
 const toggleVisibility = catchAsync(async (req, res) => {
   const { id: commentId } = req.params;
 
-  const result = await CommentServices.toggleVisibility(commentId);
+  const result = await CommentServices.toggleVisibility({ commentId });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
