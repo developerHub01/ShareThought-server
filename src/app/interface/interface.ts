@@ -24,6 +24,7 @@ export interface IRequestWithActiveDetails extends Request {
   moderatorPermissions?: IModeratorPermissions;
   isVerifiedModerator?: boolean;
   channelRole: TChannelRole;
+  isMyPost: boolean;
 }
 
 export interface IResponse<T> {
