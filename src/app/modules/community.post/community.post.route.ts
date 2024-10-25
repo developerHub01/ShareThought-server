@@ -2,7 +2,7 @@ import express from "express";
 import { CommunityPostController } from "./community.post.controller";
 import getLoggedInUser from "../../middleware/get.loggedin.user";
 import getActiveChannel from "../../middleware/get.active.channel";
-import verifyMyCommunityPost from "../../middleware/verify.my.community.post";
+import verifyMyPost from "../../middleware/verify.my.post";
 import { CommunityPostMiddleware } from "./community.post.middleware";
 import { CommunityPostValidation } from "./community.post.validation";
 import { validateRequest } from "../../middleware/validate.request";
@@ -59,7 +59,7 @@ router.patch(
   getLoggedInUser,
   isVerified,
   getActiveChannel,
-  verifyMyCommunityPost,
+  verifyMyPost,
   CommunityPostController.updatePost,
 );
 
@@ -76,7 +76,7 @@ router.delete(
   getLoggedInUser,
   isVerified,
   getActiveChannel,
-  verifyMyCommunityPost,
+  verifyMyPost,
   CommunityPostController.deletePost,
 );
 
