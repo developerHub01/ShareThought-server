@@ -71,6 +71,7 @@ router.get(
 router.get(
   "/:id" /* :id ===> commmentId */,
   getLoggedInUser,
+  checkChannelStatus,
   CommentController.findCommentById,
 );
 

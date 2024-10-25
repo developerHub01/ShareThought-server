@@ -53,6 +53,11 @@ export interface IFindCommentByPostIdServiceParams {
   isMyPost: boolean;
 }
 
+export interface IFindCommentByIdParams {
+  commentId: string;
+  activeChannelId: string;
+}
+
 export interface ICommentModel extends Model<IComment> {
   isMyComment(
     commentId: string,

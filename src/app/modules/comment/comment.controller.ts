@@ -11,7 +11,7 @@ import { CommentModel } from "./model/model";
 const findCommentByPostId = catchAsync(async (req, res) => {
   const { postId, communityPostId } = req.params;
 
-  const {  isMyPost } = req as IRequestWithActiveDetails;
+  const { isMyPost } = req as IRequestWithActiveDetails;
 
   const result = await CommentServices.findCommentByPostId({
     query: req.query,
@@ -31,7 +31,12 @@ const findCommentByPostId = catchAsync(async (req, res) => {
 const findCommentById = catchAsync(async (req, res) => {
   const { id } = req.params;
 
-  const result = await CommentServices.findCommentById(id);
+  const { channelId } = req as IRequestWithActiveDetails;
+
+  const result = await CommentServices.findCommentById({
+    commentId: id,
+    activeChannelId: channelId as string,
+  });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,

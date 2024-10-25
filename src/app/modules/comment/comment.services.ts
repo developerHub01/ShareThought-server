@@ -3,6 +3,7 @@ import QueryBuilder from "../../builder/QueryBuilder";
 import { TAuthorType, TPostType } from "../../interface/interface";
 import {
   ICreateComment,
+  IFindCommentByIdParams,
   IFindCommentByPostIdServiceParams,
 } from "./comment.interface";
 import { CommentModel } from "./model/model";
@@ -71,11 +72,29 @@ const findCommentByPostId = async ({
   };
 };
 
-const findCommentById = async (commentId: string) => {
-  return await CommentModel.findById(commentId).populate({
+/**
+ * - first find the comment
+ * - if comment not found then return null
+ * - if I am not the AUTHOR or MODERATOR of comment channel and comment is hidden then also return null
+ * - else return comment
+ * **/
+const findCommentById = async ({
+  commentId,
+  activeChannelId,
+}: IFindCommentByIdParams) => {
+  const commentData = await CommentModel.findById(commentId).populate({
     path: "commentAuthorId",
     select: "fullName avatar",
   });
+
+  if (
+    !commentData ||
+    (commentData.commentAuthorChannelId?.toString() !== activeChannelId &&
+      commentData.isHidden)
+  )
+    return null;
+
+  return commentData;
 };
 
 const createComment = async (
