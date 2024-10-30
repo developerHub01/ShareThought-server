@@ -11,7 +11,9 @@ import { CommunityPostModel } from "./model/model";
 import { CommunityPostCache } from "./community.post.cache";
 
 const findCommuityPosts = catchAsync(async (req, res) => {
-  const result = await CommunityPostServices.findCommuityPosts(req.query);
+  const result = await CommunityPostServices.findCommuityPosts({
+    query: req.query,
+  });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -22,12 +24,12 @@ const findCommuityPosts = catchAsync(async (req, res) => {
 });
 
 const findCommuityPostsByChannelId = catchAsync(async (req, res) => {
-  const { id } = req.params;
+  const { id: channelId } = req.params;
 
-  const result = await CommunityPostServices.findCommuityPostsByChannelId(
-    req.query,
-    id,
-  );
+  const result = await CommunityPostServices.findCommuityPostsByChannelId({
+    query: req.query,
+    channelId,
+  });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -38,14 +40,14 @@ const findCommuityPostsByChannelId = catchAsync(async (req, res) => {
 });
 
 const findMySelectionPostOption = catchAsync(async (req, res) => {
-  const { id } = req.params;
+  const { id: postId } = req.params;
   const { userId, channelId } = req as IRequestWithActiveDetails;
 
-  const result = await CommunityPostCache.findMySelectionPostOption(
-    id,
-    channelId || userId,
-    channelId ? "channelId" : "userId",
-  );
+  const result = await CommunityPostCache.findMySelectionPostOption({
+    postId,
+    userOrChannelId: channelId || userId,
+    userType: channelId ? "channelId" : "userId",
+  });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -64,10 +66,10 @@ const findCommuityPostsMine = catchAsync(async (req, res) => {
       "you don't have any activated channel",
     );
 
-  const result = await CommunityPostServices.findCommuityPostsByChannelId(
-    req.query,
+  const result = await CommunityPostServices.findCommuityPostsByChannelId({
+    query: req.query,
     channelId,
-  );
+  });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -82,10 +84,10 @@ const findCommuityPostById = catchAsync(async (req, res) => {
 
   const { channelId } = req as IRequestWithActiveDetails;
 
-  const result = await CommunityPostCache.findCommuityPostById(
+  const result = await CommunityPostCache.findCommuityPostById({
     id,
-    channelId as string,
-  );
+    channelId: channelId as string,
+  });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -120,12 +122,12 @@ const selectPollOrQuizOption = catchAsync(async (req, res) => {
   if (isNaN(optionIndex) || optionIndex < 0)
     throw new AppError(httpStatus.BAD_REQUEST, "option index is not valid");
 
-  const result = await CommunityPostCache.selectPollOrQuizOption(
-    id,
+  const result = await CommunityPostCache.selectPollOrQuizOption({
+    postId: id,
     optionIndex,
-    channelId || userId,
-    channelId ? "channelId" : "userId",
-  );
+    userOrChannelId: channelId || userId,
+    userType: channelId ? "channelId" : "userId",
+  });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -138,7 +140,10 @@ const selectPollOrQuizOption = catchAsync(async (req, res) => {
 const updatePost = catchAsync(async (req, res) => {
   const { id } = req.params;
 
-  const result = await CommunityPostCache.updatePost(req.body, id);
+  const result = await CommunityPostCache.updatePost({
+    payload: req.body,
+    id,
+  });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -188,7 +193,7 @@ const deletePost = catchAsync(async (req, res) => {
     }
   }
 
-  const result = await CommunityPostServices.deletePost(id);
+  const result = await CommunityPostServices.deletePost({ id });
 
   return sendResponse(res, {
     statusCode: httpStatus.NO_CONTENT,

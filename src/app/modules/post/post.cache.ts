@@ -6,7 +6,13 @@ import { ICreatePost } from "./post.interface";
 import { PostServices } from "./post.services";
 import { redis } from "../../config/redis.config";
 
-const findPostByPostId = async (postId: string, channelId: string) => {
+const findPostByPostId = async ({
+  postId,
+  channelId,
+}: {
+  postId: string;
+  channelId: string;
+}) => {
   const postKey = RedisKeys.postKey(postId);
   const postDataJSON = await redis.get(postKey);
 
@@ -57,7 +63,7 @@ const findPostByPostId = async (postId: string, channelId: string) => {
     return null;
   }
 
-  const result = await PostServices.findPostByPostId(postId, channelId);
+  const result = await PostServices.findPostByPostId({ postId, channelId });
 
   if (!result) return result;
 
@@ -70,10 +76,10 @@ const findPostByPostId = async (postId: string, channelId: string) => {
   return result;
 };
 
-const createPost = async (payload: ICreatePost) => {
-  const result = (await PostServices.createPost(
+const createPost = async ({ payload }: { payload: ICreatePost }) => {
+  const result = (await PostServices.createPost({
     payload,
-  )) as unknown as TDocumentType<ICreatePost>;
+  })) as unknown as TDocumentType<ICreatePost>;
 
   if (!result) return result;
 
@@ -90,11 +96,17 @@ const createPost = async (payload: ICreatePost) => {
   return result;
 };
 
-const updatePost = async (payload: Partial<ICreatePost>, postId: string) => {
-  const result = (await PostServices.updatePost(
+const updatePost = async ({
+  payload,
+  postId,
+}: {
+  payload: Partial<ICreatePost>;
+  postId: string;
+}) => {
+  const result = (await PostServices.updatePost({
     payload,
     postId,
-  )) as unknown as TDocumentType<ICreatePost>;
+  })) as unknown as TDocumentType<ICreatePost>;
 
   if (!result) return result;
 
@@ -110,7 +122,7 @@ const updatePost = async (payload: Partial<ICreatePost>, postId: string) => {
 };
 
 const deletePost = async (postId: string) => {
-  const result = await PostServices.deletePost(postId);
+  const result = await PostServices.deletePost({ postId });
 
   if (!result) return result;
 

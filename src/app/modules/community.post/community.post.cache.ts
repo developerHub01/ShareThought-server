@@ -7,7 +7,13 @@ import {
 } from "./community.post.interface";
 import { CommunityPostServices } from "./community.post.services";
 
-const findCommuityPostById = async (id: string, channelId: string) => {
+const findCommuityPostById = async ({
+  id,
+  channelId,
+}: {
+  id: string;
+  channelId: string;
+}) => {
   const postKey = RedisKeys.communityPostkey(id);
   let postData = await redis.get(postKey);
 
@@ -21,10 +27,10 @@ const findCommuityPostById = async (id: string, channelId: string) => {
     return null;
   }
 
-  const result = await CommunityPostServices.findCommuityPostById(
+  const result = await CommunityPostServices.findCommuityPostById({
     id,
     channelId,
-  );
+  });
 
   if (!result) return result;
 
@@ -33,10 +39,10 @@ const findCommuityPostById = async (id: string, channelId: string) => {
   return result;
 };
 
-const createPost = async (payload: ICreateCommunityPost) => {
-  const result = (await CommunityPostServices.createPost(
+const createPost = async ({ payload }: { payload: ICreateCommunityPost }) => {
+  const result = (await CommunityPostServices.createPost({
     payload,
-  )) as TDocumentType<ICreateCommunityPost>;
+  })) as unknown as TDocumentType<ICreateCommunityPost>;
 
   if (!result) return result;
 
@@ -49,11 +55,17 @@ const createPost = async (payload: ICreateCommunityPost) => {
   return result;
 };
 
-const updatePost = async (payload: ICreateCommunityPost, id: string) => {
-  const result = (await CommunityPostServices.updatePost(
+const updatePost = async ({
+  payload,
+  id,
+}: {
+  payload: ICreateCommunityPost;
+  id: string;
+}) => {
+  const result = (await CommunityPostServices.updatePost({
     payload,
     id,
-  )) as TDocumentType<ICreateCommunityPost>;
+  })) as unknown as TDocumentType<ICreateCommunityPost>;
 
   if (!result) return result;
 
@@ -67,7 +79,7 @@ const updatePost = async (payload: ICreateCommunityPost, id: string) => {
 };
 
 const deletePost = async (id: string) => {
-  const result = await CommunityPostServices.deletePost(id);
+  const result = await CommunityPostServices.deletePost({ id });
 
   if (!result) return result;
 
@@ -80,11 +92,15 @@ const deletePost = async (id: string) => {
   return result;
 };
 
-const findMySelectionPostOption = async (
-  postId: string,
-  userOrChannelId: string,
-  userType: "channelId" | "userId",
-) => {
+const findMySelectionPostOption = async ({
+  postId,
+  userOrChannelId,
+  userType,
+}: {
+  postId: string;
+  userOrChannelId: string;
+  userType: "channelId" | "userId";
+}) => {
   const postSelectionKey = RedisKeys.communityPostSelectionKey(postId);
 
   const communityPostField = RedisKeys.cummunityPostSelectionField(
@@ -96,11 +112,11 @@ const findMySelectionPostOption = async (
 
   if (selectedIndex) return { selectedOption: JSON.parse(selectedIndex) };
 
-  const result = await CommunityPostServices.findMySelectionPostOption(
-    postId,
-    userOrChannelId,
-    userType,
-  );
+  const result = await CommunityPostServices.findMySelectionPostOption({
+    communityPostId: postId,
+    authorId: userOrChannelId,
+    authorType: userType,
+  });
 
   const { selectedOption } = result as { selectedOption: number };
 
@@ -109,12 +125,17 @@ const findMySelectionPostOption = async (
   return result;
 };
 
-const selectPollOrQuizOption = async (
-  postId: string,
-  optionIndex: number,
-  userOrChannelId: string,
-  userType: "channelId" | "userId",
-) => {
+const selectPollOrQuizOption = async ({
+  postId,
+  optionIndex,
+  userOrChannelId,
+  userType,
+}: {
+  postId: string;
+  optionIndex: number;
+  userOrChannelId: string;
+  userType: "channelId" | "userId";
+}) => {
   const postSelectionKey = RedisKeys.communityPostSelectionKey(postId);
 
   const communityPostField = RedisKeys.cummunityPostSelectionField(
@@ -122,12 +143,12 @@ const selectPollOrQuizOption = async (
     userType,
   );
 
-  const result = await CommunityPostServices.selectPollOrQuizOption(
-    postId,
-    optionIndex,
-    userOrChannelId,
-    userType,
-  );
+  const result = await CommunityPostServices.selectPollOrQuizOption({
+    communityPostId: postId,
+    selectedOptionIndex: optionIndex,
+    authorId: userOrChannelId,
+    authorType: userType,
+  });
 
   if (!result) return result;
 

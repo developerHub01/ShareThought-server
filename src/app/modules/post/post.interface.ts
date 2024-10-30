@@ -1,7 +1,7 @@
+import { Document } from "mongoose";
 import { Model, Types } from "mongoose";
-import { TDocumentType } from "../../interface/interface";
 
-export interface IPost {
+export interface IPost extends Document {
   channelId?: Types.ObjectId;
   title: string;
   content: string;
@@ -30,10 +30,4 @@ export interface IPostModel extends Model<IPost> {
   findPostById(id: string, channelId: string): Promise<unknown>;
 
   isPublicPostById(id: string): Promise<boolean | unknown>;
-
-  createPost(payload: ICreatePost): Promise<TDocumentType<IPost>>;
-
-  updatePost(payload: Partial<ICreatePost>, postId: string): Promise<TDocumentType<IPost>>;
-
-  deletePost(postId: string): Promise<unknown>;
 }

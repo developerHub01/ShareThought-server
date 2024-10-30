@@ -10,7 +10,7 @@ import { PostModel } from "./model/model";
 import { PostCache } from "./post.cache";
 
 const findPost = catchAsync(async (req, res) => {
-  const result = await PostServices.findPost(req.query);
+  const result = await PostServices.findPost({ query: req.query });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -25,11 +25,11 @@ const findPostByChannelId = catchAsync(async (req, res) => {
 
   const { channelId } = req as IRequestWithActiveDetails;
 
-  const result = await PostServices.findPostByChannelId(
-    req.query,
+  const result = await PostServices.findPostByChannelId({
+    query: req.query,
     id,
-    channelId as string,
-  );
+    channelId: channelId as string,
+  });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -44,7 +44,10 @@ const findPostByPostId = catchAsync(async (req, res) => {
 
   const { channelId } = req as IRequestWithActiveDetails;
 
-  const result = await PostCache.findPostByPostId(postId, channelId as string);
+  const result = await PostCache.findPostByPostId({
+    postId,
+    channelId: channelId as string,
+  });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -68,7 +71,7 @@ const createPost = catchAsync(async (req, res) => {
     req.body.banner = bannerImage;
   }
 
-  const result = await PostCache.createPost(req.body);
+  const result = await PostCache.createPost({ payload: req.body });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -94,7 +97,11 @@ const updatePost = catchAsync(async (req, res) => {
     req.body.banner = bannerImage;
   }
 
-  const result = await PostCache.updatePost(req.body, postId);
+  const result = await PostCache.updatePost({
+    payload: req.body,
+    postId,
+  });
+
   return sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -110,7 +117,7 @@ const deletePost = catchAsync(async (req, res) => {
 
   if (bannerImage) await CloudinaryUtils.deleteFile([bannerImage]);
 
-  const result = await PostServices.deletePost(postId);
+  const result = await PostServices.deletePost({ postId });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,

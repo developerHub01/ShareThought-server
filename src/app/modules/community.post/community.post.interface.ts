@@ -1,6 +1,5 @@
 import { Model, Types } from "mongoose";
 import { CommunityPostConstant } from "./community.post.constant";
-import { TAuthorType } from "../../interface/interface";
 
 const communityPostTypeList: Array<string> = Object.keys(
   CommunityPostConstant?.COMMUNITY_POST_TYPES,
@@ -93,26 +92,4 @@ export interface ICommunityPostModel extends Model<ICommunityPost> {
   ): Promise<unknown>;
 
   isPublicPostById(communityPostId: string): Promise<boolean | unknown>;
-
-  createPost(payload: ICreateCommunityPost): Promise<unknown>;
-
-  updatePost(
-    payload: Partial<ICreateCommunityPost>,
-    postId: string,
-  ): Promise<unknown>;
-
-  deletePost(communityPostId: string): Promise<unknown>;
-
-  findMySelectedOption(
-    communityPostId: string,
-    authorId: string,
-    authorType: TAuthorType,
-  ): Promise<unknown>;
-
-  selectPollOrQuizOption(
-    communityPostId: string,
-    selectedOptionIndex: number,
-    authorId: string,
-    authorType: TAuthorType,
-  ): Promise<unknown>;
 }

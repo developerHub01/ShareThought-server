@@ -39,6 +39,11 @@ postSchema.pre<IPost>("save", async function (next) {
   next();
 });
 
+/* TODO 
+
+Both need to updated for new BullMQ post scheduled 
+
+*/
 /* handle schedule after saving post */
 postSchema.post<IPost>("save", async function (doc) {
   if (!doc.isPublished && doc.scheduledTime) {
@@ -50,6 +55,11 @@ postSchema.post<IPost>("save", async function (doc) {
   }
 });
 
+/* TODO 
+
+Both need to updated for new BullMQ post scheduled 
+
+*/
 /* handle schedule when updating post */
 postSchema.pre("findOneAndUpdate", async function () {
   const update = this.getUpdate();
