@@ -7,4 +7,6 @@ export const QueueJobList = {
   SEND_MODERATOR_REMOVE_EMAIL: "sendModeratorRemoveEmail",
   SEND_MODERATOR_REQUEST_ACCEPTANCE_EMAIL:
     "sendModeratorRequestAcceptanceEmail",
+  BLOG_POST_SCHEDULING_JOB: "blogPostSchedulingJob",
+  COMMUNITY_POST_SCHEDULING_JOB: "communityPostSchedulingJob",
 };

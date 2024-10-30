@@ -3,6 +3,7 @@ import { redisOptions } from "../../config/redis.config";
 import { QueueJobList } from "..";
 import { AuthEmailServices } from "./services/auth";
 import { ModeratorEmailServices } from "./services/moderator";
+import { PostScheduleServices } from "./services/post";
 
 export const emailWorker = new Worker(
   "emailQueue",
@@ -31,12 +32,31 @@ export const emailWorker = new Worker(
   },
 );
 
-emailWorker.on("completed", (job) => {
-  // eslint-disable-next-line no-console
-  console.log(`Job ${job?.id} completed!`);
-});
+export const postScheduleWorker = new Worker(
+  "postScheduleQueue",
+  async ({ name, data }) => {
+    switch (name) {
+      case QueueJobList.BLOG_POST_SCHEDULING_JOB:
+        return await PostScheduleServices.scheduleBlogPost(data);
+      case QueueJobList.COMMUNITY_POST_SCHEDULING_JOB:
+        return await PostScheduleServices.scheduleCommunityPost(data);
+    }
+  },
+  {
+    connection: redisOptions,
+  },
+);
 
-emailWorker.on("failed", (job, err) => {
-  // eslint-disable-next-line no-console
-  console.error(`Job ${job?.id} failed with error: ${err.message}`);
-});
+[emailWorker, postScheduleWorker].map(
+  (worker: Worker<unknown, unknown, string>) => {
+    worker.on("completed", (job) => {
+      // eslint-disable-next-line no-console
+      console.log(`Job ${job?.id} completed!`);
+    });
+
+    worker.on("failed", (job, err) => {
+      // eslint-disable-next-line no-console
+      console.error(`Job ${job?.id} failed with error: ${err.message}`);
+    });
+  },
+);
