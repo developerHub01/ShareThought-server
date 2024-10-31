@@ -104,29 +104,53 @@ export interface IModeratorRemoveEmailData {
 }
 
 export interface IModeratorModel extends Model<IModerator> {
-  channelModeratorData(
-    channelId: string,
-    userId: string,
-  ): Promise<IModerator | null>;
+  channelModeratorData({
+    channelId,
+    userId,
+  }: {
+    channelId: string;
+    userId: string;
+  }): Promise<IModerator | null>;
 
-  getChannelModeratorsCount(channelId: string): Promise<number>;
+  getChannelModeratorsCount({
+    channelId,
+  }: {
+    channelId: string;
+  }): Promise<number>;
 
-  isAlreadyModerator(channelId: string, userId: string): Promise<boolean>;
+  isAlreadyModerator({
+    channelId,
+    userId,
+  }: {
+    channelId: string;
+    userId: string;
+  }): Promise<boolean>;
 
-  addChannelModerator(
-    channelId: string,
-    payload: IModeratorPayload,
-  ): Promise<unknown>;
+  addChannelModerator({
+    channelId,
+    payload,
+  }: {
+    channelId: string;
+    payload: IModeratorPayload;
+  }): Promise<unknown>;
 
-  resign(
-    userId: string,
-    moderatorId: string,
-    session?: ClientSession,
-  ): Promise<unknown>;
+  resign({
+    userId,
+    moderatorId,
+    session,
+  }: {
+    userId: string;
+    moderatorId: string;
+    session?: ClientSession;
+  }): Promise<unknown>;
 
-  acceptModeratorRequest(
-    userId: string,
-    moderatorId: string,
-    session?: ClientSession,
-  ): Promise<unknown>;
+  acceptModeratorRequest({
+    userId,
+    moderatorId,
+    session,
+  }: {
+    userId: string;
+    moderatorId: string;
+    session?: ClientSession;
+  }): Promise<unknown>;
 }

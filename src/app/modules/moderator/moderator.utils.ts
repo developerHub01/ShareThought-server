@@ -15,6 +15,7 @@ const defaultPermissions = {
     hide: false,
     show: false,
     pin: false,
+    unpin: false,
   },
   communityPost: {
     create: false,
@@ -25,10 +26,12 @@ const defaultPermissions = {
   },
   comment: {
     create: false,
+    update: false,
     delete: false,
     hide: false,
     show: false,
     pin: false,
+    unpin: false,
   },
   channel: {},
 };
