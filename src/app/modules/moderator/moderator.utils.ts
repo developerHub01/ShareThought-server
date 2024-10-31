@@ -41,9 +41,11 @@ interface IPermissionType {
   [key: string]: boolean | IPermissionType;
 }
 
-const moderatorRequestTokenGenerator = async (
+const moderatorRequestTokenGenerator = async ({
+  payload
+}: {
   payload: Record<string, string>,
-) => {
+}) => {
   return AuthUtils.createToken(
     payload,
     config.JWT_MODERATOR_REQUEST_SECRET,
@@ -51,10 +53,10 @@ const moderatorRequestTokenGenerator = async (
   );
 };
 
-const makeEveryKeyFalse = (payload: IPermissionType) => {
+const makeEveryKeyFalse = ({ payload }: { payload: IPermissionType }) => {
   Object.keys(payload).forEach((data) => {
     if (typeof payload[data] === "object" && payload[data] !== null) {
-      return makeEveryKeyFalse(payload[data]);
+      return makeEveryKeyFalse({ payload: payload[data] });
     } else {
       payload[data] = false;
     }
@@ -63,11 +65,15 @@ const makeEveryKeyFalse = (payload: IPermissionType) => {
   return payload;
 };
 
-const recursivePermissionAdjust = (
+const recursivePermissionAdjust = ({
+  mainPermissions,
+  payloadPermissions,
+  warningMap,
+}: {
   mainPermissions: IPermissionType,
   payloadPermissions: IPermissionType,
   warningMap: IPermissionType,
-) => {
+}) => {
   Object.keys(mainPermissions).forEach((permission: string) => {
     if (
       typeof mainPermissions[permission] === "object" &&
@@ -76,15 +82,15 @@ const recursivePermissionAdjust = (
       warningMap[permission] = {};
 
       if (!payloadPermissions[permission])
-        payloadPermissions[permission] = makeEveryKeyFalse(
-          mainPermissions[permission],
-        );
+        payloadPermissions[permission] = makeEveryKeyFalse({
+          payload: mainPermissions[permission],
+        });
 
-      return recursivePermissionAdjust(
-        mainPermissions[permission] as IPermissionType,
-        payloadPermissions[permission] as IPermissionType,
-        warningMap[permission] as IPermissionType,
-      );
+      return recursivePermissionAdjust({
+        mainPermissions: mainPermissions[permission] as IPermissionType,
+        payloadPermissions: payloadPermissions[permission] as IPermissionType,
+        warningMap: warningMap[permission] as IPermissionType,
+      });
     } else {
       if (!(permission in payloadPermissions))
         payloadPermissions[permission] = false;
@@ -101,20 +107,23 @@ const recursivePermissionAdjust = (
   return { payloadPermissions, warningMap };
 };
 
-const recursiveWarningMapAdjuster = (
-  warningMap: IPermissionType,
+const recursiveWarningMapAdjuster = ({
+  warningMap,
   warningCount = 0,
-) => {
+}: {
+  warningMap: IPermissionType,
+  warningCount?: number,
+}) => {
   Object.keys(warningMap).forEach((warningKey) => {
     if (
       typeof warningMap[warningKey] === "object" &&
       warningMap[warningKey] !== null
     ) {
       if (Object.keys(warningMap[warningKey]).length) {
-        const result = recursiveWarningMapAdjuster(
-          warningMap[warningKey],
+        const result = recursiveWarningMapAdjuster({
+          warningMap: warningMap[warningKey],
           warningCount,
-        );
+        });
         warningCount = result.warningCount;
       } else delete warningMap[warningKey];
     } else if (warningMap[warningKey]) warningCount++;
@@ -123,20 +132,23 @@ const recursiveWarningMapAdjuster = (
   return { warningMap, warningCount };
 };
 
-const comparePermissionAndAdjust = (
+const comparePermissionAndAdjust = ({
+  payloadPermissions,
+  mainPermissions = defaultPermissions,
+}: {
   payloadPermissions: IModeratorPermissions,
-  mainPermissions: IModeratorPermissions = defaultPermissions,
-) => {
-  const result = recursivePermissionAdjust(
-    mainPermissions as IPermissionType,
-    payloadPermissions as IPermissionType,
-    {},
-  );
+  mainPermissions: IModeratorPermissions,
+}) => {
+  const result = recursivePermissionAdjust({
+    mainPermissions: mainPermissions as IPermissionType,
+    payloadPermissions: payloadPermissions as IPermissionType,
+    warningMap: {},
+  });
 
   const { warningMap } = result;
   payloadPermissions = result.payloadPermissions;
 
-  const warnings = recursiveWarningMapAdjuster(warningMap);
+  const warnings = recursiveWarningMapAdjuster({ warningMap });
 
   return { payloadPermissions, warnings };
 };
