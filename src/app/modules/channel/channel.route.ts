@@ -9,7 +9,7 @@ import { ChannelMiddleware } from "./channel.middleware";
 import getActiveChannel from "../../middleware/get.active.channel";
 import readReqBodyFiles from "../../middleware/read.req.body.files";
 import checkChannelStatus from "../../middleware/check.channel.status";
-import isVerified from "../../middleware/is.Verified";
+import isVerified from "../../middleware/is.verified";
 
 const router = express.Router();
 

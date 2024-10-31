@@ -35,12 +35,17 @@ import { ChannelConstant } from "../channel/channel.constant";
  * - If the user is a NORMAL_MODERATOR and the targeted moderator is a SUPER_MODERATOR, deny access.
  * - Otherwise, allow access to see the moderator's data.
  */
-const singleModerator = async (
+const singleModerator = async ({
+  channelId,
+  myModeratorId,
+  targetedModeratorId,
+  channelRole,
+}: {
   channelId: string,
   myModeratorId: string,
   targetedModeratorId: string,
   channelRole: TChannelRole,
-) => {
+}) => {
   const targetedModeratorData = (await ModeratorModel.findById(
     targetedModeratorId,
   ).populate({
@@ -59,7 +64,7 @@ const singleModerator = async (
 
   const targetedModeratorRole =
     targetedModeratorData.permissions.moderator?.add ||
-    targetedModeratorData.permissions.moderator?.canRemove
+      targetedModeratorData.permissions.moderator?.canRemove
       ? ChannelConstant.CHANNEL_USER_ROLES.SUPER_MODERATOR
       : ChannelConstant.CHANNEL_USER_ROLES.NORMAL_MODERATOR;
 
@@ -72,7 +77,7 @@ const singleModerator = async (
       myModeratorId !== targetedModeratorId) ||
     (channelRole === ChannelConstant.CHANNEL_USER_ROLES.NORMAL_MODERATOR &&
       targetedModeratorRole ===
-        ChannelConstant.CHANNEL_USER_ROLES.SUPER_MODERATOR)
+      ChannelConstant.CHANNEL_USER_ROLES.SUPER_MODERATOR)
   )
     throw new AppError(
       httpStatus.UNAUTHORIZED,
@@ -88,11 +93,15 @@ const singleModerator = async (
  * - else all moderators
  * - after that modify the result and also add role
  * ***/
-const getAllModerators = async (
+const getAllModerators = async ({
+  query,
+  channelId,
+  channelRole,
+}: {
   query: Record<string, unknown>,
   channelId: string,
   channelRole: TChannelRole,
-) => {
+}) => {
   if (channelRole === ChannelConstant.CHANNEL_USER_ROLES.NORMAL_MODERATOR)
     throw new AppError(
       httpStatus.FORBIDDEN,
@@ -102,11 +111,11 @@ const getAllModerators = async (
   const moderatorTypeFilter =
     channelRole === ChannelConstant.CHANNEL_USER_ROLES.SUPER_MODERATOR
       ? {
-          $and: [
-            { "permissions.moderator.add": false },
-            { "permissions.moderator.canRemove": false },
-          ],
-        }
+        $and: [
+          { "permissions.moderator.add": false },
+          { "permissions.moderator.canRemove": false },
+        ],
+      }
       : {};
 
   const chennelQuery = new QueryBuilder(
@@ -154,10 +163,10 @@ const getAllModerators = async (
  * - if that user is pending moderator then request acceptable only for sending emails
  * - if that user is not a moderator then request acceptable and other process will continue
  * **/
-const addModerator = async (channelId: string, payload: IModeratorPayload) => {
+const addModerator = async ({ channelId, payload }: { channelId: string, payload: IModeratorPayload }) => {
   const { userId } = payload;
 
-  if (await ModeratorModel.isAlreadyModerator(channelId, userId))
+  if (await ModeratorModel.isAlreadyModerator({ channelId, userId }))
     throw new AppError(
       httpStatus.INTERNAL_SERVER_ERROR,
       "this user is already moderator of your channel",
@@ -192,10 +201,10 @@ const addModerator = async (channelId: string, payload: IModeratorPayload) => {
       then create that moderator instance
     */
     if (!isPendingModerator) {
-      const newModerator = (await ModeratorModel.addChannelModerator(
+      const newModerator = (await ModeratorModel.addChannelModerator({
         channelId,
         payload,
-      )) as TDocumentType<IModerator>;
+      })) as TDocumentType<IModerator>;
 
       if (!newModerator)
         throw new AppError(httpStatus.FORBIDDEN, "something went wrong");
@@ -275,12 +284,17 @@ const addModerator = async (channelId: string, payload: IModeratorPayload) => {
  * - if targed moderator is super moderator and user is not AUTHOR then throw an error
  * - update MODERATOR permissions
  * **/
-const updateModerator = async (
-  channelId: string,
-  targetedModeratorId: string,
-  channelRole: TChannelRole,
-  payloadPermissions: IModeratorPermissions,
-) => {
+const updateModerator = async ({
+  channelId,
+  targetedModeratorId,
+  channelRole,
+  payloadPermissions,
+}: {
+  channelId: string;
+  targetedModeratorId: string;
+  channelRole: TChannelRole;
+  payloadPermissions: IModeratorPermissions;
+}) => {
   const targetedModeratorData = (await ModeratorModel.findById(
     targetedModeratorId,
   ).populate({
@@ -299,8 +313,8 @@ const updateModerator = async (
 
   const targetedModeratorRole =
     targetedModeratorData.permissions.moderator?.add ||
-    targetedModeratorData.permissions.moderator?.canRemove ||
-    targetedModeratorData.permissions.moderator?.update
+      targetedModeratorData.permissions.moderator?.canRemove ||
+      targetedModeratorData.permissions.moderator?.update
       ? ChannelConstant.CHANNEL_USER_ROLES.SUPER_MODERATOR
       : ChannelConstant.CHANNEL_USER_ROLES.NORMAL_MODERATOR;
 
@@ -333,16 +347,22 @@ const updateModerator = async (
   return updatedModeratorData;
 };
 
-const acceptModerationRequest = async (userId: string, moderatorId: string) => {
+const acceptModerationRequest = async ({
+  userId,
+  moderatorId,
+}: {
+  userId: string;
+  moderatorId: string;
+}) => {
   const session = await mongoose.startSession();
 
   try {
     session.startTransaction();
-    const newModerator = (await ModeratorModel.acceptModeratorRequest(
+    const newModerator = (await ModeratorModel.acceptModeratorRequest({
       userId,
       moderatorId,
       session,
-    )) as TDocumentType<IModerator>;
+    })) as TDocumentType<IModerator>;
 
     if (!newModerator)
       throw new AppError(
@@ -421,16 +441,22 @@ const acceptModerationRequest = async (userId: string, moderatorId: string) => {
   }
 };
 
-const resign = async (userId: string, moderatorId: string) => {
+const resign = async ({
+  userId,
+  moderatorId,
+}: {
+  userId: string;
+  moderatorId: string;
+}) => {
   const session = await mongoose.startSession();
 
   try {
     session.startTransaction();
-    const operationResult = (await ModeratorModel.resign(
+    const operationResult = (await ModeratorModel.resign({
       userId,
       moderatorId,
       session,
-    )) as TDocumentType<IModerator>;
+    })) as TDocumentType<IModerator>;
 
     if (!operationResult)
       throw new AppError(
@@ -496,7 +522,7 @@ const resign = async (userId: string, moderatorId: string) => {
  * - add email to the email queue
  * - then return the updated channel data
  * ***/
-const removeModerator = async (moderatorId: string) => {
+const removeModerator = async ({ moderatorId }: { moderatorId: string }) => {
   const session = await mongoose.startSession();
 
   try {

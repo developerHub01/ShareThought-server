@@ -21,21 +21,33 @@ export interface IUserChangePassword {
 }
 
 export interface IUserModel extends Model<IUser> {
-  isPasswordMatch(
-    plainPassword: string,
-    hashedPassword: string,
-  ): Promise<boolean>;
+  isPasswordMatch({
+    plainPassword,
+    hashedPassword,
+  }: {
+    plainPassword: string;
+    hashedPassword: string;
+  }): Promise<boolean>;
 
-  createHash(str: string): Promise<string>;
+  createHash({ str }: { str: string }): Promise<string>;
 
-  isVerified(id: string): Promise<boolean>;
+  isVerified({ id }: { id: string }): Promise<boolean>;
 
-  isUserExist(id: string): Promise<boolean>;
+  isUserExist({ id }: { id: string }): Promise<boolean>;
 
-  updateUserPassword(
-    payload: IUserChangePassword,
-    userId: string,
-  ): Promise<unknown>;
+  updateUserPassword({
+    payload,
+    userId,
+  }: {
+    payload: IUserChangePassword;
+    userId: string;
+  }): Promise<unknown>;
 
-  deleteGuestUser(guestUserId: string, currentUserId: string): Promise<unknown>;
+  deleteGuestUser({
+    guestUserId,
+    currentUserId,
+  }: {
+    guestUserId: string;
+    currentUserId: string;
+  }): Promise<unknown>;
 }

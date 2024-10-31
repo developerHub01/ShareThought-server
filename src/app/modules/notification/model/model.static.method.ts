@@ -40,7 +40,7 @@ notificationSchema.statics.makeNotificationSeen = async (
   const channelId = notificationData?.channelId?.toString();
 
   if (channelId) {
-    await ChannelModel.isChannelMine(channelId, userId);
+    await ChannelModel.isChannelMine({ channelId, authorId: userId });
   }
 
   return await NotificationModel.findByIdAndUpdate(

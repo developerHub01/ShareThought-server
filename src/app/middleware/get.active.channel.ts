@@ -15,12 +15,12 @@ const getActiveChannel = catchAsync(
     if (!token)
       throw new AppError(httpStatus.UNAUTHORIZED, "no channel activated");
 
-    const { channelId } = AuthUtils.verifyToken(
+    const { channelId } = AuthUtils.verifyToken({
       token,
-      config.JWT_CHANNEL_ACCESS_SECRET as string,
-    );
+      secret: config.JWT_CHANNEL_ACCESS_SECRET as string,
+    });
 
-    const isChannelExist = await ChannelModel.isChannelExist(channelId);
+    const isChannelExist = await ChannelModel.isChannelExist({ id: channelId });
 
     if (!channelId || !isChannelExist)
       throw new AppError(

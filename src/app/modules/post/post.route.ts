@@ -10,7 +10,7 @@ import getActiveChannel from "../../middleware/get.active.channel";
 import checkChannelStatus from "../../middleware/check.channel.status";
 import readReqBodyFiles from "../../middleware/read.req.body.files";
 import rateLimit from "../../middleware/rate.limit";
-import isVerified from "../../middleware/is.Verified";
+import isVerified from "../../middleware/is.verified";
 
 const router = express.Router();
 

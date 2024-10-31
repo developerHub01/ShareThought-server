@@ -1,6 +1,5 @@
 import { Document, Model } from "mongoose";
 import { Types } from "mongoose";
-import { TDocumentType } from "../../interface/interface";
 import { IUser } from "../user/user.interface";
 import { ChannelConstant } from "./channel.constant";
 
@@ -31,18 +30,13 @@ export interface IChannelPopulated extends Omit<IChannel, "authorId"> {
 }
 
 export interface IChannelModel extends Model<IChannel> {
-  isChannelExist(id: string): Promise<boolean>;
+  isChannelExist({ id }: { id: string }): Promise<boolean>;
 
-  isChannelMine(channelId: string, authorId: string): Promise<boolean>;
-
-  createChannel(payload: ICreateChannel): Promise<TDocumentType<IChannel>>;
-
-  updateChannel(
-    id: string,
-    payload: Partial<IChannel>,
-  ): Promise<TDocumentType<IChannel>>;
-
-  deleteChannel(id: string): Promise<unknown>;
-
-  channelModeratorCount(channelId: string): Promise<IChannelModeratorCount>;
+  isChannelMine({
+    channelId,
+    authorId,
+  }: {
+    channelId: string;
+    authorId: string;
+  }): Promise<boolean>;
 }

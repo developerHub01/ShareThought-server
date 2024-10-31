@@ -10,10 +10,13 @@ import { CloudinaryUtils } from "../../../utils/cloudinary.utils";
 import { CommunityPostModel } from "../../community.post/model/model";
 import { PostModel } from "../../post/model/model";
 
-commentSchema.statics.isCommentOfMyAnyChannel = async (
-  userId: string,
-  commentId: string,
-): Promise<unknown> => {
+commentSchema.statics.isCommentOfMyAnyChannel = async ({
+  userId,
+  commentId,
+}: {
+  userId: string;
+  commentId: string;
+}): Promise<unknown> => {
   // const commentData = await CommentModel.findById(commentId);
 
   const commentData = await CommentModel.findById(
@@ -40,10 +43,13 @@ commentSchema.statics.isCommentOfMyAnyChannel = async (
   return false;
 };
 
-commentSchema.statics.isMyPost = async (
-  commentId: string,
-  userId: string,
-): Promise<boolean | unknown> => {
+commentSchema.statics.isMyPost = async ({
+  commentId,
+  userId,
+}: {
+  commentId: string;
+  userId: string;
+}): Promise<boolean | unknown> => {
   let { postId, communityPostId } =
     (await CommentModel.findById(commentId)) || {};
 
@@ -57,11 +63,15 @@ commentSchema.statics.isMyPost = async (
   return await PostModel.isMyPost(id as unknown as string, userId);
 };
 
-commentSchema.statics.isMyComment = async (
-  commentId: string,
-  authorId: string,
-  authorType: TAuthorType,
-): Promise<boolean | unknown> => {
+commentSchema.statics.isMyComment = async ({
+  commentId,
+  authorId,
+  authorType,
+}: {
+  commentId: string;
+  authorId: string;
+  authorType: TAuthorType;
+}): Promise<boolean | unknown> => {
   const commentData = await CommentModel.findById(commentId);
   if (!commentData)
     throw new AppError(httpStatus.NOT_FOUND, "comment not found");
@@ -73,11 +83,15 @@ commentSchema.statics.isMyComment = async (
   );
 };
 
-commentSchema.statics.haveAccessToDelete = async (
-  commentId: string,
-  authorId: string,
-  authorType: TAuthorType,
-): Promise<unknown> => {
+commentSchema.statics.haveAccessToDelete = async ({
+  commentId,
+  authorId,
+  authorType,
+}: {
+  commentId: string;
+  authorId: string;
+  authorType: TAuthorType;
+}): Promise<unknown> => {
   const commentData = await CommentModel.findById(commentId);
 
   if (!commentData)
@@ -92,9 +106,11 @@ commentSchema.statics.haveAccessToDelete = async (
   );
 };
 
-commentSchema.statics.createComment = async (
-  payload: ICreateComment,
-): Promise<unknown> => {
+commentSchema.statics.createComment = async ({
+  payload,
+}: {
+  payload: ICreateComment;
+}): Promise<unknown> => {
   const session = await mongoose.startSession();
   session.startTransaction();
 
@@ -200,10 +216,13 @@ commentSchema.statics.createComment = async (
   }
 };
 
-commentSchema.statics.deleteCommentsWithReplies = async (
-  commentId: string,
-  session?: ClientSession,
-) => {
+commentSchema.statics.deleteCommentsWithReplies = async ({
+  commentId,
+  session,
+}: {
+  commentId: string;
+  session?: ClientSession;
+}) => {
   const options = session ? { session } : {};
   const commentData = await CommentModel.findById(commentId, null, options);
   if (!commentData)
@@ -212,25 +231,25 @@ commentSchema.statics.deleteCommentsWithReplies = async (
   const { replies, commentImage } = commentData;
 
   if (!replies.length) {
-    await CommentReactionModel.deleteCommentReactionByCommentId(
+    await CommentReactionModel.deleteCommentReactionByCommentId({
       commentId,
-      options?.session,
-    );
+      session: options?.session,
+    });
     return await CommentModel.findByIdAndDelete(commentId, options?.session);
   }
 
   for (const reply of replies) {
     const { _id } = reply;
-    await CommentModel.deleteCommentsWithReplies(
-      _id?.toString(),
-      options?.session,
-    );
+    await CommentModel.deleteCommentsWithReplies({
+      commentId: _id?.toString(),
+      session: options?.session,
+    });
   }
 
-  await CommentReactionModel.deleteCommentReactionByCommentId(
+  await CommentReactionModel.deleteCommentReactionByCommentId({
     commentId,
-    options?.session,
-  );
+    session: options?.session,
+  });
 
   const result = await CommentModel.findByIdAndDelete(
     commentId,

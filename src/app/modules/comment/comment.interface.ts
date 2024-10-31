@@ -3,7 +3,7 @@ import { IUser } from "./../user/user.interface";
 import { ICommunityPost } from "./../community.post/community.post.interface";
 import { IPost } from "./../post/post.interface";
 import { ClientSession, Model, Types } from "mongoose";
-import { TAuthorType, TPostType } from "../../interface/interface";
+import { TAuthorType } from "../../interface/interface";
 
 export interface IComment {
   postId?: Types.ObjectId;
@@ -46,68 +46,44 @@ export interface ICreateComment {
   commentImage: string;
 }
 
-export interface IFindCommentByPostIdServiceParams {
-  query: Record<string, unknown>;
-  postId: string;
-  postType: TPostType;
-  isMyPost: boolean;
-}
-
-export interface IFindCommentByIdParams {
-  commentId: string;
-  activeChannelId: string;
-}
-
-export interface ICreateCommentParams {
-  payload: ICreateComment;
-  postId: string;
-  postType: TPostType;
-  authorId: string;
-  authorType: TAuthorType;
-}
-
-export interface IReplyCommentParams {
-  payload: ICreateComment;
-  parentCommentId: string;
-  authorId: string;
-  authorType: TAuthorType;
-}
-
-export interface IUpdateCommentParams {
-  payload: ICreateComment;
-  commentId: string;
-}
-
-export interface IByCommentIdParams {
-  commentId: string;
-}
-
-export interface IDeleteAllCommentParams {
-  postId: string;
-  postType: TPostType;
-}
-
 export interface ICommentModel extends Model<IComment> {
-  isMyComment(
-    commentId: string,
-    authorId: string,
-    authorType: TAuthorType,
-  ): Promise<boolean | unknown>;
+  isMyComment({
+    commentId,
+    authorId,
+    authorType,
+  }: {
+    commentId: string;
+    authorId: string;
+    authorType: TAuthorType;
+  }): Promise<boolean | unknown>;
 
   isCommentOfMyAnyChannel(userId: string, commentId: string): Promise<unknown>;
 
-  isMyPost(commentId: string, userId: string): Promise<boolean | unknown>;
+  isMyPost({
+    commentId,
+    userId,
+  }: {
+    commentId: string;
+    userId: string;
+  }): Promise<boolean | unknown>;
 
-  haveAccessToDelete(
-    commentId: string,
-    authorId: string,
-    authorType: TAuthorType,
-  ): Promise<unknown>;
+  haveAccessToDelete({
+    commentId,
+    authorId,
+    authorType,
+  }: {
+    commentId: string;
+    authorId: string;
+    authorType: TAuthorType;
+  }): Promise<unknown>;
 
-  createComment(payload: ICreateComment): Promise<unknown>;
+  createComment({ payload }: { payload: ICreateComment }): Promise<unknown>;
 
-  deleteCommentsWithReplies(
-    commentId: string,
-    session?: ClientSession,
-  ): Promise<unknown>;
+  deleteCommentsWithReplies({
+    commentId,
+    session,
+  }: {
+    commentId: string;
+    session?: ClientSession;
+  }): Promise<unknown>;
 }

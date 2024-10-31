@@ -1,7 +1,10 @@
-const generateReactionNotificationType = (
-  prefix: string,
-  reactionList: Record<string, string>,
-) => {
+const generateReactionNotificationType = ({
+  prefix,
+  reactionList,
+}: {
+  prefix: string;
+  reactionList: Record<string, string>;
+}) => {
   const reactions = Object.values(reactionList);
 
   const reactionTypeList: Record<string, string> = {};

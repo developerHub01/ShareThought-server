@@ -8,11 +8,11 @@ const verifyMyComment = catchAsync(async (req, res, next) => {
   const { id: commentId } = req.params;
   const { userId, channelId } = req as IRequestWithActiveDetails;
 
-  const isMyComment = await CommentModel.isMyComment(
+  const isMyComment = await CommentModel.isMyComment({
     commentId,
-    channelId || userId,
-    channelId ? "channelId" : "userId",
-  );
+    authorId: channelId || userId,
+    authorType: channelId ? "channelId" : "userId",
+  });
 
   if (!isMyComment)
     throw new AppError(httpStatus.UNAUTHORIZED, "This is not your comment");

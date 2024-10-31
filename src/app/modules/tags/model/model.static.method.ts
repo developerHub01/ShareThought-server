@@ -3,8 +3,11 @@ import { TagModel } from "./model";
 import tagSchema from "./model.schema";
 import { ITag } from "../tags.interface";
 
-tagSchema.statics.isTagExist = async (tag: string): Promise<boolean> =>
-  Boolean(await TagModel.findOne({ tagName: tag }));
+tagSchema.statics.isTagExist = async ({
+  tag,
+}: {
+  tag: string;
+}): Promise<boolean> => Boolean(await TagModel.findOne({ tagName: tag }));
 
 tagSchema.statics.addTags = async (
   tags: Array<string>,
@@ -70,7 +73,11 @@ tagSchema.statics.addTags = async (
   return result;
 };
 
-tagSchema.statics.searchTags = async (tag: string): Promise<Array<ITag>> => {
+tagSchema.statics.searchTags = async ({
+  tag,
+}: {
+  tag: string;
+}): Promise<Array<ITag>> => {
   return await TagModel.find({
     tagName: { $regex: tag, $options: "i" },
   });

@@ -9,14 +9,14 @@ import config from "../config";
 const readVerifyEmailToken = catchAsync(async (req, res, next) => {
   const { token } = req.query;
 
-  const tokenData = AuthUtils.verifyToken(
-    token as string,
-    config.JWT_EMAIL_VERIFICATION_SECRET,
-    {
+  const tokenData = AuthUtils.verifyToken({
+    token: token as string,
+    secret: config.JWT_EMAIL_VERIFICATION_SECRET,
+    errorDetails: {
       statusCode: httpStatus.UNAUTHORIZED,
       message: "Try again",
     },
-  );
+  });
   const verifyEmailTokenData: IVerifyEmailTokenData = {
     userId: tokenData.userId,
     email: tokenData.email,

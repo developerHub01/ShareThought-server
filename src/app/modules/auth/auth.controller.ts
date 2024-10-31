@@ -23,11 +23,11 @@ const loginUser = catchAsync(async (req, res) => {
   const body = {
     ...(isEmail(emailOrUserName)
       ? {
-          email: emailOrUserName,
-        }
+        email: emailOrUserName,
+      }
       : {
-          userName: emailOrUserName,
-        }),
+        userName: emailOrUserName,
+      }),
     password: req.body?.password,
   };
 
@@ -35,7 +35,7 @@ const loginUser = catchAsync(async (req, res) => {
     accessToken,
     refreshToken,
     userId: loggedInUserId,
-  } = await AuthServices.loginUser(body, guestId);
+  } = await AuthServices.loginUser({ payload: body, guestId });
 
   if (!accessToken || !refreshToken)
     throw new AppError(
@@ -66,7 +66,7 @@ const loginUser = catchAsync(async (req, res) => {
 
   /* send warning email for security concern */
 
-  await AuthServices.handleLoggedInUserInfo(loggedInUserId, userLoginInfo);
+  await AuthServices.handleLoggedInUserInfo({ userId: loggedInUserId, userLoginInfo });
 
   sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -80,7 +80,7 @@ const loginUser = catchAsync(async (req, res) => {
 });
 
 const logoutUser = catchAsync(async (req, res) => {
-  AuthUtils.clearAllCookies(req, res);
+  AuthUtils.clearAllCookies({ req, res });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -93,7 +93,7 @@ const logoutUser = catchAsync(async (req, res) => {
 const emailVerifyRequest = catchAsync(async (req, res) => {
   const { userId } = req as IRequestWithActiveDetails;
 
-  const result = await AuthServices.emailVerifyRequest(userId);
+  const result = await AuthServices.emailVerifyRequest({ userId });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -106,9 +106,9 @@ const emailVerifyRequest = catchAsync(async (req, res) => {
 const verifyEmail = catchAsync(async (req, res) => {
   const { verifyEmailTokenData } = req as IRequestWithActiveDetails;
 
-  const result = await AuthServices.verifyEmail(
-    verifyEmailTokenData as IVerifyEmailTokenData,
-  );
+  const result = await AuthServices.verifyEmail({
+    verifyEmailTokenData: verifyEmailTokenData as IVerifyEmailTokenData,
+  });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -121,7 +121,7 @@ const verifyEmail = catchAsync(async (req, res) => {
 const forgotPassword = catchAsync(async (req, res) => {
   const { emailOrUserName } = req.body;
 
-  const result = await AuthServices.forgetPassword(emailOrUserName);
+  const result = await AuthServices.forgetPassword({ emailOrUserName });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -141,7 +141,7 @@ const resetPassword = catchAsync(async (req, res) => {
 
   const { userId } = forgetPasswordTokenData;
 
-  const result = await AuthServices.resetPassword(userId, password);
+  const result = await AuthServices.resetPassword({ userId, password });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,

@@ -4,7 +4,7 @@ import cors from "cors";
 import cookieParser from "cookie-parser";
 import userAgent from "express-useragent";
 import IndexRoute from "./app/routes";
-import { notFound } from "./app/middleware/notfound";
+import { notFound } from "./app/middleware/not.found";
 import { globalErrorHandler } from "./app/middleware/global.error.handler";
 import "./app/config/cloudinary.config";
 import createGuestUserIfNeed from "./app/middleware/create.guest.user";

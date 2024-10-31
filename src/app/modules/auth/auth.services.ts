@@ -15,7 +15,13 @@ import { emailQueue } from "../../queues/email/queue";
 import { isEmail } from "../../utils/utils";
 import { QueueJobList } from "../../queues";
 
-const loginUser = async (payload: ILoginUser, guestId: string | undefined) => {
+const loginUser = async ({
+  payload,
+  guestId,
+}: {
+  payload: ILoginUser;
+  guestId?: string;
+}) => {
   const { password, email, userName } = payload;
 
   const user = await UserModel.findOne({
@@ -32,16 +38,16 @@ const loginUser = async (payload: ILoginUser, guestId: string | undefined) => {
 
   if (guestId) await GuestUserModel.deleteGuestUser(guestId, userId);
 
-  const accessToken = AuthUtils.createToken(
-    { userId },
-    config?.JWT_ACCESS_SECRET as string,
-    config?.JWT_ACCESS_EXPIRES_IN as string,
-  );
-  const refreshToken = AuthUtils.createToken(
-    { userId },
-    config?.JWT_REFRESH_SECRET as string,
-    config?.JWT_REFRESH_EXPIRES_IN as string,
-  );
+  const accessToken = AuthUtils.createToken({
+    jwtPayload: { userId },
+    secret: config?.JWT_ACCESS_SECRET as string,
+    expiresIn: config?.JWT_ACCESS_EXPIRES_IN as string,
+  });
+  const refreshToken = AuthUtils.createToken({
+    jwtPayload: { userId },
+    secret: config?.JWT_REFRESH_SECRET as string,
+    expiresIn: config?.JWT_REFRESH_EXPIRES_IN as string,
+  });
 
   return {
     accessToken,
@@ -50,7 +56,7 @@ const loginUser = async (payload: ILoginUser, guestId: string | undefined) => {
   };
 };
 
-const emailVerifyRequest = async (userId: string) => {
+const emailVerifyRequest = async ({ userId }: { userId: string }) => {
   const userData = await UserModel.findById(userId);
 
   if (userData?.isVerified)
@@ -73,7 +79,11 @@ const emailVerifyRequest = async (userId: string) => {
   return userData;
 };
 
-const verifyEmail = async (verifyEmailTokenData: IVerifyEmailTokenData) => {
+const verifyEmail = async ({
+  verifyEmailTokenData,
+}: {
+  verifyEmailTokenData: IVerifyEmailTokenData;
+}) => {
   const { email, userId } = verifyEmailTokenData;
 
   /**
@@ -109,15 +119,19 @@ const verifyEmail = async (verifyEmailTokenData: IVerifyEmailTokenData) => {
   return updatedUser;
 };
 
-const forgetPassword = async (emailOrUserName: string) => {
+const forgetPassword = async ({
+  emailOrUserName,
+}: {
+  emailOrUserName: string;
+}) => {
   const userData = await UserModel.findOne({
     ...(isEmail(emailOrUserName)
       ? {
-          email: emailOrUserName,
-        }
+        email: emailOrUserName,
+      }
       : {
-          userName: emailOrUserName,
-        }),
+        userName: emailOrUserName,
+      }),
   }).lean();
 
   if (!userData)
@@ -146,7 +160,13 @@ const forgetPassword = async (emailOrUserName: string) => {
   });
 };
 
-const resetPassword = async (userId: string, password: string) => {
+const resetPassword = async ({
+  userId,
+  password,
+}: {
+  userId: string;
+  password: string;
+}) => {
   const userData = await UserModel.findById(userId).select({
     needToChangePassword: 1,
   });
@@ -167,10 +187,13 @@ const resetPassword = async (userId: string, password: string) => {
   );
 };
 
-const handleLoggedInUserInfo = async (
-  userId: string,
-  userLoinInfo: IUserLoginInfo,
-) => {
+const handleLoggedInUserInfo = async ({
+  userId,
+  userLoginInfo,
+}: {
+  userId: string;
+  userLoginInfo: IUserLoginInfo;
+}) => {
   const userData = await UserModel.findById(userId);
 
   if (!userData) throw new AppError(httpStatus.NOT_FOUND, "user not found");
@@ -179,7 +202,7 @@ const handleLoggedInUserInfo = async (
 
   return await emailQueue.add(
     QueueJobList.SEND_LOGGED_IN_USER_INFO,
-    { ...userLoinInfo, fullName, email },
+    { ...userLoginInfo, fullName, email },
     {
       removeOnComplete: true,
       removeOnFail: true,

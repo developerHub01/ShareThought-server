@@ -23,11 +23,29 @@ export interface ICreatePost {
 }
 
 export interface IPostModel extends Model<IPost> {
-  isPostOfMyAnyChannel(userId: string, postId: string): Promise<boolean>;
+  isPostOfMyAnyChannel({
+    userId,
+    postId,
+  }: {
+    userId: string;
+    postId: string;
+  }): Promise<boolean>;
 
-  isMyPost(postId: string, channelId: string): Promise<boolean>;
+  isMyPost({
+    postId,
+    channelId,
+  }: {
+    postId: string;
+    channelId: string;
+  }): Promise<boolean>;
 
-  findPostById(id: string, channelId: string): Promise<unknown>;
+  findPostById({
+    id,
+    channelId,
+  }: {
+    id: string;
+    channelId: string;
+  }): Promise<unknown>;
 
-  isPublicPostById(id: string): Promise<boolean | unknown>;
+  isPublicPostById({ id }: { id: string }): Promise<boolean | unknown>;
 }

@@ -46,11 +46,11 @@ const moderatorRequestTokenGenerator = async ({
 }: {
   payload: Record<string, string>,
 }) => {
-  return AuthUtils.createToken(
-    payload,
-    config.JWT_MODERATOR_REQUEST_SECRET,
-    config.JWT_MODERATOR_REQUEST_EXPIRES_IN,
-  );
+  return AuthUtils.createToken({
+    jwtPayload: payload,
+    secret: config.JWT_MODERATOR_REQUEST_SECRET,
+    expiresIn: config.JWT_MODERATOR_REQUEST_EXPIRES_IN,
+  });
 };
 
 const makeEveryKeyFalse = ({ payload }: { payload: IPermissionType }) => {
@@ -137,7 +137,7 @@ const comparePermissionAndAdjust = ({
   mainPermissions = defaultPermissions,
 }: {
   payloadPermissions: IModeratorPermissions,
-  mainPermissions: IModeratorPermissions,
+  mainPermissions?: IModeratorPermissions,
 }) => {
   const result = recursivePermissionAdjust({
     mainPermissions: mainPermissions as IPermissionType,

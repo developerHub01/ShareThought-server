@@ -4,23 +4,23 @@ import { RedisKeys } from "../../redis.keys";
 import { IUser, IUserChangePassword } from "./user.interface";
 import { UserServices } from "./user.services";
 
-const findUserById = async (userId: string) => {
+const findUserById = async ({ userId }: { userId: string }) => {
   const userKey = RedisKeys.userKey(userId);
   const userData = await redis.get(userKey);
 
   if (userData) return JSON.parse(userData);
 
-  const result = await UserServices.findUserById(userId);
+  const result = await UserServices.findUserById({ userId });
 
   await redis.set(userKey, JSON.stringify(result));
 
   return result;
 };
 
-const createUser = async (payload: IUser) => {
-  const result = (await UserServices.createUser(
+const createUser = async ({ payload }: { payload: IUser }) => {
+  const result = (await UserServices.createUser({
     payload,
-  )) as TDocumentType<IUser>;
+  })) as TDocumentType<IUser>;
 
   const userKey = RedisKeys.userKey(result?._id?.toString());
 
@@ -29,11 +29,17 @@ const createUser = async (payload: IUser) => {
   return result;
 };
 
-const updateUser = async (payload: IUser, userId: string) => {
-  const result = (await UserServices.updateUser(
+const updateUser = async ({
+  payload,
+  userId: id,
+}: {
+  payload: IUser;
+  userId: string;
+}) => {
+  const result = (await UserServices.updateUser({
     payload,
-    userId,
-  )) as TDocumentType<IUser>;
+    id,
+  })) as TDocumentType<IUser>;
 
   const userKey = RedisKeys.userKey(result?._id?.toString());
 
@@ -42,14 +48,17 @@ const updateUser = async (payload: IUser, userId: string) => {
   return result;
 };
 
-const updateUserPassword = async (
-  payload: IUserChangePassword,
-  userId: string,
-) => {
-  const result = (await UserServices.updateUserPassword(
+const updateUserPassword = async ({
+  payload,
+  userId,
+}: {
+  payload: IUserChangePassword;
+  userId: string;
+}) => {
+  const result = (await UserServices.updateUserPassword({
     payload,
     userId,
-  )) as TDocumentType<IUser>;
+  })) as TDocumentType<IUser>;
 
   const userKey = RedisKeys.userKey(result?._id?.toString());
 

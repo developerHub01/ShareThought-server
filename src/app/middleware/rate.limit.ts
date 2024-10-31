@@ -1,8 +1,8 @@
 import httpStatus from "http-status";
-import { redis } from "../../app";
 import AppError from "../errors/AppError";
 import { RedisKeys } from "../redis.keys";
 import catchAsync from "../utils/catch.async";
+import { redis } from "../config/redis.config";
 
 const rateLimit = ({ limit = 10, timer = 60, prefix = "common" }) =>
   catchAsync(async (req, res, next) => {

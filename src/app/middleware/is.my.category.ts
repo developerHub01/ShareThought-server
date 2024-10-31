@@ -11,7 +11,7 @@ const isMyCategory = catchAsync(async (req, res, next) => {
   if (!channelId)
     throw new AppError(httpStatus.UNAUTHORIZED, "This is not your channel");
 
-  const result = await CategoryModel.isMyCategory(categoryId, channelId);
+  const result = await CategoryModel.isMyCategory({ categoryId, channelId });
 
   if (!result)
     throw new AppError(

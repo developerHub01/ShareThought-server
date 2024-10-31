@@ -1,12 +1,17 @@
 import { CloudinaryUtils } from "../../utils/cloudinary.utils";
 import { IMediaFileDimension } from "../../interface/interface";
 
-const updateChannelImage = async (
+const updateChannelImage = async ({
+  imagePath,
+  previousImage,
+  cloudinaryMediaPath,
+  dimension,
+}: {
   imagePath: string,
   previousImage: string,
   cloudinaryMediaPath: string,
   dimension: IMediaFileDimension,
-) => {
+}) => {
   await CloudinaryUtils.deleteFile([previousImage]);
 
   return await CloudinaryUtils.uploadFile(

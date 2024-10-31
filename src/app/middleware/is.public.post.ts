@@ -6,7 +6,7 @@ import { PostModel } from "../modules/post/model/model";
 const isPublicPost = catchAsync(async (req, res, next) => {
   const { postId } = req.params;
 
-  const result = await PostModel.isPublicPostById(postId);
+  const result = await PostModel.isPublicPostById({ id: postId });
 
   if (!result)
     throw new AppError(httpStatus.UNAUTHORIZED, "this post is not public");

@@ -10,7 +10,7 @@ const channelExist = catchAsync(async (req, res, next) => {
   if (!channelId)
     throw new AppError(httpStatus.BAD_REQUEST, "your channel is not activated");
 
-  const result = await ChannelModel.isChannelExist(channelId);
+  const result = await ChannelModel.isChannelExist({ id: channelId });
 
   if (!result) throw new AppError(httpStatus.NOT_FOUND, "No channel found");
 

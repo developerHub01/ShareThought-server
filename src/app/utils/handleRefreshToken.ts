@@ -13,10 +13,10 @@ const handleRefreshToken = async (
   block: boolean = true,
 ) => {
   const refreshToken = req.cookies[Constatnt.TOKENS.REFRESH_TOKEN];
-  const { userId } = AuthUtils.verifyToken(
-    refreshToken,
-    config.JWT_REFRESH_SECRET,
-  );
+  const { userId } = AuthUtils.verifyToken({
+    token: refreshToken,
+    secret: config.JWT_REFRESH_SECRET,
+  });
 
   if (!userId && block) {
     res.clearCookie(Constatnt.TOKENS.ACCESS_TOKEN);
@@ -33,13 +33,13 @@ const handleRefreshToken = async (
     throw new AppError(httpStatus.UNAUTHORIZED, "You are not logged in");
   }
 
-  const newAccessToken = AuthUtils.createToken(
-    {
+  const newAccessToken = AuthUtils.createToken({
+    jwtPayload: {
       userId,
     },
-    config.JWT_ACCESS_SECRET,
-    config.JWT_ACCESS_EXPIRES_IN,
-  );
+    secret: config.JWT_ACCESS_SECRET,
+    expiresIn: config.JWT_ACCESS_EXPIRES_IN,
+  });
 
   res.cookie(Constatnt.TOKENS.ACCESS_TOKEN, newAccessToken, {
     secure: config.PROJECT_ENVIRONMENT !== "development", // if development environment then false else true

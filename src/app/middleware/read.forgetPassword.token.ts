@@ -8,17 +8,17 @@ import config from "../config";
 
 const readForgetPasswordToken = catchAsync(async (req, res, next) => {
   const { token } = req.query;
-  
+
   if (!token) throw new AppError(httpStatus.BAD_REQUEST, "token is missing");
 
-  const tokenData = AuthUtils.verifyToken(
-    token as string,
-    config.JWT_FORGET_PASSWORD_SECRET,
-    {
+  const tokenData = AuthUtils.verifyToken({
+    token: token as string,
+    secret: config.JWT_FORGET_PASSWORD_SECRET,
+    errorDetails: {
       statusCode: httpStatus.UNAUTHORIZED,
       message: "Try again",
     },
-  );
+  });
   const forgetPasswordTokenData: IForgetPasswordTokenData = {
     userId: tokenData.userId,
     email: tokenData.email,

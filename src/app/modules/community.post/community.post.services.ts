@@ -20,9 +20,7 @@ const ObjectId = mongoose.Types.ObjectId;
 
 /* helper function start =================== */
 /*
- *
  *  to find which index of option is selected from all options
- *
  */
 const postDetailsSelectedIndex = ({
   doc,
@@ -157,7 +155,10 @@ const findCommuityPostById = async ({
   id: string;
   channelId: string | undefined;
 }) => {
-  return await CommunityPostModel.findPostById(id, channelId);
+  return await CommunityPostModel.findPostById({
+    communityPostId: id,
+    channelId,
+  });
 };
 
 const createPost = async ({ payload }: { payload: ICreateCommunityPost }) => {

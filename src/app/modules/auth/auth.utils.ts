@@ -9,11 +9,15 @@ import { Request, Response } from "express";
 import config from "../../config";
 import AppError from "../../errors/AppError";
 
-const createToken = (
+const createToken = ({
+  jwtPayload,
+  secret,
+  expiresIn,
+}: {
   jwtPayload: IJWTPayload,
   secret: string,
   expiresIn?: string,
-) => {
+}) => {
   if (expiresIn)
     return jwt.sign(jwtPayload, secret, {
       expiresIn,
@@ -22,11 +26,15 @@ const createToken = (
   return jwt.sign(jwtPayload, secret);
 };
 
-const verifyToken = (
+const verifyToken = ({
+  token,
+  secret,
+  errorDetails,
+}: {
   token: string,
   secret: string,
   errorDetails?: IErrorDetails,
-) => {
+}) => {
   try {
     return jwt.verify(token, secret) as JwtPayload;
   } catch (error) {
@@ -36,28 +44,28 @@ const verifyToken = (
   }
 };
 
-const clearAllCookies = (req: Request, res: Response) => {
+const clearAllCookies = ({ req, res }: { req: Request, res: Response }) => {
   return Object.keys(req?.cookies).forEach((cookie) => res.clearCookie(cookie));
 };
 
 const emailVerificationTokenGenerator: TEmailVarificationLinkGenerator = (
   userData,
 ) => {
-  return AuthUtils.createToken(
-    userData,
-    config.JWT_EMAIL_VERIFICATION_SECRET,
-    config.JWT_EMAIL_VERIFICATION_EXPIRES_IN,
-  );
+  return AuthUtils.createToken({
+    jwtPayload: userData,
+    secret: config.JWT_EMAIL_VERIFICATION_SECRET,
+    expiresIn: config.JWT_EMAIL_VERIFICATION_EXPIRES_IN,
+  });
 };
 
 const forgetPasswordTokenGenerator: TForgetPasswordLinkGenerator = (
   userData,
 ) => {
-  return createToken(
-    userData,
-    config.JWT_FORGET_PASSWORD_SECRET,
-    config.JWT_FORGET_PASSWORD_EXPIRES_IN,
-  );
+  return createToken({
+    jwtPayload: userData,
+    secret: config.JWT_FORGET_PASSWORD_SECRET,
+    expiresIn: config.JWT_FORGET_PASSWORD_EXPIRES_IN,
+  });
 };
 
 export const AuthUtils = {

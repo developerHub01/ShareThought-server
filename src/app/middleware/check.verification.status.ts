@@ -5,7 +5,7 @@ import { IRequestWithActiveDetails } from "../interface/interface";
 const checkVerficationStatus = catchAsync(async (req, res, next) => {
   const { userId } = req as IRequestWithActiveDetails;
 
-  const result = await UserModel.isVerified(userId);
+  const result = await UserModel.isVerified({ id: userId });
 
   (req as IRequestWithActiveDetails).isVerified = result;
 

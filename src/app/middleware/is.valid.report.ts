@@ -25,7 +25,12 @@ const isValidReport = catchAsync(async (req, res, next) => {
   if (req.body.contextChannel) {
     const reportedChannelId = req.body.contextChannel;
 
-    if (await ChannelModel.isChannelMine(reportedChannelId, userId))
+    if (
+      await ChannelModel.isChannelMine({
+        channelId: reportedChannelId,
+        authorId: userId,
+      })
+    )
       throw new AppError(
         httpStatus.BAD_REQUEST,
         "user can't report their own channel",
@@ -33,7 +38,9 @@ const isValidReport = catchAsync(async (req, res, next) => {
   } else if (req.body.contextBlogPost) {
     const reportedPostId = req.body.contextBlogPost;
 
-    if (await PostModel.isPostOfMyAnyChannel(userId, reportedPostId))
+    if (
+      await PostModel.isPostOfMyAnyChannel({ userId, postId: reportedPostId })
+    )
       throw new AppError(
         httpStatus.BAD_REQUEST,
         "user can't report their own post",
@@ -41,7 +48,9 @@ const isValidReport = catchAsync(async (req, res, next) => {
   } else if (req.body.contextCommunityPost) {
     const reportedPostId = req.body.contextCommunityPost;
 
-    if (await PostModel.isPostOfMyAnyChannel(userId, reportedPostId))
+    if (
+      await PostModel.isPostOfMyAnyChannel({ userId, postId: reportedPostId })
+    )
       throw new AppError(
         httpStatus.BAD_REQUEST,
         "user can't report their own post",

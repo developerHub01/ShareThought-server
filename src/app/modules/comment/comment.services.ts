@@ -1,15 +1,8 @@
 import mongoose from "mongoose";
 import QueryBuilder from "../../builder/QueryBuilder";
-import {
-  IByCommentIdParams,
-  ICreateCommentParams,
-  IDeleteAllCommentParams,
-  IFindCommentByIdParams,
-  IFindCommentByPostIdServiceParams,
-  IReplyCommentParams,
-  IUpdateCommentParams,
-} from "./comment.interface";
+import { ICreateComment } from "./comment.interface";
 import { CommentModel } from "./model/model";
+import { TAuthorType, TPostType } from "../../interface/interface";
 
 /**
  * - first check that is that my post if my post means I am the AUTHOR or an MODERATOR
@@ -26,7 +19,12 @@ const findCommentByPostId = async ({
   postId,
   postType,
   isMyPost,
-}: IFindCommentByPostIdServiceParams) => {
+}: {
+  query: Record<string, unknown>;
+  postId: string;
+  postType: TPostType;
+  isMyPost: boolean;
+}) => {
   let showHiddenComments = false;
 
   if (isMyPost) showHiddenComments = true;
@@ -84,7 +82,10 @@ const findCommentByPostId = async ({
 const findCommentById = async ({
   commentId,
   activeChannelId,
-}: IFindCommentByIdParams) => {
+}: {
+  commentId: string;
+  activeChannelId: string;
+}) => {
   const commentData = await CommentModel.findById(commentId).populate({
     path: "commentAuthorId",
     select: "fullName avatar",
@@ -106,7 +107,13 @@ const createComment = async ({
   postType,
   authorId,
   authorType,
-}: ICreateCommentParams) => {
+}: {
+  payload: ICreateComment;
+  postId: string;
+  postType: TPostType;
+  authorId: string;
+  authorType: TAuthorType;
+}) => {
   payload = {
     ...payload,
     ...(postType === "blogPost" ? { postId } : { communityPostId: postId }),
@@ -115,7 +122,7 @@ const createComment = async ({
       : { commentAuthorId: authorId }),
   };
 
-  return await CommentModel.createComment(payload);
+  return await CommentModel.createComment({ payload });
 };
 
 const replyComment = async ({
@@ -123,7 +130,12 @@ const replyComment = async ({
   parentCommentId,
   authorId,
   authorType,
-}: IReplyCommentParams) => {
+}: {
+  payload: ICreateComment;
+  parentCommentId: string;
+  authorId: string;
+  authorType: TAuthorType;
+}) => {
   payload = {
     ...payload,
     parentCommentId,
@@ -132,10 +144,16 @@ const replyComment = async ({
       : { commentAuthorId: authorId }),
   };
 
-  return await CommentModel.createComment(payload);
+  return await CommentModel.createComment({ payload });
 };
 
-const updateComment = async ({ payload, commentId }: IUpdateCommentParams) => {
+const updateComment = async ({
+  payload,
+  commentId,
+}: {
+  payload: ICreateComment;
+  commentId: string;
+}) => {
   return await CommentModel.findByIdAndUpdate(
     commentId,
     {
@@ -145,7 +163,7 @@ const updateComment = async ({ payload, commentId }: IUpdateCommentParams) => {
   );
 };
 
-const deleteComment = async ({ commentId }: IByCommentIdParams) => {
+const deleteComment = async ({ commentId }: { commentId: string }) => {
   const session = await mongoose.startSession();
   try {
     session.startTransaction();
@@ -168,7 +186,10 @@ const deleteComment = async ({ commentId }: IByCommentIdParams) => {
 const deleteAllComment = async ({
   postId,
   postType,
-}: IDeleteAllCommentParams) => {
+}: {
+  postId: string;
+  postType: TPostType;
+}) => {
   const session = await mongoose.startSession();
   session.startTransaction();
   try {
@@ -178,7 +199,10 @@ const deleteAllComment = async ({
 
     for (const commentData of result) {
       const { _id } = commentData;
-      await CommentModel.deleteCommentsWithReplies(_id?.toString(), session);
+      await CommentModel.deleteCommentsWithReplies({
+        commentId: _id?.toString(),
+        session,
+      });
     }
     await session.commitTransaction();
     await session.endSession();
@@ -191,7 +215,11 @@ const deleteAllComment = async ({
   }
 };
 
-const removeCommentImageField = async ({ commentId }: IByCommentIdParams) => {
+const removeCommentImageField = async ({
+  commentId,
+}: {
+  commentId: string;
+}) => {
   return await CommentModel.findByIdAndUpdate(
     commentId,
     {
@@ -201,7 +229,7 @@ const removeCommentImageField = async ({ commentId }: IByCommentIdParams) => {
   );
 };
 
-const togglePinComment = async ({ commentId }: IByCommentIdParams) => {
+const togglePinComment = async ({ commentId }: { commentId: string }) => {
   /* used aggregation to make that change in single query */
   return await CommentModel.findByIdAndUpdate(
     commentId,
@@ -224,7 +252,7 @@ const togglePinComment = async ({ commentId }: IByCommentIdParams) => {
   );
 };
 
-const toggleVisibility = async ({ commentId }: IByCommentIdParams) => {
+const toggleVisibility = async ({ commentId }: { commentId: string }) => {
   return await CommentModel.findByIdAndUpdate(
     commentId,
     [

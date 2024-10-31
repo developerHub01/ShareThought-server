@@ -17,36 +17,59 @@ export interface IPostReaction {
 }
 
 export interface IPostReactionModel extends Model<IPostReaction> {
-  totalPostReactionByPostId(
-    postId: string,
-    postType: TPostType,
-  ): Promise<unknown>;
+  totalPostReactionByPostId({
+    postId,
+    postType,
+  }: {
+    postId: string;
+    postType: TPostType;
+  }): Promise<unknown>;
 
-  myReactionOnPost(
-    postId: string,
-    postType: TPostType,
-    authorId: string,
-    authorIdType: TAuthorType,
-  ): Promise<string | unknown>;
+  myReactionOnPost({
+    postId,
+    postType,
+    authorId,
+    authorIdType,
+  }: {
+    postId: string;
+    postType: TPostType;
+    authorId: string;
+    authorIdType: TAuthorType;
+  }): Promise<string | unknown>;
 
-  togglePostReaction(
-    postId: string,
-    postType: TPostType,
-    authorId: string,
-    authorIdType: TAuthorType,
-  ): Promise<boolean | unknown>;
+  togglePostReaction({
+    postId,
+    postType,
+    authorId,
+    authorIdType,
+  }: {
+    postId: string;
+    postType: TPostType;
+    authorId: string;
+    authorIdType: TAuthorType;
+  }): Promise<boolean | unknown>;
 
-  reactOnPost(
-    postId: string,
-    postType: TPostType,
-    authorId: string,
-    authorIdType: TAuthorType,
-    reactionType: TPostReactionType,
-  ): Promise<unknown>;
-  
-  deleteAllReactionByPostId(
-    postId: string,
-    postType: TPostType,
-    session?: ClientSession,
-  ): Promise<unknown>;
+  reactOnPost({
+    postId,
+    postType,
+    authorId,
+    authorIdType,
+    reactionType,
+  }: {
+    postId: string;
+    postType: TPostType;
+    authorId: string;
+    authorIdType: TAuthorType;
+    reactionType: TPostReactionType;
+  }): Promise<unknown>;
+
+  deleteAllReactionByPostId({
+    postId,
+    postType,
+    session,
+  }: {
+    postId: string;
+    postType: TPostType;
+    session?: ClientSession;
+  }): Promise<unknown>;
 }

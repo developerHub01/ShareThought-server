@@ -24,12 +24,12 @@ const myModerationDetails = catchAsync(async (req, res) => {
       "you are the author of the channel not moderator",
     );
 
-  const result = await ModeratorServices.singleModerator(
-    channelId as string,
-    myModeratorId as string,
-    myModeratorId as string,
+  const result = await ModeratorServices.singleModerator({
+    channelId: channelId as string,
+    myModeratorId: myModeratorId as string,
+    targetedModeratorId: myModeratorId as string,
     channelRole,
-  );
+  });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -58,12 +58,12 @@ const singleModerator = catchAsync(async (req, res) => {
       "Access denied: Only channel owners or super moderators can perform this action.",
     );
 
-  const result = await ModeratorServices.singleModerator(
-    channelId as string,
-    myModeratorId as string,
-    targetedModeratorId as string,
+  const result = await ModeratorServices.singleModerator({
+    channelId: channelId as string,
+    myModeratorId: myModeratorId as string,
+    targetedModeratorId: targetedModeratorId as string,
     channelRole,
-  );
+  });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -82,11 +82,11 @@ const getAllModerators = catchAsync(async (req, res) => {
       "Access denied: Only channel owners or super moderators can perform this action.",
     );
 
-  const result = await ModeratorServices.getAllModerators(
-    req.query,
-    channelId as string,
+  const result = await ModeratorServices.getAllModerators({
+    query: req.query,
+    channelId: channelId as string,
     channelRole,
-  );
+  });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -107,10 +107,10 @@ const addModerator = catchAsync(async (req, res) => {
   if (!userData.isVerified)
     throw new AppError(httpStatus.FORBIDDEN, "user is not verified");
 
-  const result = await ModeratorCache.addModerator(
-    channelId as string,
-    req.body,
-  );
+  const result = await ModeratorCache.addModerator({
+    channelId: channelId as string,
+    payload: req.body,
+  });
 
   return sendResponse(res, {
     statusCode: httpStatus.CREATED,
@@ -123,10 +123,10 @@ const addModerator = catchAsync(async (req, res) => {
 const acceptModerationRequest = catchAsync(async (req, res) => {
   const { userId, moderatorId } = req as IRequestWithActiveDetails;
 
-  const result = await ModeratorCache.acceptModerationRequest(
+  const result = await ModeratorCache.acceptModerationRequest({
     userId,
-    moderatorId as string,
-  );
+    moderatorId: moderatorId as string,
+  });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -162,10 +162,10 @@ const updateModerator = catchAsync(async (req, res) => {
     myModeratorId &&
     channelRole !== ChannelConstant.CHANNEL_USER_ROLES.AUTHOR
   ) {
-    const resultPayload = ModeratorUtils.comparePermissionAndAdjust(
-      payloadPermissions["permissions"],
-      moderatorPermissions as IModeratorPermissions,
-    );
+    const resultPayload = ModeratorUtils.comparePermissionAndAdjust({
+      payloadPermissions: payloadPermissions["permissions"],
+      mainPermissions: moderatorPermissions as IModeratorPermissions,
+    });
 
     warnings = resultPayload.warnings;
     (warnings as typeof warnings & { message: string }).message =
@@ -173,19 +173,19 @@ const updateModerator = catchAsync(async (req, res) => {
 
     payloadPermissions["permissions"] = resultPayload.payloadPermissions;
   } else {
-    const resultPayload = ModeratorUtils.comparePermissionAndAdjust(
-      payloadPermissions["permissions"],
-    );
+    const resultPayload = ModeratorUtils.comparePermissionAndAdjust({
+      payloadPermissions: payloadPermissions["permissions"],
+    });
 
     payloadPermissions["permissions"] = resultPayload.payloadPermissions;
   }
 
-  const updatedData = await ModeratorServices.updateModerator(
-    channelId as string,
-    targetedModeratorId as string,
+  const updatedData = await ModeratorServices.updateModerator({
+    channelId: channelId as string,
+    targetedModeratorId: targetedModeratorId as string,
     channelRole,
     payloadPermissions,
-  );
+  });
 
   const result = {
     updatedData,
@@ -203,7 +203,10 @@ const updateModerator = catchAsync(async (req, res) => {
 const resign = catchAsync(async (req, res) => {
   const { userId, moderatorId } = req as IRequestWithActiveDetails;
 
-  const result = await ModeratorCache.resign(userId, moderatorId as string);
+  const result = await ModeratorCache.resign({
+    userId,
+    moderatorId: moderatorId as string,
+  });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -216,7 +219,7 @@ const resign = catchAsync(async (req, res) => {
 const removeModerator = catchAsync(async (req, res) => {
   const { moderatorId } = req.params;
 
-  const result = await ModeratorCache.removeModerator(moderatorId);
+  const result = await ModeratorCache.removeModerator({ moderatorId });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,

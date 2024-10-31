@@ -5,9 +5,15 @@ import { ChannelModel } from "../channel/model/model";
 import { IModeratorPayload } from "./moderator.interface";
 import { ModeratorServices } from "./moderator.services";
 
-const addModerator = async (channelId: string, payload: IModeratorPayload) => {
+const addModerator = async ({
+  channelId,
+  payload,
+}: {
+  channelId: string;
+  payload: IModeratorPayload;
+}) => {
   const { moderatorData: result, isRequesting } =
-    await ModeratorServices.addModerator(channelId, payload);
+    await ModeratorServices.addModerator({ channelId, payload });
 
   if (!result) return result;
 
@@ -34,11 +40,17 @@ const addModerator = async (channelId: string, payload: IModeratorPayload) => {
   return result;
 };
 
-const acceptModerationRequest = async (userId: string, moderatorId: string) => {
-  const result = await ModeratorServices.acceptModerationRequest(
+const acceptModerationRequest = async ({
+  userId,
+  moderatorId,
+}: {
+  userId: string;
+  moderatorId: string;
+}) => {
+  const result = await ModeratorServices.acceptModerationRequest({
     userId,
     moderatorId,
-  );
+  });
 
   if (!result) return result;
 
@@ -68,8 +80,14 @@ const acceptModerationRequest = async (userId: string, moderatorId: string) => {
   return result;
 };
 
-const resign = async (userId: string, moderatorId: string) => {
-  const result = await ModeratorServices.resign(userId, moderatorId);
+const resign = async ({
+  userId,
+  moderatorId,
+}: {
+  userId: string;
+  moderatorId: string;
+}) => {
+  const result = await ModeratorServices.resign({ userId, moderatorId });
 
   if (!result) return result;
 
@@ -99,8 +117,8 @@ const resign = async (userId: string, moderatorId: string) => {
   return result;
 };
 
-const removeModerator = async (moderatorId: string) => {
-  const result = await ModeratorServices.removeModerator(moderatorId);
+const removeModerator = async ({ moderatorId }: { moderatorId: string }) => {
+  const result = await ModeratorServices.removeModerator({ moderatorId });
 
   if (!result) return result;
 

@@ -21,10 +21,10 @@ const createGuestToken = async () => {
   if (!guestUser) return null;
 
   const { _id } = guestUser as { _id: string };
-  const guestToken = AuthUtils.createToken(
-    { guestId: _id.toString() },
-    config.JWT_GUEST_SECRET as string,
-  );
+  const guestToken = AuthUtils.createToken({
+    jwtPayload: { guestId: _id.toString() },
+    secret: config.JWT_GUEST_SECRET as string,
+  });
 
   return guestToken;
 };
@@ -32,10 +32,10 @@ const createGuestToken = async () => {
 const validateAccessToken = (accessToken: string | undefined) => {
   if (!accessToken) return null;
   try {
-    const { userId } = AuthUtils.verifyToken(
-      accessToken,
-      config.JWT_ACCESS_SECRET as string,
-    );
+    const { userId } = AuthUtils.verifyToken({
+      token: accessToken,
+      secret: config.JWT_ACCESS_SECRET as string,
+    });
     return userId;
   } catch (error) {
     return null;
@@ -44,19 +44,19 @@ const validateAccessToken = (accessToken: string | undefined) => {
 
 const refreshAccessTokenIfValid = async (refreshToken: string) => {
   try {
-    const { userId } = AuthUtils.verifyToken(
-      refreshToken,
-      config.JWT_REFRESH_SECRET,
-    );
-    const isUserExist = await UserModel.isUserExist(userId);
+    const { userId } = AuthUtils.verifyToken({
+      token: refreshToken,
+      secret: config.JWT_REFRESH_SECRET,
+    });
+    const isUserExist = await UserModel.isUserExist({ id: userId });
 
     if (!isUserExist) return null;
 
-    const newAccessToken = AuthUtils.createToken(
-      { userId },
-      config.JWT_ACCESS_SECRET,
-      config.JWT_ACCESS_EXPIRES_IN,
-    );
+    const newAccessToken = AuthUtils.createToken({
+      jwtPayload: { userId },
+      secret: config.JWT_ACCESS_SECRET,
+      expiresIn: config.JWT_ACCESS_EXPIRES_IN,
+    });
 
     return { userId, newAccessToken };
   } catch (error) {
@@ -113,10 +113,10 @@ const createGuestUserIfNeed = catchAsync(
     let guestId;
     if (guestToken) {
       try {
-        guestId = AuthUtils.verifyToken(
-          guestToken,
-          config.JWT_GUEST_SECRET as string,
-        )?.guestId;
+        guestId = AuthUtils.verifyToken({
+          token: guestToken,
+          secret: config.JWT_GUEST_SECRET as string,
+        })?.guestId;
       } catch {
         guestId = null;
       }
@@ -125,10 +125,10 @@ const createGuestUserIfNeed = catchAsync(
     if (!guestId) {
       guestToken = await createGuestToken();
       if (guestToken) {
-        guestId = AuthUtils.verifyToken(
-          guestToken,
-          config.JWT_GUEST_SECRET as string,
-        )?.guestId;
+        guestId = AuthUtils.verifyToken({
+          token: guestToken,
+          secret: config.JWT_GUEST_SECRET as string,
+        })?.guestId;
 
         // Set new guest token in cookie
         res.cookie(Constatnt.TOKENS.GUEST_TOKEN, guestToken, {

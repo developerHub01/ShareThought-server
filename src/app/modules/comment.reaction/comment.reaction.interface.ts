@@ -15,29 +15,49 @@ export interface ICommentReaction {
   reactionType: TCommentReactionType;
 }
 export interface ICommentReactionModel extends Model<ICommentReaction> {
-  totalCommentReactionByCommentId(commentId: string): Promise<number>;
+  totalCommentReactionByCommentId({
+    commentId,
+  }: {
+    commentId: string;
+  }): Promise<number>;
 
-  myReactionOnComment(
-    commentId: string,
-    authorId: string,
-    authorIdType: TAuthorType,
-  ): Promise<string | null>;
+  myReactionOnComment({
+    commentId,
+    authorId,
+    authorIdType,
+  }: {
+    commentId: string;
+    authorId: string;
+    authorIdType: TAuthorType;
+  }): Promise<string | null>;
 
-  deleteCommentReactionByCommentId(
-    commentId: string,
-    session?: ClientSession,
-  ): Promise<unknown>;
+  deleteCommentReactionByCommentId({
+    commentId,
+    session,
+  }: {
+    commentId: string;
+    session?: ClientSession;
+  }): Promise<unknown>;
 
-  toggleCommentReaction(
-    commentId: string,
-    authorId: string,
-    authorIdType: TAuthorType,
-  ): Promise<boolean | unknown>;
+  toggleCommentReaction({
+    commentId,
+    authorId,
+    authorIdType,
+  }: {
+    commentId: string;
+    authorId: string;
+    authorIdType: TAuthorType;
+  }): Promise<boolean | unknown>;
 
-  reactOnComment(
-    commentId: string,
-    authorId: string,
-    authorIdType: TAuthorType,
-    reactionType: TCommentReactionType,
-  ): Promise<unknown>;
+  reactOnComment({
+    commentId,
+    authorId,
+    authorIdType,
+    reactionType,
+  }: {
+    commentId: string;
+    authorId: string;
+    authorIdType: TAuthorType;
+    reactionType: TCommentReactionType;
+  }): Promise<unknown>;
 }

@@ -32,12 +32,17 @@ postReactionSchema.statics.myReactionOnPost = async (
   return result?.reactionType || null;
 };
 
-postReactionSchema.statics.togglePostReaction = async (
-  postId: string,
-  postType: TPostType,
-  authorId: string,
-  authorIdType: TAuthorType,
-): Promise<boolean | unknown> => {
+postReactionSchema.statics.togglePostReaction = async ({
+  postId,
+  postType,
+  authorId,
+  authorIdType,
+}: {
+  postId: string;
+  postType: TPostType;
+  authorId: string;
+  authorIdType: TAuthorType;
+}): Promise<boolean | unknown> => {
   const query = {
     ...(postType === "blogPost" ? { postId } : { communityPostId: postId }),
     ...(authorIdType === "channelId"
@@ -56,13 +61,19 @@ postReactionSchema.statics.togglePostReaction = async (
   );
 };
 
-postReactionSchema.statics.reactOnPost = async (
-  postId: string,
-  postType: TPostType,
-  authorId: string,
-  authorIdType: TAuthorType,
-  reactionType: TPostReactionType,
-): Promise<unknown> => {
+postReactionSchema.statics.reactOnPost = async ({
+  postId,
+  postType,
+  authorId,
+  authorIdType,
+  reactionType,
+}: {
+  postId: string;
+  postType: TPostType;
+  authorId: string;
+  authorIdType: TAuthorType;
+  reactionType: TPostReactionType;
+}): Promise<unknown> => {
   const doc = await PostReactionModel.findOneAndUpdate(
     {
       ...(postType === "blogPost" ? { postId } : { communityPostId: postId }),
@@ -84,13 +95,17 @@ postReactionSchema.statics.reactOnPost = async (
   );
 };
 
-postReactionSchema.statics.deleteAllReactionByPostId = async (
-  postId: string,
-  postType: TPostType,
-  session?: ClientSession,
-) => {
+postReactionSchema.statics.deleteAllReactionByPostId = async ({
+  postId,
+  postType,
+  session,
+}: {
+  postId: string;
+  postType: TPostType;
+  session?: ClientSession;
+}) => {
   const options = session ? { session } : {};
-  
+
   return await PostReactionModel.deleteMany(
     {
       ...(postType === "blogPost" ? { postId } : { communityPostId: postId }),

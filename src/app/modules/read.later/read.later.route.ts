@@ -1,7 +1,7 @@
 import express from "express";
 import getLoggedInUser from "../../middleware/get.loggedin.user";
 import { ReadLaterController } from "./read.later.controller";
-import isVerified from "../../middleware/is.Verified";
+import isVerified from "../../middleware/is.verified";
 
 const router = express.Router();
 

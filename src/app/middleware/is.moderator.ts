@@ -31,10 +31,10 @@ const isModerator = (isVerified = false) =>
     if (!token)
       throw new AppError(httpStatus.UNAUTHORIZED, "user is not a moderator");
 
-    const { moderatorId } = AuthUtils.verifyToken(
+    const { moderatorId } = AuthUtils.verifyToken({
       token,
-      config.JWT_MODERATOR_SECRET as string,
-    );
+      secret: config.JWT_MODERATOR_SECRET as string,
+    });
 
     if (!moderatorId)
       throw new AppError(httpStatus.UNAUTHORIZED, "user is not a moderator");

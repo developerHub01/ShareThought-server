@@ -15,7 +15,7 @@ const verifyCategoryPostMine = catchAsync(async (req, res, next) => {
   if (!postList) return next();
 
   for (const postId of postList) {
-    if (!(await PostModel.isMyPost(postId, channelId)))
+    if (!(await PostModel.isMyPost({postId, channelId})))
       throw new AppError(httpStatus.UNAUTHORIZED, `${postId} is not your post`);
 
     const postData = await PostModel.findById(postId);

@@ -8,10 +8,13 @@ import { TDocumentType } from "../../../interface/interface";
 import { IChannel } from "../../channel/channel.interface";
 import { ClientSession } from "mongoose";
 
-moderatorSchema.statics.channelModeratorData = async (
-  channelId: string,
-  userId: string,
-): Promise<IModerator | null> => {
+moderatorSchema.statics.channelModeratorData = async ({
+  channelId,
+  userId,
+}: {
+  channelId: string;
+  userId: string;
+}): Promise<IModerator | null> => {
   return await ModeratorModel.findOne({
     channelId,
     userId,
@@ -19,17 +22,23 @@ moderatorSchema.statics.channelModeratorData = async (
   });
 };
 
-moderatorSchema.statics.getChannelModeratorsCount = async (
-  channelId: string,
-): Promise<number> => {
+moderatorSchema.statics.getChannelModeratorsCount = async ({
+  channelId,
+}: {
+  channelId: string;
+}): Promise<number> => {
   return (await ModeratorModel.countDocuments({ channelId })) || 0;
 };
 
-moderatorSchema.statics.addChannelModerator = async (
-  channelId: string,
-  payload: IModeratorPayload,
-  session?: ClientSession,
-) => {
+moderatorSchema.statics.addChannelModerator = async ({
+  channelId,
+  payload,
+  session,
+}: {
+  channelId: string;
+  payload: IModeratorPayload;
+  session?: ClientSession;
+}) => {
   const { userId, permissions } = payload;
 
   const channelData = (await ChannelModel.findById(
@@ -62,11 +71,15 @@ moderatorSchema.statics.addChannelModerator = async (
   )[0];
 };
 
-moderatorSchema.statics.resign = async (
-  userId: string,
-  moderatorId: string,
-  session?: ClientSession,
-) => {
+moderatorSchema.statics.resign = async ({
+  userId,
+  moderatorId,
+  session,
+}: {
+  userId: string;
+  moderatorId: string;
+  session?: ClientSession;
+}) => {
   const moderatorData = (await ModeratorModel.findById(
     moderatorId,
   )) as TDocumentType<IModerator>;
@@ -93,10 +106,13 @@ moderatorSchema.statics.resign = async (
     : null;
 };
 
-moderatorSchema.statics.isAlreadyModerator = async (
-  channelId: string,
-  userId: string,
-): Promise<boolean> => {
+moderatorSchema.statics.isAlreadyModerator = async ({
+  channelId,
+  userId,
+}: {
+  channelId: string;
+  userId: string;
+}): Promise<boolean> => {
   return Boolean(
     await ModeratorModel.findOne({ channelId, userId, isVerified: true }),
   );
@@ -109,10 +125,13 @@ moderatorSchema.statics.isAlreadyModerator = async (
  * - Throws an error if the user is not a moderator or already verified.
  *
  */
-moderatorSchema.statics.acceptModeratorRequest = async (
-  userId: string,
-  moderatorId: string,
-): Promise<IModerator> => {
+moderatorSchema.statics.acceptModeratorRequest = async ({
+  userId,
+  moderatorId,
+}: {
+  userId: string;
+  moderatorId: string;
+}): Promise<IModerator> => {
   const moderatorData =
     await ModeratorModel.findById(moderatorId).select("userId isVerified");
 

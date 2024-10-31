@@ -8,11 +8,11 @@ const haveAccessCategory = catchAsync(async (req, res, next) => {
   const { id: categoryId } = req.params;
   const { userId, channelId } = req as IRequestWithActiveDetails;
 
-  const result = await CategoryModel.haveAccessCategory(
+  const result = await CategoryModel.haveAccessCategory({
     categoryId,
-    channelId || userId,
-    channelId ? "channelId" : "userId",
-  );
+    userOrChannelId: channelId || userId,
+    idType: channelId ? "channelId" : "userId",
+  });
 
   if (!result)
     throw new AppError(

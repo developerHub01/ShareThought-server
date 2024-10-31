@@ -11,11 +11,11 @@ const createReport = catchAsync(async (req, res) => {
   const { userId, channelId } = req as IRequestWithActiveDetails;
 
   if (req.body?.evidenceImages) {
-    const evidenceImages = await ReportUtils.createReportImage(
-      req.body?.evidenceImages,
-      CloudinaryConstant.SHARE_THOUGHT_REPORT_FOLDER_NAME,
-      false,
-    );
+    const evidenceImages = await ReportUtils.createReportImage({
+      imagePaths: req.body?.evidenceImages,
+      cloudinaryMediaPath: CloudinaryConstant.SHARE_THOUGHT_REPORT_FOLDER_NAME,
+      isUpdating: false,
+    });
     req.body.evidenceImages = evidenceImages;
   }
 

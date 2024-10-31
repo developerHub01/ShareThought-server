@@ -4,10 +4,13 @@ import communityPostSchema from "./model.schema";
 import AppError from "../../../errors/AppError";
 
 /* static methods start ============================================= */
-communityPostSchema.statics.isPostOfMyAnyChannel = async (
-  userId: string,
-  postId: string,
-): Promise<boolean> => {
+communityPostSchema.statics.isPostOfMyAnyChannel = async ({
+  userId,
+  postId,
+}: {
+  userId: string;
+  postId: string;
+}): Promise<boolean> => {
   const postData = await CommunityPostModel.findById(
     postId,
     "channelId",
@@ -25,10 +28,13 @@ communityPostSchema.statics.isPostOfMyAnyChannel = async (
   return userId === authorId?.toString();
 };
 
-communityPostSchema.statics.isMyPost = async (
-  communityPostId: string,
-  channelId: string,
-): Promise<boolean> => {
+communityPostSchema.statics.isMyPost = async ({
+  communityPostId,
+  channelId,
+}: {
+  communityPostId: string;
+  channelId: string;
+}): Promise<boolean> => {
   const { channelId: postChannelId } =
     (await CommunityPostModel.findById(communityPostId).select(
       "channelId -_id",
@@ -40,10 +46,13 @@ communityPostSchema.statics.isMyPost = async (
   return channelId === postChannelId?.toString();
 };
 
-communityPostSchema.statics.findPostById = async (
-  communityPostId: string,
-  channelId: string | undefined,
-): Promise<unknown> => {
+communityPostSchema.statics.findPostById = async ({
+  communityPostId,
+  channelId,
+}: {
+  communityPostId: string;
+  channelId?: string;
+}): Promise<unknown> => {
   const postData = await CommunityPostModel.findById(communityPostId);
 
   if (!postData) throw new AppError(httpStatus.NOT_FOUND, "post not found");
@@ -53,16 +62,18 @@ communityPostSchema.statics.findPostById = async (
   if (
     channelId &&
     !isPublished &&
-    !(await CommunityPostModel.isMyPost(communityPostId, channelId))
+    !(await CommunityPostModel.isMyPost({ communityPostId, channelId }))
   )
     throw new AppError(httpStatus.NOT_FOUND, "post not found");
 
   return postData;
 };
 
-communityPostSchema.statics.isPublicPostById = async (
-  communityPostId: string,
-): Promise<boolean | unknown> => {
+communityPostSchema.statics.isPublicPostById = async ({
+  communityPostId,
+}: {
+  communityPostId: string;
+}): Promise<boolean | unknown> => {
   const { isPublished } =
     (await CommunityPostModel.findById(communityPostId)) || {};
   return Boolean(isPublished);

@@ -100,7 +100,7 @@ const findPostByPostId = async ({
   const query: IFindPostByIdQuery = { _id: postId };
 
   if (channelId) {
-    const isMyPost = await PostModel.isMyPost(postId, channelId);
+    const isMyPost = await PostModel.isMyPost({ postId, channelId });
 
     if (!isMyPost) query["isPublished"] = true;
   }
@@ -227,25 +227,25 @@ const deletePost = async ({ postId }: { postId: string }) => {
     });
 
     /* Deleting all reactions of post */
-    (result as unknown) = await PostReactionModel.deleteAllReactionByPostId(
+    (result as unknown) = await PostReactionModel.deleteAllReactionByPostId({
       postId,
-      "blogPost",
+      postType: "blogPost",
       session,
-    );
+    });
 
     /* removing post from all category postList */
     (result as unknown) =
-      await CategoryModel.removeSpecificPostFromAllCategoryList(
+      await CategoryModel.removeSpecificPostFromAllCategoryList({
         postId,
         session,
-      );
+      });
 
     /* Deleting all that post from all read later list */
     (result as unknown) =
-      await ReadLaterModel.removeFromReadLaterListWhenPostIsDeleting(
+      await ReadLaterModel.removeFromReadLaterListWhenPostIsDeleting({
         postId,
         session,
-      );
+      });
 
     (result as unknown) = await PostModel.findByIdAndDelete(postId, {
       session,

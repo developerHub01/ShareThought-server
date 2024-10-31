@@ -1,11 +1,16 @@
+import httpStatus from "http-status";
 import QueryBuilder from "../../builder/QueryBuilder";
+import AppError from "../../errors/AppError";
 import { ReadLaterModel } from "./model/model";
 import { ReadLaterConstant } from "./read.later.constant";
 
-const findReadLaterList = async (
-  query: Record<string, unknown>,
-  userId: string,
-) => {
+const findReadLaterList = async ({
+  query,
+  userId,
+}: {
+  query: Record<string, unknown>;
+  userId: string;
+}) => {
   const readLaterQuery = new QueryBuilder(
     ReadLaterModel.find({
       userId,
@@ -37,20 +42,72 @@ const findReadLaterList = async (
   };
 };
 
-const isExistInReadLaterList = async (postId: string, userId: string) => {
-  return await ReadLaterModel.isExistInReadLaterList(postId, userId);
+const isExistInReadLaterList = async ({
+  postId,
+  userId,
+}: {
+  postId: string;
+  userId: string;
+}) => {
+  return await ReadLaterModel.isExistInReadLaterList({ postId, userId });
 };
 
-const addToReadLaterList = async (postId: string, userId: string) => {
-  return await ReadLaterModel.addToReadLaterList(postId, userId);
+const addToReadLaterList = async ({
+  postId,
+  userId,
+}: {
+  postId: string;
+  userId: string;
+}) => {
+  return await ReadLaterModel.create({
+    postId,
+    userId,
+  });
 };
 
-const removeFromReadLaterListById = async (id: string, userId: string) => {
-  return await ReadLaterModel.removeFromReadLaterListById(id, userId);
+const removeFromReadLaterListById = async ({
+  id,
+  userId,
+}: {
+  id: string;
+  userId: string;
+}) => {
+  if (!(await ReadLaterModel.isMyReadLaterListPost({ id, userId })))
+    throw new AppError(
+      httpStatus.UNAUTHORIZED,
+      "This is not your read later list item",
+    );
+
+  return await ReadLaterModel.findByIdAndDelete(id);
 };
 
-const removeFromReadLaterList = async (postId: string, userId: string) => {
-  return await ReadLaterModel.removeFromReadLaterList(postId, userId);
+const removeFromReadLaterList = async ({
+  postId,
+  userId,
+}: {
+  postId: string;
+  userId: string;
+}) => {
+  const postData = await ReadLaterModel.findOne({ postId, userId });
+
+  if (!postData)
+    throw new AppError(
+      httpStatus.NOT_FOUND,
+      "this post is not in read later list",
+    );
+
+  if (
+    !(await ReadLaterModel.isMyReadLaterListPost({
+      id: postData?._id?.toString(),
+      userId,
+    }))
+  )
+    throw new AppError(
+      httpStatus.UNAUTHORIZED,
+      "This is not your read later list item",
+    );
+
+  return await ReadLaterModel.deleteOne({ postId, userId });
 };
 
 export const ReadLaterServices = {

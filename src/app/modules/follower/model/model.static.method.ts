@@ -34,7 +34,10 @@ followerSchema.statics.followToggle = async (
   userId: string,
 ) => {
   /* Check if the user is trying to follow their own channel */
-  const isMyChannel = await ChannelModel.isChannelMine(channelId, userId);
+  const isMyChannel = await ChannelModel.isChannelMine({
+    channelId,
+    authorId: userId,
+  });
 
   /* Prevent user from following their own channel */
   if (isMyChannel)

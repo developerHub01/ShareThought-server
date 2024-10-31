@@ -12,12 +12,12 @@ userSchema.pre<IUser>("save", async function (next) {
     throw new AppError(httpStatus.BAD_REQUEST, "userName can't contain spaces");
 
   if (!this?.avatar)
-    this.avatar = UserUtils.generateAvatarURL(
-      this.gender as TGender,
-      this.userName,
-    );
+    this.avatar = UserUtils.generateAvatarURL({
+      gender: this.gender as TGender,
+      userName: this.userName,
+    });
 
-  this.password = await UserModel.createHash(this?.password);
+  this.password = await UserModel.createHash({ str: this?.password });
 
   next();
 });
@@ -29,7 +29,7 @@ userSchema.pre("findOneAndUpdate", async function (next) {
     throw new AppError(httpStatus.BAD_REQUEST, "userName can't contain spaces");
 
   if (update.password) {
-    update.password = await UserModel.createHash(update.password);
+    update.password = await UserModel.createHash({ str: update.password });
   }
 
   next();

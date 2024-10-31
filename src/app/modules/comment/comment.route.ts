@@ -9,7 +9,7 @@ import haveAccessDeleteComment from "../../middleware/have.access.delete.comment
 import verifyMyPost from "../../middleware/verify.my.post";
 import getActiveChannel from "../../middleware/get.active.channel";
 import readReqBodyFiles from "../../middleware/read.req.body.files";
-import isVerified from "../../middleware/is.Verified";
+import isVerified from "../../middleware/is.verified";
 import checkChannelUserRole from "../../middleware/check.channel.user.role";
 import checkModeratorStatus from "../../middleware/check.moderator.status";
 import isMyPost from "../../middleware/is.my.post";

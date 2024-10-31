@@ -5,14 +5,23 @@ import { ChannelConstant } from "./channel.constant";
 import { IChannel, ICreateChannel } from "./channel.interface";
 import { ChannelServices } from "./channel.services";
 
-const singleChannel = async (channelId: string, isAuthor: boolean) => {
+const singleChannel = async ({
+  channelId,
+  isAuthor,
+}: {
+  channelId: string;
+  isAuthor: boolean;
+}) => {
   const channelKey = RedisKeys.channelKey(channelId);
 
   const channelData = await redis.get(channelKey);
 
   if (channelData) return JSON.parse(channelData);
 
-  const result = await ChannelServices.singleChannel(channelId, isAuthor);
+  const result = await ChannelServices.singleChannel({
+    id: channelId,
+    author: isAuthor,
+  });
 
   await redis.setex(
     channelKey,
@@ -23,10 +32,10 @@ const singleChannel = async (channelId: string, isAuthor: boolean) => {
   return result;
 };
 
-const createChannel = async (payload: ICreateChannel) => {
-  const result = (await ChannelServices.createChannel(
+const createChannel = async ({ payload }: { payload: ICreateChannel }) => {
+  const result = (await ChannelServices.createChannel({
     payload,
-  )) as TDocumentType<IChannel>;
+  })) as TDocumentType<IChannel>;
 
   if (!result) return result;
 
@@ -43,13 +52,19 @@ const createChannel = async (payload: ICreateChannel) => {
   return result;
 };
 
-const updateChannel = async (channelId: string, payload: Partial<IChannel>) => {
+const updateChannel = async ({
+  channelId,
+  payload,
+}: {
+  channelId: string;
+  payload: Partial<IChannel>;
+}) => {
   const channelKey = RedisKeys.channelKey(channelId);
 
-  const result = (await ChannelServices.updateChannel(
-    channelId,
+  const result = (await ChannelServices.updateChannel({
+    id: channelId,
     payload,
-  )) as TDocumentType<IChannel>;
+  })) as TDocumentType<IChannel>;
 
   if (!result) return result;
 
@@ -62,10 +77,10 @@ const updateChannel = async (channelId: string, payload: Partial<IChannel>) => {
   return result;
 };
 
-const deleteChannel = async (channelId: string) => {
+const deleteChannel = async ({ channelId }: { channelId: string }) => {
   const channelKey = RedisKeys.channelKey(channelId);
 
-  const result = ChannelServices.deleteChannel(channelId);
+  const result = ChannelServices.deleteChannel({ id: channelId });
 
   if (!result) return result;
 
@@ -74,14 +89,14 @@ const deleteChannel = async (channelId: string) => {
   return result;
 };
 
-const channelModeratorCount = async (channelId: string) => {
+const channelModeratorCount = async ({ channelId }: { channelId: string }) => {
   const moderatorsCountKey = RedisKeys.channelModeratorsCount(channelId);
 
   const moderatorsCount = await redis.get(moderatorsCountKey);
 
   if (moderatorsCount) return JSON.parse(moderatorsCount);
 
-  const result = await ChannelServices.channelModeratorCount(channelId);
+  const result = await ChannelServices.channelModeratorCount({ channelId });
 
   await redis.setex(
     moderatorsCountKey,

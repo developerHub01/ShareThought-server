@@ -3,15 +3,14 @@ import catchAsync from "../../utils/catch.async";
 import { sendResponse } from "../../utils/send.response";
 import { IRequestWithActiveDetails } from "../../interface/interface";
 import { SavedCategoryServices } from "./saved.category.services";
-import { SavedCategoryModel } from "./model/model";
 
 const findSavedCategory = catchAsync(async (req, res) => {
   const { userId } = req as IRequestWithActiveDetails;
 
-  const result = await SavedCategoryServices.findSavedCategory(
-    req.query,
+  const result = await SavedCategoryServices.findSavedCategory({
+    query: req.query,
     userId,
-  );
+  });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -26,7 +25,10 @@ const addToSaveCategory = catchAsync(async (req, res) => {
 
   const { categoryId } = req.params;
 
-  const result = await SavedCategoryModel.addToSaveCategory(categoryId, userId);
+  const result = await SavedCategoryServices.addToSaveCategory({
+    categoryId,
+    userId,
+  });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -41,9 +43,11 @@ const removeFromSaveCategoryByCategoryId = catchAsync(async (req, res) => {
 
   const { categoryId } = req.params;
 
-  const result = await SavedCategoryModel.removeFromSaveCategoryByCategoryId(
-    categoryId,
-    userId,
+  const result = await SavedCategoryServices.removeFromSaveCategoryByCategoryId(
+    {
+      categoryId,
+      userId,
+    },
   );
 
   return sendResponse(res, {
@@ -60,10 +64,10 @@ const removeFromSaveCategoryBySavedCategoryId = catchAsync(async (req, res) => {
   const { savedCategoryId } = req.params;
 
   const result =
-    await SavedCategoryModel.removeFromSaveCategoryBySavedCategoryId(
-      savedCategoryId,
+    await SavedCategoryServices.removeFromSaveCategoryBySavedCategoryId({
+      id: savedCategoryId,
       userId,
-    );
+    });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,

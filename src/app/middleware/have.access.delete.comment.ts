@@ -8,11 +8,11 @@ const haveAccessDeleteComment = catchAsync(async (req, res, next) => {
   const { id: commentId } = req.params;
   const { userId, channelId } = req as IRequestWithActiveDetails;
 
-  const result = await CommentModel.haveAccessToDelete(
+  const result = await CommentModel.haveAccessToDelete({
     commentId,
-    channelId || userId,
-    channelId ? "channelId" : "userId",
-  );
+    authorId: channelId || userId,
+    authorType: channelId ? "channelId" : "userId",
+  });
 
   if (!result)
     throw new AppError(

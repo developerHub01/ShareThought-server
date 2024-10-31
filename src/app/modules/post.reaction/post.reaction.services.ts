@@ -3,30 +3,41 @@ import { TAuthorType, TPostType } from "../../interface/interface";
 import { PostReactionModel } from "./model/model";
 import { TPostReactionType } from "./post.reaction.interface";
 
-const myReactionOnPost = async (
-  authorId: string,
-  authorType: TAuthorType,
-  postId: string,
-  postType: TPostType,
-) => {
-  return await PostReactionModel.myReactionOnPost(
+const myReactionOnPost = async ({
+  authorId,
+  authorIdType,
+  postId,
+  postType,
+}: {
+  authorId: string;
+  authorIdType: TAuthorType;
+  postId: string;
+  postType: TPostType;
+}) => {
+  return await PostReactionModel.myReactionOnPost({
     postId,
     postType,
     authorId,
-    authorType,
-  );
+    authorIdType,
+  });
 };
 
-const allReactionOnPost = async (
-  query: Record<string, unknown>,
-  authorId: string,
-  authorType: TAuthorType,
-  postId: string,
-  postType: TPostType,
-) => {
+const allReactionOnPost = async ({
+  query,
+  authorId,
+  authorIdType,
+  postId,
+  postType,
+}: {
+  query: Record<string, unknown>;
+  authorId: string;
+  authorIdType: TAuthorType;
+  postId: string;
+  postType: TPostType;
+}) => {
   const postReactionQuery = new QueryBuilder(
     PostReactionModel.find({
-      ...(authorType === "channelId"
+      ...(authorIdType === "channelId"
         ? { channelId: authorId }
         : { userId: authorId }),
       ...(postType === "blogPost"
@@ -57,28 +68,34 @@ const allReactionOnPost = async (
   };
 };
 
-const reactOnPost = async (
-  authorId: string,
-  authorType: TAuthorType,
-  postId: string,
-  postType: TPostType,
-  reactionType?: TPostReactionType | undefined,
-) => {
+const reactOnPost = async ({
+  authorId,
+  authorIdType,
+  postId,
+  postType,
+  reactionType,
+}: {
+  authorId: string;
+  authorIdType: TAuthorType;
+  postId: string;
+  postType: TPostType;
+  reactionType?: TPostReactionType;
+}) => {
   if (reactionType)
-    return await PostReactionModel.reactOnPost(
+    return await PostReactionModel.reactOnPost({
       postId,
       postType,
       authorId,
-      authorType,
+      authorIdType,
       reactionType,
-    );
+    });
 
-  return await PostReactionModel.togglePostReaction(
+  return await PostReactionModel.togglePostReaction({
     postId,
     postType,
     authorId,
-    authorType,
-  );
+    authorIdType,
+  });
 };
 
 export const PostReactionServices = {

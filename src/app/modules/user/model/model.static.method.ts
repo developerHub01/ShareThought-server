@@ -6,29 +6,47 @@ import config from "../../../config";
 import { IUserChangePassword } from "../user.interface";
 import AppError from "../../../errors/AppError";
 
-userSchema.statics.createHash = async (str: string): Promise<string> => {
+userSchema.statics.createHash = async ({
+  str,
+}: {
+  str: string;
+}): Promise<string> => {
   return await bcrypt.hash(str, Number(config?.BCRYPT_SALT_ROUND));
 };
 
-userSchema.statics.isPasswordMatch = async (
+userSchema.statics.isPasswordMatch = async ({
   plainPassword,
   hashedPassword,
-): Promise<boolean> => {
+}: {
+  plainPassword: string;
+  hashedPassword: string;
+}): Promise<boolean> => {
   return await bcrypt.compare(plainPassword, hashedPassword);
 };
 
-userSchema.statics.isUserExist = async (id: string): Promise<boolean> => {
+userSchema.statics.isUserExist = async ({
+  id,
+}: {
+  id: string;
+}): Promise<boolean> => {
   return Boolean(await UserModel.findById(id));
 };
 
-userSchema.statics.isVerified = async (id: string): Promise<boolean> => {
+userSchema.statics.isVerified = async ({
+  id,
+}: {
+  id: string;
+}): Promise<boolean> => {
   return Boolean((await UserModel.findById(id))?.isVerified);
 };
 
-userSchema.statics.updateUserPassword = async (
-  payload: IUserChangePassword,
-  userId: string,
-): Promise<unknown> => {
+userSchema.statics.updateUserPassword = async ({
+  payload,
+  userId,
+}: {
+  payload: IUserChangePassword;
+  userId: string;
+}): Promise<unknown> => {
   const { oldPassword, newPassword } = payload;
 
   // finding user by id
@@ -41,10 +59,10 @@ userSchema.statics.updateUserPassword = async (
   };
 
   // checking that user password and my old password are same or not
-  const isPasswordMatched = await UserModel.isPasswordMatch(
-    oldPassword,
-    userPassword,
-  );
+  const isPasswordMatched = await UserModel.isPasswordMatch({
+    plainPassword: oldPassword,
+    hashedPassword: userPassword,
+  });
 
   if (!isPasswordMatched)
     throw new AppError(httpStatus.UNAUTHORIZED, "password not matched");
@@ -54,7 +72,7 @@ userSchema.statics.updateUserPassword = async (
     userId,
     {
       // creating new password and replacing
-      password: await UserModel.createHash(newPassword),
+      password: await UserModel.createHash({ str: newPassword }),
     },
     {
       new: true,

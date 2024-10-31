@@ -7,7 +7,8 @@ import { IRequestWithActiveDetails } from "../../interface/interface";
 const findCategoryById = catchAsync(async (req, res) => {
   const { id: categoryId } = req.params;
 
-  const result = (await CategoryServices.findCategoryById(categoryId)) || {};
+  const result =
+    (await CategoryServices.findCategoryById({ categoryId })) || {};
 
   const { name } = result as typeof result & { name: string };
   return sendResponse(res, {
@@ -25,11 +26,11 @@ const findCategoryByChannelId = catchAsync(async (req, res) => {
 
   const { channelId: myChannelId } = req as IRequestWithActiveDetails;
 
-  const result = await CategoryServices.findCategoryByChannelId(
-    req.query,
+  const result = await CategoryServices.findCategoryByChannelId({
+    query: req.query,
     channelId,
-    myChannelId as string,
-  );
+    myChannelId: myChannelId as string,
+  });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -57,7 +58,10 @@ const createCategory = catchAsync(async (req, res) => {
 const updateCategory = catchAsync(async (req, res) => {
   const { id } = req.params;
 
-  const result = await CategoryServices.updateCategory(req.body, id);
+  const result = await CategoryServices.updateCategory({
+    payload: req.body,
+    categoryId: id,
+  });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -70,7 +74,10 @@ const updateCategory = catchAsync(async (req, res) => {
 const addPostInCategory = catchAsync(async (req, res) => {
   const { id: categoryId, postId } = req.params;
 
-  const result = await CategoryServices.addPostInCategory(categoryId, postId);
+  const result = await CategoryServices.addPostInCategory({
+    categoryId,
+    postId,
+  });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -83,10 +90,10 @@ const addPostInCategory = catchAsync(async (req, res) => {
 const removePostFromCategory = catchAsync(async (req, res) => {
   const { id: categoryId, postId } = req.params;
 
-  const result = await CategoryServices.removePostFromCategory(
+  const result = await CategoryServices.removePostFromCategory({
     categoryId,
     postId,
-  );
+  });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -99,7 +106,7 @@ const removePostFromCategory = catchAsync(async (req, res) => {
 const deleteCategory = catchAsync(async (req, res) => {
   const { id: categoryId } = req.params;
 
-  const result = await CategoryServices.deleteCategory(categoryId);
+  const result = await CategoryServices.deleteCategory({ categoryId });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,

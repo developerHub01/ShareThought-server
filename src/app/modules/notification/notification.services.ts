@@ -2,14 +2,21 @@ import QueryBuilder from "../../builder/QueryBuilder";
 import { NotificationModel } from "./model/model";
 import { INotification } from "./notification.interface";
 
-const createNotification = async (payload: Partial<INotification>) => {
+const createNotification = async ({
+  payload,
+}: {
+  payload: Partial<INotification>;
+}) => {
   return await NotificationModel.createNotification(payload);
 };
 
-const findMyNotification = async (
-  query: Record<string, unknown>,
-  userId: string,
-) => {
+const findMyNotification = async ({
+  query,
+  userId,
+}: {
+  query: Record<string, unknown>;
+  userId: string;
+}) => {
   const notificationQuery = new QueryBuilder(
     NotificationModel.find({ userId }).populate({
       path: "userId",
@@ -31,10 +38,13 @@ const findMyNotification = async (
   };
 };
 
-const findChannelNotification = async (
-  query: Record<string, unknown>,
-  channelId: string,
-) => {
+const findChannelNotification = async ({
+  query,
+  channelId,
+}: {
+  query: Record<string, unknown>;
+  channelId: string;
+}) => {
   const notificationQuery = new QueryBuilder(
     NotificationModel.find({ channelId }).populate({
       path: "userId",
@@ -56,10 +66,13 @@ const findChannelNotification = async (
   };
 };
 
-const findMyUnseenNotification = async (
-  query: Record<string, unknown>,
-  userId: string,
-) => {
+const findMyUnseenNotification = async ({
+  query,
+  userId,
+}: {
+  query: Record<string, unknown>;
+  userId: string;
+}) => {
   const notificationQuery = new QueryBuilder(
     NotificationModel.find({ userId, isSeen: false }).populate({
       path: "userId",
@@ -81,10 +94,13 @@ const findMyUnseenNotification = async (
   };
 };
 
-const findChannelUnseenNotification = async (
-  query: Record<string, unknown>,
-  channelId: string,
-) => {
+const findChannelUnseenNotification = async ({
+  query,
+  channelId,
+}: {
+  query: Record<string, unknown>;
+  channelId: string;
+}) => {
   const notificationQuery = new QueryBuilder(
     NotificationModel.find({ channelId, isSeen: false }).populate({
       path: "userId",
@@ -106,15 +122,25 @@ const findChannelUnseenNotification = async (
   };
 };
 
-const numberOfMyUnseenNotification = async (userId: string) => {
+const numberOfMyUnseenNotification = async ({ userId }: { userId: string }) => {
   return await NotificationModel.numberOfMyUnseenNotification(userId);
 };
 
-const numberOfChannelUnseenNotification = async (channelId: string) => {
+const numberOfChannelUnseenNotification = async ({
+  channelId,
+}: {
+  channelId: string;
+}) => {
   return await NotificationModel.numberOfMyUnseenNotification(channelId);
 };
 
-const makeNotificationSeen = async (id: string, userId: string) => {
+const makeNotificationSeen = async ({
+  id,
+  userId,
+}: {
+  id: string;
+  userId: string;
+}) => {
   return await NotificationModel.makeNotificationSeen(id, userId);
 };
 

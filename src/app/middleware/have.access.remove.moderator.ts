@@ -25,10 +25,10 @@ const haveAccessRemoveModerator = catchAsync(async (req, res, next) => {
 
   const { moderatorId: moderatorIdToRemove } = req.params;
 
-  const isChannelMine = await ChannelModel.isChannelMine(
-    channelId as string,
-    userId,
-  );
+  const isChannelMine = await ChannelModel.isChannelMine({
+    channelId: channelId as string,
+    authorId: userId,
+  });
 
   /* if channel is mine then I have every access */
   if (isChannelMine) return next();

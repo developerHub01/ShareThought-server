@@ -15,7 +15,7 @@ import { QueueJobList } from "../../queues";
 const getMyDetails = catchAsync(async (req, res) => {
   const { userId } = req as IRequestWithActiveDetails;
 
-  const result = await UserCache.findUserById(userId);
+  const result = await UserCache.findUserById({ userId });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -26,9 +26,9 @@ const getMyDetails = catchAsync(async (req, res) => {
 });
 
 const getUserById = catchAsync(async (req, res) => {
-  const { id } = req.params;
+  const { id: userId } = req.params;
 
-  const result = await UserCache.findUserById(id);
+  const result = await UserCache.findUserById({ userId });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -39,7 +39,7 @@ const getUserById = catchAsync(async (req, res) => {
 });
 
 const findUser = catchAsync(async (req, res) => {
-  const result = await UserServices.findUser(req.query);
+  const result = await UserServices.findUser({ query: req.query });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -71,7 +71,7 @@ const createUser = catchAsync(async (req, res) => {
     removeOnFail: true,
   });
 
-  AuthUtils.clearAllCookies(req, res);
+  AuthUtils.clearAllCookies({ req, res });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -87,17 +87,17 @@ const updateUser = catchAsync(async (req, res) => {
   const previousAvatarImage = (await UserModel.findById(userId))?.avatar;
 
   if (req.body?.avatar) {
-    const avatarImage = await UserUtils.updateUserAvatar(
-      req.body?.avatar,
-      CloudinaryConstant.SHARE_THOUGHT_USER_FOLDER_NAME,
-      true,
-      previousAvatarImage,
-    );
+    const avatarImage = await UserUtils.updateUserAvatar({
+      imagePath: req.body?.avatar,
+      cloudinaryMediaPath: CloudinaryConstant.SHARE_THOUGHT_USER_FOLDER_NAME,
+      isUpdating: true,
+      previousImage: previousAvatarImage,
+    });
 
     req.body.avatar = avatarImage;
   }
 
-  const result = await UserCache.updateUser(req.body, userId);
+  const result = await UserCache.updateUser({ payload: req.body, userId });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -110,7 +110,10 @@ const updateUser = catchAsync(async (req, res) => {
 const updateUserPassword = catchAsync(async (req, res) => {
   const { userId } = req as IRequestWithActiveDetails;
 
-  const result = await UserCache.updateUserPassword(req.body, userId);
+  const result = await UserCache.updateUserPassword({
+    payload: req.body,
+    userId,
+  });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,

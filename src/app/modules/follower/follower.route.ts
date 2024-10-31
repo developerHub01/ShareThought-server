@@ -5,7 +5,7 @@ import channelExist from "../../middleware/channel.exist";
 import verifyMyChannel from "../../middleware/verify.my.channel";
 import getActiveChannel from "../../middleware/get.active.channel";
 import isValidChannel from "../../middleware/is.valid.channel";
-import isVerified from "../../middleware/is.Verified";
+import isVerified from "../../middleware/is.verified";
 import checkChannelStatus from "../../middleware/check.channel.status";
 const router = express.Router();
 

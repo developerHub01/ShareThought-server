@@ -6,12 +6,5 @@ export interface ISavedCategory {
 }
 
 export interface ISavedCategoryModel extends Model<ISavedCategory> {
-  addToSaveCategory(categoryId: string, userId: string): Promise<unknown>;
-
-  removeFromSaveCategoryByCategoryId(
-    categoryId: string,
-    userId: string,
-  ): Promise<unknown>;
-
-  removeFromSaveCategoryBySavedCategoryId(id: string, userId: string): Promise<unknown>;
+  
 }

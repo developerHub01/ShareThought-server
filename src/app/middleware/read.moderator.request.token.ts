@@ -10,14 +10,14 @@ const readModeratorRequestToken = catchAsync(async (req, res, next) => {
 
   if (!token) throw new AppError(httpStatus.BAD_REQUEST, "token is missing");
 
-  const tokenData = AuthUtils.verifyToken(
-    token as string,
-    config.JWT_MODERATOR_REQUEST_SECRET,
-    {
+  const tokenData = AuthUtils.verifyToken({
+    token: token as string,
+    secret: config.JWT_MODERATOR_REQUEST_SECRET,
+    errorDetails: {
       statusCode: httpStatus.UNAUTHORIZED,
       message: "this is not a valid token",
     },
-  );
+  });
 
   if (!tokenData)
     throw new AppError(httpStatus.BAD_REQUEST, "Token data is not valid");

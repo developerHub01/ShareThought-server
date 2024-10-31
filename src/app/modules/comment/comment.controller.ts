@@ -51,11 +51,11 @@ const createComment = catchAsync(async (req, res) => {
   const { postId, communityPostId } = req.params;
 
   if (req.body?.commentImage) {
-    const commentImage = await CommentUtils.uploadCommentImage(
-      req.body?.commentImage,
-      CloudinaryConstant.SHARE_THOUGHT_COMMENT_FOLDER_NAME,
-      false,
-    );
+    const commentImage = await CommentUtils.uploadCommentImage({
+      imagePath: req.body?.commentImage,
+      cloudinaryMediaPath: CloudinaryConstant.SHARE_THOUGHT_COMMENT_FOLDER_NAME,
+      isUpdating: false,
+    });
     req.body.commentImage = commentImage;
   }
 
@@ -77,14 +77,14 @@ const createComment = catchAsync(async (req, res) => {
 
 const replyComment = catchAsync(async (req, res) => {
   const { userId, channelId } = req as IRequestWithActiveDetails;
-  const { id: parentCommentId } = req.params; // commentId of parent comment
+  const { id: parentCommentId } = req.params; /* commentId of parent comment */
 
   if (req.body?.commentImage) {
-    const commentImage = await CommentUtils.uploadCommentImage(
-      req.body?.commentImage,
-      CloudinaryConstant.SHARE_THOUGHT_COMMENT_FOLDER_NAME,
-      false,
-    );
+    const commentImage = await CommentUtils.uploadCommentImage({
+      imagePath: req.body?.commentImage,
+      cloudinaryMediaPath: CloudinaryConstant.SHARE_THOUGHT_COMMENT_FOLDER_NAME,
+      isUpdating: false,
+    });
 
     req.body.commentImage = commentImage;
   }
@@ -114,12 +114,12 @@ const updateComment = catchAsync(async (req, res) => {
     ?.commentImage;
 
   if (req.body?.commentImage) {
-    const commentImage = await CommentUtils.uploadCommentImage(
-      req.body?.commentImage,
-      CloudinaryConstant.SHARE_THOUGHT_COMMENT_FOLDER_NAME,
-      true,
-      previousCommentImage,
-    );
+    const commentImage = await CommentUtils.uploadCommentImage({
+      imagePath: req.body?.commentImage,
+      cloudinaryMediaPath: CloudinaryConstant.SHARE_THOUGHT_COMMENT_FOLDER_NAME,
+      isUpdating: true,
+      previousImage: previousCommentImage,
+    });
 
     req.body.commentImage = commentImage;
   }

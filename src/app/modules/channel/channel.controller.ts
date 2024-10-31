@@ -19,7 +19,7 @@ import { Constatnt } from "../../constants/constants";
 import { ModeratorModel } from "../moderator/model/model";
 
 const findChannel = catchAsync(async (req, res) => {
-  const result = await ChannelServices.findChannel(req.query);
+  const result = await ChannelServices.findChannel({ query: req.query });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -32,7 +32,11 @@ const findChannel = catchAsync(async (req, res) => {
 const getMyChannel = catchAsync(async (req, res) => {
   const { userId } = req as IRequestWithActiveDetails;
 
-  const result = await ChannelServices.getChannelOfMine(req.query, userId);
+  const result = await ChannelServices.getChannelOfMine({
+    query: req.query,
+    authorId: userId,
+  });
+
   return sendResponse(res, {
     statusCode: httpStatus.OK,
     success: true,
@@ -44,7 +48,10 @@ const getMyChannel = catchAsync(async (req, res) => {
 const getMyModeratedChannel = catchAsync(async (req, res) => {
   const { userId } = req as IRequestWithActiveDetails;
 
-  const result = await ChannelServices.getMyModeratedChannel(req.query, userId);
+  const result = await ChannelServices.getMyModeratedChannel({
+    query: req.query,
+    userId,
+  });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -74,15 +81,15 @@ const singleChannel = catchAsync(async (req, res) => {
     /*
      * find my activated channel data
      */
-    result = await ChannelCache.singleChannel(
-      activeChannelId,
-      activeChannelId === channelId,
-    );
+    result = await ChannelCache.singleChannel({
+      channelId: activeChannelId,
+      isAuthor: activeChannelId === channelId,
+    });
   } else
-    result = await ChannelCache.singleChannel(
+    result = await ChannelCache.singleChannel({
       channelId,
-      activeChannelId === channelId,
-    );
+      isAuthor: activeChannelId === channelId,
+    });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -123,34 +130,39 @@ const updateChannel = catchAsync(async (req, res) => {
   const { channelAvatar, channelCover } = req.body;
 
   if (channelAvatar) {
-    const url = await ChannelUtils.updateChannelImage(
-      channelAvatar,
-      previousAvatar,
-      CloudinaryConstant.SHARE_THOUGHT_CHANNEL_AVATAR_FOLDER_NAME,
-      {
+    const url = await ChannelUtils.updateChannelImage({
+      imagePath: channelAvatar,
+      previousImage: previousAvatar,
+      cloudinaryMediaPath:
+        CloudinaryConstant.SHARE_THOUGHT_CHANNEL_AVATAR_FOLDER_NAME,
+      dimension: {
         width: ChannelConstant.CHANNEL_AVATAR_SIZE.WIDTH,
         height: ChannelConstant.CHANNEL_AVATAR_SIZE.HEIGHT,
       },
-    );
+    });
 
     if (url) req.body.channelAvatar = url;
   }
 
   if (channelCover) {
-    const url = await ChannelUtils.updateChannelImage(
-      channelCover,
-      previousCover,
-      CloudinaryConstant.SHARE_THOUGHT_CHANNEL_COVER_FOLDER_NAME,
-      {
+    const url = await ChannelUtils.updateChannelImage({
+      imagePath: channelCover,
+      previousImage: previousCover,
+      cloudinaryMediaPath:
+        CloudinaryConstant.SHARE_THOUGHT_CHANNEL_COVER_FOLDER_NAME,
+      dimension: {
         width: ChannelConstant.CHANNEL_COVER_SIZE.WIDTH,
         height: ChannelConstant.CHANNEL_COVER_SIZE.HEIGHT,
       },
-    );
+    });
 
     if (url) req.body.channelCover = url;
   }
 
-  const result = await ChannelCache.updateChannel(channelId, req.body);
+  const result = await ChannelCache.updateChannel({
+    channelId,
+    payload: req.body,
+  });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -166,7 +178,7 @@ const deleteChannel = catchAsync(async (req, res) => {
   if (!channelId)
     throw new AppError(httpStatus.BAD_REQUEST, "your channel is not activated");
 
-  const result = ChannelCache.deleteChannel(channelId);
+  const result = ChannelCache.deleteChannel({ channelId });
 
   return sendResponse(res, {
     statusCode: httpStatus.NO_CONTENT,
@@ -188,11 +200,11 @@ const switchChannel = catchAsync(async (req, res) => {
 
   let moderatorId: string | null = null;
 
-  if (!(await ChannelModel.isChannelMine(channelId, userId))) {
-    const moderatorData = (await ModeratorModel.channelModeratorData(
+  if (!(await ChannelModel.isChannelMine({ channelId, authorId: userId }))) {
+    const moderatorData = (await ModeratorModel.channelModeratorData({
       channelId,
       userId,
-    )) as TDocumentType<IModerator>;
+    })) as TDocumentType<IModerator>;
 
     if (!moderatorData)
       throw new AppError(httpStatus.UNAUTHORIZED, "This is not your channel");
@@ -200,17 +212,17 @@ const switchChannel = catchAsync(async (req, res) => {
     moderatorId = moderatorData._id.toString();
   }
 
-  const channelToken = AuthUtils.createToken(
-    { channelId },
-    config?.JWT_CHANNEL_ACCESS_SECRET as string,
-  );
+  const channelToken = AuthUtils.createToken({
+    jwtPayload: { channelId },
+    secret: config?.JWT_CHANNEL_ACCESS_SECRET as string,
+  });
 
   const moderatorToken =
     moderatorId &&
-    AuthUtils.createToken(
-      { moderatorId },
-      config?.JWT_MODERATOR_SECRET as string,
-    );
+    AuthUtils.createToken({
+      jwtPayload: { moderatorId },
+      secret: config?.JWT_MODERATOR_SECRET as string,
+    });
 
   res.cookie(Constatnt.TOKENS.CHANNEL_TOKEN, channelToken, {
     secure: config.PROJECT_ENVIRONMENT !== "development", // if development environment then false else true
@@ -250,7 +262,9 @@ const logOutChannel = catchAsync(async (req, res) => {
 const channelModeratorCount = catchAsync(async (req, res) => {
   const { channelId } = req as IRequestWithActiveDetails;
 
-  const result = await ChannelCache.channelModeratorCount(channelId as string);
+  const result = await ChannelCache.channelModeratorCount({
+    channelId: channelId as string,
+  });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,

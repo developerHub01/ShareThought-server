@@ -1,6 +1,5 @@
 import { Model, Types } from "mongoose";
 import { ReportConstant } from "./report.constant";
-import { TDocumentType } from "../../interface/interface";
 
 const reportTypes: Array<string> = Object.keys(ReportConstant.REPORT_TYPES);
 
@@ -35,5 +34,4 @@ export interface IReport {
 }
 
 export interface IReportModel extends Model<IReport> {
-  createReport(payload: IReport): Promise<TDocumentType<IReport>>;
 }

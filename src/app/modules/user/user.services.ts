@@ -3,11 +3,11 @@ import { UserModel } from "./model/model";
 import { UserConstant } from "./user.constant";
 import { IUser, IUserChangePassword } from "./user.interface";
 
-const findUserById = async (userId: string) => {
+const findUserById = async ({ userId }: { userId: string }) => {
   return await UserModel.findById(userId);
 };
 
-const findUser = async (query: Record<string, unknown>) => {
+const findUser = async ({ query }: { query: Record<string, unknown> }) => {
   const userQuery = new QueryBuilder(UserModel.find({}), query)
     .search(UserConstant.USER_SEARCHABLE_FIELD)
     .filter()
@@ -24,14 +24,20 @@ const findUser = async (query: Record<string, unknown>) => {
   };
 };
 
-const createUser = async (payload: IUser) => {
+const createUser = async ({ payload }: { payload: IUser }) => {
   const result = await UserModel.create({
     ...payload,
   });
   return result;
 };
 
-const updateUser = async (payload: Partial<IUser>, id: string) => {
+const updateUser = async ({
+  payload,
+  id,
+}: {
+  payload: Partial<IUser>;
+  id: string;
+}) => {
   const result = await UserModel.findByIdAndUpdate(
     id,
     {
@@ -42,11 +48,14 @@ const updateUser = async (payload: Partial<IUser>, id: string) => {
   return result;
 };
 
-const updateUserPassword = async (
-  payload: IUserChangePassword,
-  userId: string,
-) => {
-  return await UserModel.updateUserPassword(payload, userId);
+const updateUserPassword = async ({
+  payload,
+  userId,
+}: {
+  payload: IUserChangePassword;
+  userId: string;
+}) => {
+  return await UserModel.updateUserPassword({ payload, userId });
 };
 
 export const UserServices = {

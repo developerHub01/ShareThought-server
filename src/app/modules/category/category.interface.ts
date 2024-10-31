@@ -29,46 +29,53 @@ export interface IUpdateCategory {
 }
 
 export interface ICategoryModel extends Model<ICategory> {
-  findCategoryById(categoryId: string): Promise<ICategory | unknown>;
+  findCategoryById({
+    categoryId,
+  }: {
+    categoryId: string;
+  }): Promise<ICategory | unknown>;
 
-  haveAccessCategory(
-    categoryId: string,
-    userOrChannelId: string,
-    idType: "channelId" | "userId",
-  ): Promise<unknown>;
+  haveAccessCategory({
+    categoryId,
+    userOrChannelId,
+    idType,
+  }: {
+    categoryId: string;
+    userOrChannelId: string;
+    idType: "channelId" | "userId";
+  }): Promise<unknown>;
 
-  isSameNameCategoryExistInMyChannelCategoryList(
-    channelId: string,
-    categoryName: string,
-  ): Promise<boolean | unknown>;
+  isSameNameCategoryExistInMyChannelCategoryList({
+    channelId,
+    categoryName,
+  }: {
+    channelId: string;
+    categoryName: string;
+  }): Promise<boolean | unknown>;
 
-  isCategoryExist(categoryId: string): Promise<boolean>;
+  isCategoryExist({ categoryId }: { categoryId: string }): Promise<boolean>;
 
-  isMyCategory(categoryId: string, channelId: string): Promise<boolean>;
+  isMyCategory({
+    categoryId,
+    channelId,
+  }: {
+    categoryId: string;
+    channelId: string;
+  }): Promise<boolean>;
 
-  createCategory(payload: ICreateCategory): Promise<unknown>;
+  haveAccessToModify({
+    categoryId,
+    channelId,
+  }: {
+    categoryId: string;
+    channelId: string;
+  }): Promise<boolean>;
 
-  deleteCategory(categoryId: string): Promise<unknown>;
-
-  haveAccessToModify(categoryId: string, channelId: string): Promise<boolean>;
-
-  addPostInCategory(
-    categoryId: string,
-    postId: string,
-  ): Promise<ICategory | unknown>;
-
-  removePostFromCategory(
-    categoryId: string,
-    postId: string,
-  ): Promise<ICategory | unknown>;
-
-  updateCategory(
-    payload: Partial<IUpdateCategory>,
-    categoryId: string,
-  ): Promise<unknown>;
-
-  removeSpecificPostFromAllCategoryList(
+  removeSpecificPostFromAllCategoryList({
+    postId,
+    session,
+  }: {
     postId: string,
     session?: ClientSession,
-  ): Promise<unknown>;
+  }): Promise<unknown>;
 }

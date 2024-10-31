@@ -1,11 +1,16 @@
 import { CloudinaryUtils } from "../../utils/cloudinary.utils";
 
-const uploadCommentImage = async (
-  imagePath: string,
-  cloudinaryMediaPath: string,
-  isUpdating: boolean = false,
-  previousImage?: string,
-) => {
+const uploadCommentImage = async ({
+  imagePath,
+  cloudinaryMediaPath,
+  isUpdating = false,
+  previousImage,
+}: {
+  imagePath: string;
+  cloudinaryMediaPath: string;
+  isUpdating?: boolean;
+  previousImage?: string;
+}) => {
   if (isUpdating && previousImage)
     await CloudinaryUtils.deleteFile([previousImage]);
 

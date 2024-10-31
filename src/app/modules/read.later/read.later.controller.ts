@@ -7,7 +7,10 @@ import { ReadLaterServices } from "./read.later.services";
 const findReadLaterList = catchAsync(async (req, res) => {
   const { userId } = req as IRequestWithActiveDetails;
 
-  const result = await ReadLaterServices.findReadLaterList(req.query, userId);
+  const result = await ReadLaterServices.findReadLaterList({
+    query: req.query,
+    userId,
+  });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -21,7 +24,10 @@ const isExistInReadLaterList = catchAsync(async (req, res) => {
   const { userId } = req as IRequestWithActiveDetails;
   const { postId } = req.params;
 
-  const result = await ReadLaterServices.isExistInReadLaterList(postId, userId);
+  const result = await ReadLaterServices.isExistInReadLaterList({
+    postId,
+    userId,
+  });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -35,7 +41,7 @@ const addToReadLaterList = catchAsync(async (req, res) => {
   const { userId } = req as IRequestWithActiveDetails;
   const { postId } = req.params;
 
-  const result = await ReadLaterServices.addToReadLaterList(postId, userId);
+  const result = await ReadLaterServices.addToReadLaterList({ postId, userId });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -49,10 +55,10 @@ const removeFromReadLaterListById = catchAsync(async (req, res) => {
   const { userId } = req as IRequestWithActiveDetails;
   const { id } = req.params;
 
-  const result = await ReadLaterServices.removeFromReadLaterListById(
+  const result = await ReadLaterServices.removeFromReadLaterListById({
     id,
     userId,
-  );
+  });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,
@@ -65,10 +71,10 @@ const removeFromReadLaterListById = catchAsync(async (req, res) => {
 const removeFromReadLaterList = catchAsync(async (req, res) => {
   const { userId } = req as IRequestWithActiveDetails;
   const { postId } = req.params;
-  const result = await ReadLaterServices.removeFromReadLaterList(
+  const result = await ReadLaterServices.removeFromReadLaterList({
     postId,
     userId,
-  );
+  });
 
   return sendResponse(res, {
     statusCode: httpStatus.OK,

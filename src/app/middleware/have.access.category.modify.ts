@@ -11,7 +11,10 @@ const haveAccessCategoryModify = catchAsync(async (req, res, next) => {
   if (!channelId)
     throw new AppError(httpStatus.UNAUTHORIZED, "This is not your channel");
 
-  const result = await CategoryModel.haveAccessToModify(categoryId, channelId);
+  const result = await CategoryModel.haveAccessToModify({
+    categoryId,
+    channelId,
+  });
 
   if (!result)
     throw new AppError(

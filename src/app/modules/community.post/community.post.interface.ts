@@ -82,14 +82,33 @@ export interface ICreateCommunityPost {
 }
 
 export interface ICommunityPostModel extends Model<ICommunityPost> {
-  isPostOfMyAnyChannel(userId: string, postId: string): Promise<boolean>;
+  isPostOfMyAnyChannel({
+    userId,
+    postId,
+  }: {
+    userId: string;
+    postId: string;
+  }): Promise<boolean>;
 
-  isMyPost(communityPostId: string, channelId: string): Promise<boolean>;
+  isMyPost({
+    communityPostId,
+    channelId,
+  }: {
+    communityPostId: string;
+    channelId: string;
+  }): Promise<boolean>;
 
-  findPostById(
-    communityPostId: string,
-    channelId: string | undefined,
-  ): Promise<unknown>;
+  findPostById({
+    communityPostId,
+    channelId,
+  }: {
+    communityPostId: string;
+    channelId?: string;
+  }): Promise<unknown>;
 
-  isPublicPostById(communityPostId: string): Promise<boolean | unknown>;
+  isPublicPostById({
+    communityPostId,
+  }: {
+    communityPostId: string;
+  }): Promise<boolean | unknown>;
 }

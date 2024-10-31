@@ -25,10 +25,10 @@ const checkModeratorStatus = catchAsync(
 
     if (!token) return next();
 
-    const { moderatorId } = AuthUtils.verifyToken(
+    const { moderatorId } = AuthUtils.verifyToken({
       token,
-      config.JWT_MODERATOR_SECRET as string,
-    );
+      secret: config.JWT_MODERATOR_SECRET as string,
+    });
 
     if (!moderatorId) return next();
 
