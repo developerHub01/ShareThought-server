@@ -11,12 +11,6 @@ const createUserValidationSchema = zod.object({
       required_error: "Full name is required",
     })
     .trim(),
-  avatar: zod
-    .string({
-      required_error: "Avatar is required",
-    })
-    .trim()
-    .optional(),
   email: zod
     .string({
       required_error: "Email is required",
